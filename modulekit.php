@@ -9,6 +9,7 @@ $modules_path = "lib/modulekit";
 
 $include = array(
   'php' => array(
+    'inc/database.php',
     'inc/ObjectType.php',
   ),
 );
