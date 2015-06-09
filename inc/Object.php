@@ -7,6 +7,28 @@ class Object {
     $this->id = $data['id'];
     $this->data = $data;
   }
+
+  /**
+   * save - save new data to database for current object
+   * $data: a hash array with key/values to update. if a key does not exist in
+   *   $data, it will not be modified in the database.
+   */
+  function save($data) {
+    global $db_conn;
+    $set = array();
+
+    foreach($data as $column_id=>$d) {
+      $set[] = db_quote_ident($column_id) . "=" . $db_conn->quote($d);
+    }
+
+    $query = "update " . db_quote_ident($this->type) . " set " .
+      implode(", ", $set) . " where \"id\"=" .
+      $db_conn->quote($this->id);
+
+    if($db_conn->query($query) === false) {
+      print_r($db_conn->errorInfo());
+    }
+  }
 }
 
 function get_object($type, $id) {
