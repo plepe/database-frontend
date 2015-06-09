@@ -6,6 +6,35 @@ class ObjectType {
     $this->id = $type;
     $this->def = $def;
   }
+
+  function sql_create_statement() {
+    global $db_conn;
+    $columns = array();
+
+    if(!array_key_exists('id', $this->def)) {
+      $columns[] = db_quote_ident('id'). " INTEGER PRIMARY KEY";
+    }
+
+    foreach($this->def as $column=>$column_def) {
+      $r = db_quote_ident($column) . " text";
+
+      if($column == "id")
+        $r .= " primary key";
+
+      if(array_key_exists('values', $column_def) && is_string($column_def['values'])) {
+        $r .= ", foreign key(" . db_quote_ident($column ). ") references " .
+          db_quote_ident($column_def['values']) . "(id)";
+      }
+
+      $columns[] = $r;
+    }
+
+    $ret  = "create table \"{$this->id}\" (\n  ";
+    $ret .= implode(",\n  ", $columns);
+    $ret .= "\n);\n";
+
+    return $ret;
+  }
 }
 
 function get_object_type($type) {
