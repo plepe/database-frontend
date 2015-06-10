@@ -45,7 +45,13 @@ function get_object_type($type) {
     $def = json_decode($def, true);
 
     if($def === null) {
-      throw new Exception("Can't load object type {$type}: " . json_last_error_msg());
+      // COMPAT: json_last_error_msg() exists PHP >= 5.5
+      if(function_exists("json_last_error_msg"))
+	$error = json_last_error_msg();
+      else
+	$error = json_last_error();
+
+      throw new Exception("Can't load object type {$type}: " . $error);
     }
 
     $object_type_cache[$type] = new ObjectType($type, $def);
