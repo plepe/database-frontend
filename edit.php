@@ -1,6 +1,7 @@
 <?php include "conf.php"; /* load a local configuration */ ?>
 <?php include "modulekit/loader.php"; /* loads all php-includes */ ?>
 <?php call_hooks("init"); ?>
+<?php Header('Content-Type: text/html; charset=utf-8'); ?>
 <?php
 $type = get_object_type($_REQUEST['type']);
 if(isset($_REQUEST['id']))
