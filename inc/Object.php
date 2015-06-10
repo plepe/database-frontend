@@ -61,27 +61,33 @@ function get_object($type, $id) {
   global $db_conn;
   global $object_cache;
 
-  if(!array_key_exists($id, $object_cache)) {
+  if(!array_key_exists($type, $object_cache))
+    $object_cache[$type] = array();
+
+  if(!array_key_exists($id, $object_cache[$type])) {
     $res = $db_conn->query("select * from " . db_quote_ident($type) . " where id=" . $db_conn->quote($id));
     if($elem = $res->fetch()) {
-      $object_cache[$id] = new Object($type, $elem);
+      $object_cache[$type][$id] = new Object($type, $elem);
     }
     $res->closeCursor();
   }
 
-  return $object_cache[$id];
+  return $object_cache[$type][$id];
 }
 
 function get_objects($type) {
   global $db_conn;
   global $object_cache;
 
+  if(!array_key_exists($type, $object_cache))
+    $object_cache[$type] = array();
+
   $res = $db_conn->query("select * from " . db_quote_ident($type));
   while($elem = $res->fetch()) {
-    if(!array_key_exists($elem['id'], $object_cache))
-      $object_cache[$elem['id']] = new Object($type, $elem);
+    if(!array_key_exists($elem['id'], $object_cache[$type]))
+      $object_cache[$type][$elem['id']] = new Object($type, $elem);
   }
   $res->closeCursor();
 
-  return $object_cache;
+  return $object_cache[$type];
 }
