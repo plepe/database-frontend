@@ -9,6 +9,9 @@ $form = new form("data", $type->def);
 
 if($form->is_complete()) {
   $data = $form->get_data();
+  if(!isset($_REQUEST['id']))
+    $ob = new Object($_REQUEST['type'], null);
+
   $ob->save($data);
 }
 else {
