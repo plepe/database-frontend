@@ -13,6 +13,8 @@ if($form->is_complete()) {
     $ob = new Object($_REQUEST['type'], null);
 
   $ob->save($data);
+
+  page_reload("edit.php?type=" . urlencode($_REQUEST['type']) . "&amp;id=" . urlencode($ob->id));
 }
 else {
   if(isset($ob)) {
