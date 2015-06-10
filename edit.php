@@ -5,7 +5,7 @@
 $type = get_object_type($_REQUEST['type']);
 if(isset($_REQUEST['id']))
   $ob = get_object($_REQUEST['type'], $_REQUEST['id']);
-$form = new form("data", $type->def);
+$form = new form("data", $type->def());
 
 if($form->is_complete()) {
   $data = $form->get_data();

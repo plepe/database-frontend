@@ -35,6 +35,23 @@ class ObjectType {
 
     return $ret;
   }
+
+  function def() {
+    $ret = $this->def;
+
+    foreach($this->def as $k=>$d) {
+      if(array_key_exists('values', $d) && is_string($d['values'])) {
+	$values = array();
+	foreach(get_objects($d['values']) as $o) {
+	  $values[$o->id] = $o->data;
+	}
+
+	$ret[$k]['values'] = $values;
+      }
+    }
+
+    return $ret;
+  }
 }
 
 function get_object_type($type) {
