@@ -50,6 +50,10 @@ class Object {
     if($this->id === null) {
       $this->id = $db_conn->lastInsertId();
     }
+
+    if(array_key_exists('id', $data)) {
+      $this->id = $data['id'];
+    }
   }
 }
 
