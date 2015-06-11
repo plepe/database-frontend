@@ -1,8 +1,15 @@
 <?
 class Page_show extends Page {
   function content($param) {
+    $ret = "";
+
+    $type = get_object_type($param['type']);
     $object = get_object($param['type'], $param['id']);
-    $ret  = "<pre>" . print_r($object, 1) . "</pre>";
+
+    $def = $type->def();
+    $table = new table($def, array($object->data), array("template_engine"=>"twig"));
+    $ret .= $table->show();
+
     $ret .= "<a href='" . page_url(array("page" => "edit", "type" => $param['type'], "id" => $param['id'] )) . "'>Edit</a>\n|";
     $ret .= "<a href='" . page_url(array("page" => "list", "type" => $param['type'] )) . "'>Back</a>\n";
     return $ret;
