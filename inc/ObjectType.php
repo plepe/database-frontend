@@ -51,6 +51,8 @@ class ObjectType {
 	}
 
 	$ret[$k]['values'] = $values;
+	if(!array_key_exists('format', $ret[$k]))
+	  $ret[$k]['format'] = "{{ {$k}.name }}";
       }
     }
 
