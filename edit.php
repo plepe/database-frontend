@@ -15,7 +15,7 @@ if($form->is_complete()) {
 
   $ob->save($data);
 
-  page_reload("edit.php?type=" . urlencode($_REQUEST['type']) . "&amp;id=" . urlencode($ob->id));
+  page_reload("show.php?type=" . urlencode($_REQUEST['type']) . "&amp;id=" . urlencode($ob->id));
 }
 else {
   if(isset($ob)) {
@@ -39,6 +39,12 @@ else {
 print $form->show();
 ?>
 <input type='submit' value='Save'>
+<?php
+if(isset($_REQUEST['id']))
+  print "<a href='show.php?type=" . urlencode($_REQUEST['type']) . "&amp;id=" . urlencode($_REQUEST['id']) . "'>Back</a>\n";
+else
+  print "<a href='list.php?type=" . urlencode($_REQUEST['type']) . "'>Back</a>\n";
+?>
 </form>
   </body>
 </html>

@@ -17,5 +17,8 @@ $object = get_object($_REQUEST['type'], $_REQUEST['id']);
 print_r($object);
 ?>
 </pre>
+<?php
+print "<a href='list.php?type=" . urlencode($_REQUEST['type']) . "'>Back</a>\n";
+?>
   </body>
 </html>

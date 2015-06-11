@@ -20,6 +20,8 @@ $def['__links'] = array(
 $table = new table($def, $data, array("template_engine"=>"twig"));
 $ret .= $table->show();
 
+$ret .= "<div><a href='index.php'>Index</a> | <a href='edit.php?type={$type}'>Create new entry</a></div>\n";
+
 ?>
 <!DOCTYPE html>
 <html>
