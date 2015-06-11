@@ -15,7 +15,8 @@ class Page_edit extends Page {
 
       page_reload(page_url(array("page" => "show", "type" => $param['type'], "id" => $ob->id)));
     }
-    else {
+
+    if($form->is_empty()) {
       if(isset($ob)) {
 	$form->set_data($ob->data);
       }
