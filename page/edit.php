@@ -13,7 +13,7 @@ class Page_edit extends Page {
 
       $ob->save($data);
 
-      page_reload(page_url(array("page" => "show", "type=" => $param['type'], "id" => $ob->id)));
+      page_reload(page_url(array("page" => "show", "type" => $param['type'], "id" => $ob->id)));
     }
     else {
       if(isset($ob)) {
