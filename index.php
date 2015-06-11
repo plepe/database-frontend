@@ -3,14 +3,8 @@
 <?php call_hooks("init"); ?>
 <?php Header('Content-Type: text/html; charset=utf-8'); ?>
 <?php
-$ret  = "The following types exist:\n";
-$ret .= "<ul>";
-foreach(get_object_types() as $type) {
-  $ret .= "<li><a href='list.php?type=" . urlencode($type->id) . "'>" .
-    $type->name() . "</a></li>\n";
-}
-$ret .= "</ul>\n";
-
+$page = get_page($_REQUEST);
+$ret = $page->content($_REQUEST);
 ?>
 <!DOCTYPE html>
 <html>

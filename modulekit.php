@@ -14,5 +14,6 @@ $include = array(
     'inc/database.php',
     'inc/Object.php',
     'inc/ObjectType.php',
+    'page/*',
   ),
 );
