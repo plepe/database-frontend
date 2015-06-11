@@ -3,6 +3,9 @@
 <?php call_hooks("init"); ?>
 <?php Header('Content-Type: text/html; charset=utf-8'); ?>
 <?php
+if(!array_key_exists('page', $_REQUEST))
+  $_REQUEST['page'] = 'index';
+
 $page = get_page($_REQUEST);
 $ret = $page->content($_REQUEST);
 ?>
