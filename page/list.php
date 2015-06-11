@@ -1,23 +1,24 @@
 <?
 class Page_list extends Page {
   function content($param) {
-    $type = $param['type'];
-    $ret  = htmlspecialchars($type) . ":\n";
+    $type = get_object_type($param['type']);
+
+    $ret  = htmlspecialchars($type->name()) . ":\n";
 
     $data = array();
-    foreach(get_objects($type) as $o) {
+    foreach(get_objects($param['type']) as $o) {
       $data[$o->id] = $o->data;
     }
 
-    $def = get_object_type($type)->def();
+    $def = $type->def();
     $def['__links'] = array(
       "name" => "",
       "format" => 
         "<a href='" .  
-	strtr(page_url(array('page' => 'show', 'type' => $type, 'id' => "ID")
+	strtr(page_url(array('page' => 'show', 'type' => $param['type'], 'id' => "ID")
 	), array("ID" => "{{ id }}")) .
 	"'>Show</a> <a href='" .
-	strtr(page_url(array('page' => 'edit', 'type' => $type, 'id' => "ID")
+	strtr(page_url(array('page' => 'edit', 'type' => $param['type'], 'id' => "ID")
 	), array("ID" => "{{ id }}")) .
 	"'>Edit</a>",
     );

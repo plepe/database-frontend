@@ -21,7 +21,7 @@ class Page_edit extends Page {
       }
     }
 
-    $ret .= "<form method='post'>\n";
+    $ret  = "<form method='post'>\n";
     $ret .= $form->show();
     $ret .= "<input type='submit' value='Save'>\n";
     $ret .= "</form>\n";
