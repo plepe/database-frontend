@@ -47,7 +47,7 @@ class ObjectType {
       if(array_key_exists('values', $d) && is_string($d['values'])) {
 	$values = array();
 	foreach(get_objects($d['values']) as $o) {
-	  $values[$o->id] = $o->data;
+	  $values[$o->id] = $o->view();
 	}
 
 	$ret[$k]['values'] = $values;

@@ -7,7 +7,7 @@ class Page_show extends Page {
     $object = get_object($param['type'], $param['id']);
 
     $def = $type->def();
-    $table = new table($def, array($object->data), array("template_engine"=>"twig"));
+    $table = new table($def, array($object->view()), array("template_engine"=>"twig"));
     $ret .= $table->show();
 
     $ret .= "<a href='" . page_url(array("page" => "edit", "type" => $param['type'], "id" => $param['id'] )) . "'>Edit</a>\n|";

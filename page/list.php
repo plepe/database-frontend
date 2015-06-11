@@ -7,7 +7,7 @@ class Page_list extends Page {
 
     $data = array();
     foreach(get_objects($param['type']) as $o) {
-      $data[$o->id] = $o->data;
+      $data[$o->id] = $o->view();
     }
 
     $def = $type->def();

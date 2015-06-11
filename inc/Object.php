@@ -55,6 +55,26 @@ class Object {
       $this->id = $data['id'];
     }
   }
+
+  /**
+   * view - return data including references to other tables
+   */
+  function view() {
+    $type = get_object_type($this->type);
+    $ret = $this->data;
+
+    foreach($type->def as $k=>$d) {
+      if(array_key_exists('values', $d) && is_string($d['values'])) {
+	if($this->data[$k]) {
+	  $o = get_object($d['values'], $this->data[$k]);
+	  if($o)
+	    $ret[$k] = $o->view();
+	}
+      }
+    }
+
+    return $ret;
+  }
 }
 
 function get_object($type, $id) {
