@@ -6,6 +6,10 @@ class ObjectType {
     $this->id = $type;
     $this->def = $def;
   }
+  
+  function name() {
+    return $this->id;
+  }
 
   function sql_create_statement() {
     global $db_conn;
