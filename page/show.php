@@ -1,4 +1,4 @@
-<?
+<?php
 class Page_show extends Page {
   function content($param) {
     $ret = "";

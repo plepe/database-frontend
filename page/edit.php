@@ -1,4 +1,4 @@
-<?
+<?php
 class Page_edit extends Page {
   function content($param) {
     $table = get_db_table($param['table']);
