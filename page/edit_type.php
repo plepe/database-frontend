@@ -3,7 +3,16 @@ class Page_edit_type extends Page {
   function content($param) {
     $type = get_object_type($param['type']);
 
-    $form = new form("data", form_template_editor());
+    $template_options = array(
+      'def_additional' => array(
+        'old_key' => array(
+	  'type' => 'hidden',
+	  'default_other' => '@k',
+	),
+      ),
+    );
+
+    $form = new form("data", form_template_editor($template_options));
 
     if($form->is_complete()) {
       $data = $form->get_data();
