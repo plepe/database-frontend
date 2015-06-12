@@ -11,12 +11,22 @@ class Page_edit_type extends Page {
       ),
     );
 
-    $form = new form("data", form_template_editor($template_options));
+    $def = array_merge(array(
+        'id' => array(
+	  'type'	=> 'text',
+	  'name'	=> 'ID',
+	  'req'		=> true,
+	),
+      ),
+      form_template_editor($template_options)
+    );
+
+    $form = new form("data", $def);
 
     if($form->is_complete()) {
       $data = $form->get_data();
       
-      return "<pre>" . json_readable_encode($data['fields']) . "</pre>\n";
+      $type->save($data);
     }
     
     if($form->is_empty()) {
@@ -26,7 +36,7 @@ class Page_edit_type extends Page {
 	  $data[$k]['old_key'] = $k;
 	}
 
-	$form->set_data(array('fields' => $data));
+	$form->set_data(array('id' => $type->id, 'fields' => $data));
       }
     }
 
