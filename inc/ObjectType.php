@@ -1,5 +1,25 @@
 <?php
 $object_type_cache = array();
+$object_type_is_init = false;
+
+function object_type_init() {
+  global $object_type_is_init;
+  global $db_conn;
+
+  if($object_type_is_init)
+    return;
+
+  if($db_conn->query("select 1 from __system__") === false) {
+    $db_conn->query(<<<EOT
+create table __system__ (
+  id		text	not null,
+  data		text	null,
+  primary key(id)
+);
+EOT
+    );
+  }
+}
 
 class ObjectType {
   function __construct($type, $def) {
@@ -63,6 +83,8 @@ class ObjectType {
 function get_object_type($type) {
   global $object_type_cache;
 
+  object_type_init();
+
   if(!array_key_exists($type, $object_type_cache)) {
     $def = file_get_contents("objects/{$type}.json");
     $def = json_decode($def, true);
@@ -85,6 +107,8 @@ function get_object_type($type) {
 
 function get_object_types() {
   $ret = array();
+
+  object_type_init();
 
   $f = opendir('objects');
   while($r = readdir($f)) {
