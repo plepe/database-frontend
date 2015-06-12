@@ -6,7 +6,5 @@ $object_types = get_object_types();
 $ret = "";
 
 foreach($object_types as $id=>$ob) {
-  $ret = $ob->sql_create_statement();
-  // print $ret;
-  $db_conn->query($ret);
+  $ret = $ob->update_database_structure();
 }

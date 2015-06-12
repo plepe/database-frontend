@@ -32,15 +32,36 @@ class ObjectType {
     return $this->id;
   }
 
-  function sql_create_statement() {
+  function update_database_structure($data=null) {
     global $db_conn;
     $columns = array();
+    $column_copy = array();
 
-    if(!array_key_exists('id', $this->def)) {
+    if($data === null)
+      $data = $this->data;
+
+    $old_table_name_quoted = db_quote_ident($this->old_id);
+    $table_name_quoted = db_quote_ident($data['id']);
+
+    // is this a new table?
+    if($this->id) {
+      $new_table = false;
+      $res = $db_conn->query("select 1 from {$old_table_name_quoted}");
+      if($res === false) {
+	$new_table = true;
+      }
+      else
+	$res->closeCursor();
+    }
+    else
+      $new_table = true;
+
+    if(!array_key_exists('id', $data['fields'])) {
       $columns[] = db_quote_ident('id'). " INTEGER PRIMARY KEY";
+      $column_copy[] = db_quote_ident('id');
     }
 
-    foreach($this->def as $column=>$column_def) {
+    foreach($data['fields'] as $column=>$column_def) {
       $r = db_quote_ident($column) . " text";
 
       if($column == "id")
@@ -52,13 +73,36 @@ class ObjectType {
       }
 
       $columns[] = $r;
+      if(array_key_exists('old_key', $column_def) && ($column_def['old_key']))
+	$column_copy[] = db_quote_ident($column_def['old_key']);
+      else
+	$column_copy[] = "null";
     }
 
-    $ret  = "create table \"{$this->id}\" (\n  ";
-    $ret .= implode(",\n  ", $columns);
-    $ret .= "\n);\n";
+    $cmds = array();
+    $cmds[] = "pragma foreign_keys=off;";
+    if(!$new_table)
+      $cmds[] = "alter table {$old_table_name_quoted} rename to __tmp__;";
 
-    return $ret;
+    $cmds[] = "create table {$table_name_quoted} (\n  ".
+              implode(",\n  ", $columns) .
+              "\n);";
+
+    if(!$new_table) {
+      $cmds[] = "insert into {$table_name_quoted} select " . implode(", ", $column_copy) . " from __tmp__;";
+      $cmds[] = "drop table __tmp__;";
+    }
+
+    $cmds[] = "pragma foreign_keys=on;";
+
+    foreach($cmds as $cmd) {
+      // print "<pre>" . htmlspecialchars($cmd) . "</pre>\n";
+      $res = $db_conn->query($cmd);
+      if($res === false) {
+	print "Failure executing: {$cmd}";
+	print_r($db_conn->errorInfo());
+      }
+    }
   }
 
   function def() {
@@ -95,8 +139,10 @@ class ObjectType {
     }
     else {
       if(array_key_exists("id", $data) && ($data['id'] != $this->id)) {
-	// TODO
-	// TODO: check references from other types
+	$query = "update __system__ set " .
+	  "id=" . $db_conn->quote($data['id']) . ", data=" .
+	  $db_conn->quote(json_readable_encode($data)) . ' where id=' .
+	  $db_conn->quote($this->id);
       }
       else {
 	$query = "update __system__ set data=" .
@@ -109,9 +155,15 @@ class ObjectType {
       print_r($db_conn->errorInfo());
     }
 
+    $this->old_id = $this->id;
     if(array_key_exists('id', $data)) {
       $this->id = $data['id'];
     }
+
+    $this->update_database_structure($data);
+
+    $this->data = $data;
+    $this->def = $data['fields'];
   }
 }
 
