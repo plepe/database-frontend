@@ -7,7 +7,6 @@ class Page_edit_type extends Page {
       'def_additional' => array(
         'old_key' => array(
 	  'type' => 'hidden',
-	  'default_other' => '@k',
 	),
       ),
     );
@@ -21,8 +20,14 @@ class Page_edit_type extends Page {
     }
     
     if($form->is_empty()) {
-      if(isset($type))
-	$form->set_data(array('fields' => $type->def));
+      if(isset($type)) {
+	$data = $type->def;
+	foreach($data as $k=>$d) {
+	  $data[$k]['old_key'] = $k;
+	}
+
+	$form->set_data(array('fields' => $data));
+      }
     }
 
 
