@@ -1,7 +1,8 @@
 <?php
 class Page_edit_table extends Page {
   function content($param) {
-    $table = get_db_table($param['table']);
+    if(isset($param['table']))
+      $table = get_db_table($param['table']);
 
     foreach(get_db_tables() as $t)
       $tables_data[$t->id] = $t->view();
@@ -64,6 +65,9 @@ EOT
     if($form->is_complete()) {
       $data = $form->get_data();
       
+      if(!isset($table))
+	$table = new DB_table(null);
+
       $table->save($data);
     }
     
