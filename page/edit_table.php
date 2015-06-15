@@ -3,10 +3,20 @@ class Page_edit_table extends Page {
   function content($param) {
     $table = get_db_table($param['table']);
 
+    foreach(get_db_tables() as $t)
+      $tables_data[$t->id] = $t->view();
+
     $template_options = array(
       'def_additional' => array(
         'old_key' => array(
 	  'type' => 'hidden',
+	),
+	'reference' => array(
+	  'type'	=> 'select',
+	  'req'		=> false,
+	  'name'	=> 'Reference',
+	  'desc'	=> 'Use this to reference another table as possibles values for this field. Leave \'Values\' empty.',
+	  'values'	=> $tables_data,
 	),
       ),
     );

@@ -64,9 +64,9 @@ class DB_Entry {
     $ret = $this->data;
 
     foreach($type->def as $k=>$d) {
-      if(array_key_exists('values', $d) && is_string($d['values'])) {
+      if(array_key_exists('reference', $d) && ($d['reference'] != null)) {
 	if($this->data[$k]) {
-	  $o = get_db_entry($d['values'], $this->data[$k]);
+	  $o = get_db_entry($d['reference'], $this->data[$k]);
 	  if($o)
 	    $ret[$k] = $o->view();
 	}

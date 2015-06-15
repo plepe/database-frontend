@@ -67,9 +67,9 @@ class DB_Table {
       if($column == "id")
         $r .= " primary key";
 
-      if(array_key_exists('values', $column_def) && is_string($column_def['values'])) {
+      if(array_key_exists('reference', $column_def) && ($column_def['reference'] != null)) {
         $r .= ", foreign key(" . db_quote_ident($column ). ") references " .
-          db_quote_ident($column_def['values']) . "(id)";
+          db_quote_ident($column_def['reference']) . "(id)";
       }
 
       $columns[] = $r;
@@ -109,9 +109,9 @@ class DB_Table {
     $ret = $this->def;
 
     foreach($this->def as $k=>$d) {
-      if(array_key_exists('values', $d) && is_string($d['values'])) {
+      if(array_key_exists('reference', $d) && ($d['reference'] !== null)) {
 	$values = array();
-	foreach(get_db_entries($d['values']) as $o) {
+	foreach(get_db_entries($d['reference']) as $o) {
 	  $values[$o->id] = $o->view();
 	}
 
