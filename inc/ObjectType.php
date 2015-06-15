@@ -165,6 +165,10 @@ class ObjectType {
     $this->data = $data;
     $this->def = $data['fields'];
   }
+
+  function view() {
+    return $this->data;
+  }
 }
 
 function get_object_type($type) {
