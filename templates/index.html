@@ -1,6 +1,7 @@
 The following types exist:
 <ul>
 {% for table in tables %}
-  <li><a href='{{ page_url({ 'page': 'list', 'type': table.id }) }}'>{{ table.id }}</a></li>
+  <li><a href='{{ page_url({ 'page': 'list', 'type': table.id }) }}'>{{ table.id }}</a> (<a href='{{ page_url({ 'page': 'edit_type', 'type': table.id }) }}'>edit</a>)</li>
 {% endfor %}
 </ul>
+<a href='{{ page_url({ 'page': 'edit_type' }) }}'>Create new table</a>
