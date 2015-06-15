@@ -5,8 +5,6 @@ $id = "pdb";
 
 $version = "0.1-dev";
 
-$modules_path = "lib/modulekit";
-
 $depend = array("modulekit-form", "modulekit-table", "page", "twig");
 
 $include = array(
