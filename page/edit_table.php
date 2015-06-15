@@ -7,6 +7,34 @@ class Page_edit_table extends Page {
       $tables_data[$t->id] = $t->view();
 
     $template_options = array(
+      'def_form' => array(
+	'key_def' => array(
+	  'name'  =>lang('form:hash_key_field_name'),
+	  'default_func' => array(
+	    'js' => <<<EOT
+function(value, form_element, form) {
+  if(!('name' in form_element.form_parent.elements))
+    return null;
+
+  var key = form_element.form_parent.elements.name.get_data();
+
+  if(typeof(key) != 'string')
+    return null;
+
+  key = key.toLowerCase();
+  key.replace(' ', '_');
+  key.replace('-', '_');
+  // Further sanitize name
+
+  return key;
+}
+EOT
+	  ),
+	  'type'	=>"text",
+	  'req'	=>true,
+	  'check'	=>array("regexp", "^[a-zA-Z0-9_]+$"),
+	),
+      ),
       'def_additional' => array(
         'old_key' => array(
 	  'type' => 'hidden',
