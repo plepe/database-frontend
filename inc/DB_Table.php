@@ -35,6 +35,7 @@ class DB_Table {
   function update_database_structure($data=null) {
     global $db_conn;
     $columns = array();
+    $constraints = array();
     $column_copy = array();
 
     if($data === null)
@@ -68,7 +69,7 @@ class DB_Table {
         $r .= " primary key";
 
       if(array_key_exists('reference', $column_def) && ($column_def['reference'] != null)) {
-        $r .= ", foreign key(" . db_quote_ident($column ). ") references " .
+        $constraints[] = "foreign key(" . db_quote_ident($column ). ") references " .
           db_quote_ident($column_def['reference']) . "(id)";
       }
 
@@ -86,6 +87,8 @@ class DB_Table {
 
     $cmds[] = "create table {$table_name_quoted} (\n  ".
               implode(",\n  ", $columns) .
+              (sizeof($constraints) ?
+	        ", " . implode(",\n  ", $constraints) : "") .
               "\n);";
 
     if(!$new_table) {
