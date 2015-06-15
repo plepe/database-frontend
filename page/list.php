@@ -1,24 +1,24 @@
 <?
 class Page_list extends Page {
   function content($param) {
-    $type = get_object_type($param['type']);
+    $table = get_db_table($param['table']);
 
-    $ret  = htmlspecialchars($type->name()) . ":\n";
+    $ret  = htmlspecialchars($table->name()) . ":\n";
 
     $data = array();
-    foreach(get_objects($param['type']) as $o) {
+    foreach(get_db_entries($param['table']) as $o) {
       $data[$o->id] = $o->view();
     }
 
-    $def = $type->def();
+    $def = $table->def();
     $def['__links'] = array(
       "name" => "",
       "format" => 
         "<a href='" .  
-	strtr(page_url(array('page' => 'show', 'type' => $param['type'], 'id' => "ID")
+	strtr(page_url(array('page' => 'show', 'table' => $param['table'], 'id' => "ID")
 	), array("ID" => "{{ id }}")) .
 	"'>Show</a> <a href='" .
-	strtr(page_url(array('page' => 'edit', 'type' => $param['type'], 'id' => "ID")
+	strtr(page_url(array('page' => 'edit', 'table' => $param['table'], 'id' => "ID")
 	), array("ID" => "{{ id }}")) .
 	"'>Edit</a>",
     );
@@ -26,7 +26,7 @@ class Page_list extends Page {
     $table = new table($def, $data, array("template_engine"=>"twig"));
     $ret .= $table->show();
 
-    $ret .= "<div><a href='" . page_url(array('page' => 'index')) . "'>Index</a> | <a href='" . page_url(array('page' => 'edit', 'type' => $param['type'])) . "'>Create new entry</a></div>\n";
+    $ret .= "<div><a href='" . page_url(array('page' => 'index')) . "'>Index</a> | <a href='" . page_url(array('page' => 'edit', 'table' => $param['table'])) . "'>Create new entry</a></div>\n";
 
     return $ret;
   }

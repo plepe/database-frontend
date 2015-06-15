@@ -10,8 +10,8 @@ $depend = array("modulekit-form", "modulekit-table", "page", "twig");
 $include = array(
   'php' => array(
     'inc/database.php',
-    'inc/Object.php',
-    'inc/ObjectType.php',
+    'inc/DB_Entry.php',
+    'inc/DB_Table.php',
     'page/*',
   ),
 );

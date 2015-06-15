@@ -1,7 +1,7 @@
 <?php
-class Page_edit_type extends Page {
+class Page_edit_table extends Page {
   function content($param) {
-    $type = get_object_type($param['type']);
+    $table = get_db_table($param['table']);
 
     $template_options = array(
       'def_additional' => array(
@@ -26,17 +26,17 @@ class Page_edit_type extends Page {
     if($form->is_complete()) {
       $data = $form->get_data();
       
-      $type->save($data);
+      $table->save($data);
     }
     
     if($form->is_empty()) {
-      if(isset($type)) {
-	$data = $type->def;
+      if(isset($table)) {
+	$data = $table->def;
 	foreach($data as $k=>$d) {
 	  $data[$k]['old_key'] = $k;
 	}
 
-	$form->set_data(array('id' => $type->id, 'fields' => $data));
+	$form->set_data(array('id' => $table->id, 'fields' => $data));
       }
     }
 

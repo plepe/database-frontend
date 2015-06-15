@@ -1,7 +1,7 @@
 <?php
-$object_cache = array();
+$db_entry_cache = array();
 
-class Object {
+class DB_Entry {
   function __construct($type, $data) {
     $this->type = $type;
 
@@ -60,13 +60,13 @@ class Object {
    * view - return data including references to other tables
    */
   function view() {
-    $type = get_object_type($this->type);
+    $type = get_db_table($this->type);
     $ret = $this->data;
 
     foreach($type->def as $k=>$d) {
       if(array_key_exists('values', $d) && is_string($d['values'])) {
 	if($this->data[$k]) {
-	  $o = get_object($d['values'], $this->data[$k]);
+	  $o = get_db_entry($d['values'], $this->data[$k]);
 	  if($o)
 	    $ret[$k] = $o->view();
 	}
@@ -77,37 +77,37 @@ class Object {
   }
 }
 
-function get_object($type, $id) {
+function get_db_entry($type, $id) {
   global $db_conn;
-  global $object_cache;
+  global $db_entry_cache;
 
-  if(!array_key_exists($type, $object_cache))
-    $object_cache[$type] = array();
+  if(!array_key_exists($type, $db_entry_cache))
+    $db_entry_cache[$type] = array();
 
-  if(!array_key_exists($id, $object_cache[$type])) {
+  if(!array_key_exists($id, $db_entry_cache[$type])) {
     $res = $db_conn->query("select * from " . db_quote_ident($type) . " where id=" . $db_conn->quote($id));
     if($elem = $res->fetch()) {
-      $object_cache[$type][$id] = new Object($type, $elem);
+      $db_entry_cache[$type][$id] = new DB_Entry($type, $elem);
     }
     $res->closeCursor();
   }
 
-  return $object_cache[$type][$id];
+  return $db_entry_cache[$type][$id];
 }
 
-function get_objects($type) {
+function get_db_entries($type) {
   global $db_conn;
-  global $object_cache;
+  global $db_entry_cache;
 
-  if(!array_key_exists($type, $object_cache))
-    $object_cache[$type] = array();
+  if(!array_key_exists($type, $db_entry_cache))
+    $db_entry_cache[$type] = array();
 
   $res = $db_conn->query("select * from " . db_quote_ident($type));
   while($elem = $res->fetch()) {
-    if(!array_key_exists($elem['id'], $object_cache[$type]))
-      $object_cache[$type][$elem['id']] = new Object($type, $elem);
+    if(!array_key_exists($elem['id'], $db_entry_cache[$type]))
+      $db_entry_cache[$type][$elem['id']] = new DB_Entry($type, $elem);
   }
   $res->closeCursor();
 
-  return $object_cache[$type];
+  return $db_entry_cache[$type];
 }

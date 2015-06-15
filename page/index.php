@@ -5,7 +5,7 @@ class Page_index extends Page {
       'tables' => array()
     );
 
-    foreach(get_object_types() as $type) {
+    foreach(get_db_tables() as $type) {
       $data['tables'][] = $type->view();
     }
 

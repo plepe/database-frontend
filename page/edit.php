@@ -1,19 +1,19 @@
 <?
 class Page_edit extends Page {
   function content($param) {
-    $type = get_object_type($param['type']);
+    $table = get_db_table($param['table']);
     if(isset($param['id']))
-      $ob = get_object($param['type'], $param['id']);
-    $form = new form("data", $type->def());
+      $ob = get_db_entry($param['table'], $param['id']);
+    $form = new form("data", $table->def());
 
     if($form->is_complete()) {
       $data = $form->get_data();
       if(!isset($param['id']))
-	$ob = new Object($param['type'], null);
+	$ob = new DB_Entry($param['table'], null);
 
       $ob->save($data);
 
-      page_reload(page_url(array("page" => "show", "type" => $param['type'], "id" => $ob->id)));
+      page_reload(page_url(array("page" => "show", "table" => $param['table'], "id" => $ob->id)));
     }
 
     if($form->is_empty()) {
@@ -28,9 +28,9 @@ class Page_edit extends Page {
     $ret .= "</form>\n";
 
     if(isset($param['id']))
-      $ret .= "<a href='" . page_url(array("page" => "show", "type" => $param['type'], "id" => $param['id'])) . "'>Back</a>\n";
+      $ret .= "<a href='" . page_url(array("page" => "show", "table" => $param['table'], "id" => $param['id'])) . "'>Back</a>\n";
     else
-      $ret .= "<a href='". page_url(array("page" => "list", "type" => $param['type'])) . "'>Back</a>\n";
+      $ret .= "<a href='". page_url(array("page" => "list", "table" => $param['table'])) . "'>Back</a>\n";
 
     return $ret;
   }

@@ -1,7 +1,7 @@
-The following types exist:
+The following tables exist:
 <ul>
 {% for table in tables %}
-  <li><a href='{{ page_url({ 'page': 'list', 'type': table.id }) }}'>{{ table.id }}</a> (<a href='{{ page_url({ 'page': 'edit_type', 'type': table.id }) }}'>edit</a>)</li>
+  <li><a href='{{ page_url({ 'page': 'list', 'table': table.id }) }}'>{{ table.id }}</a> (<a href='{{ page_url({ 'page': 'edit_table', 'table': table.id }) }}'>edit</a>)</li>
 {% endfor %}
 </ul>
-<a href='{{ page_url({ 'page': 'edit_type' }) }}'>Create new table</a>
+<a href='{{ page_url({ 'page': 'edit_table' }) }}'>Create new table</a>

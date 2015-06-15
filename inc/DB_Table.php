@@ -1,12 +1,12 @@
 <?php
-$object_type_cache = array();
-$object_type_is_init = false;
+$db_table_cache = array();
+$db_table_is_init = false;
 
-function object_type_init() {
-  global $object_type_is_init;
+function db_table_init() {
+  global $db_table_is_init;
   global $db_conn;
 
-  if($object_type_is_init)
+  if($db_table_is_init)
     return;
 
   if($db_conn->query("select 1 from __system__") === false) {
@@ -21,7 +21,7 @@ EOT
   }
 }
 
-class ObjectType {
+class DB_Table {
   function __construct($type, $data) {
     $this->id = $type;
     $this->data = $data;
@@ -111,7 +111,7 @@ class ObjectType {
     foreach($this->def as $k=>$d) {
       if(array_key_exists('values', $d) && is_string($d['values'])) {
 	$values = array();
-	foreach(get_objects($d['values']) as $o) {
+	foreach(get_db_entries($d['values']) as $o) {
 	  $values[$o->id] = $o->view();
 	}
 
@@ -129,7 +129,7 @@ class ObjectType {
 
     if($this->id === null) {
       if(!array_key_exists("id", $data)) {
-	print "ObjectType::save(): require id for new types\n";
+	print "DB_Table::save(): require id for new types\n";
 	return;
       }
 
@@ -171,13 +171,13 @@ class ObjectType {
   }
 }
 
-function get_object_type($type) {
+function get_db_table($type) {
   global $db_conn;
-  global $object_type_cache;
+  global $db_table_cache;
 
-  object_type_init();
+  db_table_init();
 
-  if(!array_key_exists($type, $object_type_cache)) {
+  if(!array_key_exists($type, $db_table_cache)) {
     $res = $db_conn->query("select * from __system__ where id=" . $db_conn->quote($type));
     if($elem = $res->fetch()) {
       $data = json_decode($elem['data'], true);
@@ -189,26 +189,26 @@ function get_object_type($type) {
 	else
 	  $error = json_last_error();
 
-	throw new Exception("Can't load object type {$elem['id']}: " . $error);
+	throw new Exception("Can't load db table {$elem['id']}: " . $error);
       }
 
-      $object_type_cache[$elem['id']] = new ObjectType($elem['id'], $data);
+      $db_table_cache[$elem['id']] = new DB_Table($elem['id'], $data);
     }
     $res->closeCursor();
   }
 
-  return $object_type_cache[$type];
+  return $db_table_cache[$type];
 }
 
-function get_object_types() {
+function get_db_tables() {
   global $db_conn;
-  global $object_type_cache;
+  global $db_table_cache;
 
-  object_type_init();
+  db_table_init();
 
   $res = $db_conn->query("select * from __system__");
   while($elem = $res->fetch()) {
-    if(!array_key_exists($elem['id'], $object_type_cache)) {
+    if(!array_key_exists($elem['id'], $db_table_cache)) {
       $data = json_decode($elem['data'], true);
 
       if($data === null) {
@@ -218,13 +218,13 @@ function get_object_types() {
 	else
 	  $error = json_last_error();
 
-	throw new Exception("Can't load object type {$elem['id']}: " . $error);
+	throw new Exception("Can't load db table {$elem['id']}: " . $error);
       }
 
-      $object_type_cache[$elem['id']] = new ObjectType($elem['id'], $data);
+      $db_table_cache[$elem['id']] = new DB_Table($elem['id'], $data);
     }
   }
   $res->closeCursor();
 
-  return $object_type_cache;
+  return $db_table_cache;
 }
