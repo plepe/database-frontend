@@ -8,10 +8,13 @@ class Page_show extends Page {
 
     $def = $table->def();
     $table = new table($def, array($object->view()), array("template_engine"=>"twig"));
-    $ret .= $table->show("html-transposed");
 
-    $ret .= "<a href='" . page_url(array("page" => "edit", "table" => $param['table'], "id" => $param['id'] )) . "'>Edit</a>\n|";
-    $ret .= "<a href='" . page_url(array("page" => "list", "table" => $param['table'] )) . "'>Back</a>\n";
-    return $ret;
+    return array(
+      'template' => "show.html",
+      'table' => $param['table'],
+      'id' => $param['id'],
+      'view' => $table,
+      'data' => $object->view(),
+    );
   }
 }
