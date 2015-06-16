@@ -9,6 +9,9 @@ class Page_index extends Page {
       $data['tables'][] = $type->view();
     }
 
-    return twig_render("index.html", $data);
+    return array(
+      'template' => "index.html",
+      'data' => $data,
+    );
   }
 }

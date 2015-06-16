@@ -8,6 +8,10 @@ if(!array_key_exists('page', $_REQUEST))
 
 $page = get_page($_REQUEST);
 $ret = $page->content($_REQUEST);
+
+if(is_array($ret)) {
+  $ret = twig_render($ret['template'], $ret);
+}
 ?>
 <!DOCTYPE html>
 <html>
