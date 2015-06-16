@@ -4,4 +4,5 @@ The following tables exist:
   <li><a href='{{ page_url({ 'page': 'list', 'table': table.id }) }}'>{{ table.id }}</a> (<a href='{{ page_url({ 'page': 'edit_table', 'table': table.id }) }}'>edit</a>)</li>
 {% endfor %}
 </ul>
+
 <a href='{{ page_url({ 'page': 'edit_table' }) }}'>Create new table</a>

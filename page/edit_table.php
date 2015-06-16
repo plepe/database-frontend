@@ -82,13 +82,11 @@ EOT
       }
     }
 
-
-    $ret  = "<form method='post'>\n";
-    $ret .= $form->show();
-    $ret .= "<input type='submit' value='Save'>\n";
-    $ret .= "</form>\n";
-    $ret .= "<div><a href='" . page_url(array('page' => 'index')) . "'>Index</a></div>";
-    
-    return $ret;
+    return array(
+      'template' => 'edit_table.html',
+      'table' => $param['table'],
+      'form' => $form,
+      'data' => $table ? $table->view() : null,
+    );
   }
 }

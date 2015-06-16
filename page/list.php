@@ -3,8 +3,6 @@ class Page_list extends Page {
   function content($param) {
     $table = get_db_table($param['table']);
 
-    $ret  = htmlspecialchars($table->name()) . ":\n";
-
     $data = array();
     foreach(get_db_entries($param['table']) as $o) {
       $data[$o->id] = $o->view();
@@ -24,10 +22,11 @@ class Page_list extends Page {
     );
 
     $table = new table($def, $data, array("template_engine"=>"twig"));
-    $ret .= $table->show();
 
-    $ret .= "<div><a href='" . page_url(array('page' => 'index')) . "'>Index</a> | <a href='" . page_url(array('page' => 'edit', 'table' => $param['table'])) . "'>Create new entry</a></div>\n";
-
-    return $ret;
+    return array(
+      'template' => 'list.html',
+      'table' => $param['table'],
+      'view' => $table,
+    );
   }
 }

@@ -1,0 +1,10 @@
+<form method='post'>
+{{ form|show() }}
+<input type='submit' value='Save'>
+</form>
+
+{% if id %}
+<a href='{{ page_url({ "page": "show", "table": table, "id": id }) }}'>Back</a>
+{% else %}
+<a href='{{ page_url({ "page": "list", "table": table }) }}'>Back</a>
+{% endif %}

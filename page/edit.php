@@ -22,17 +22,13 @@ class Page_edit extends Page {
       }
     }
 
-    $ret  = "<form method='post'>\n";
-    $ret .= $form->show();
-    $ret .= "<input type='submit' value='Save'>\n";
-    $ret .= "</form>\n";
-
-    if(isset($param['id']))
-      $ret .= "<a href='" . page_url(array("page" => "show", "table" => $param['table'], "id" => $param['id'])) . "'>Back</a>\n";
-    else
-      $ret .= "<a href='". page_url(array("page" => "list", "table" => $param['table'])) . "'>Back</a>\n";
-
-    return $ret;
+    return array(
+      'template' => 'edit.html',
+      'table' => $param['table'],
+      'id' => $param['id'],
+      'form' => $form,
+      'data' => $ob ? $ob->view() : null,
+    );
   }
 }
 
