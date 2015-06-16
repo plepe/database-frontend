@@ -12,6 +12,7 @@ $include = array(
     'inc/database.php',
     'inc/DB_Entry.php',
     'inc/DB_Table.php',
+    'inc/twig_show.php',
     'page/*',
   ),
 );
