@@ -13,6 +13,10 @@ $include = array(
     'inc/DB_Entry.php',
     'inc/DB_Table.php',
     'inc/twig_show.php',
+    'inc/str_to_id.php',
     'page/*',
+  ),
+  'js' => array(
+    'inc/str_to_id.php',
   ),
 );

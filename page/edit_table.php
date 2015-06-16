@@ -22,10 +22,7 @@ function(value, form_element, form) {
   if(typeof(key) != 'string')
     return null;
 
-  key = key.toLowerCase();
-  key.replace(' ', '_');
-  key.replace('-', '_');
-  // Further sanitize name
+  key = str_to_id(key);
 
   return key;
 }
