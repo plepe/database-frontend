@@ -21,19 +21,12 @@ if($ret === null) {
 
   $ret = file_get_contents("templates/404.html");
 }
-?>
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>PDB</title>
-    <?php print modulekit_to_javascript(); /* pass modulekit configuration to JavaScript */ ?>
-    <?php print modulekit_include_js(); /* prints all js-includes */ ?>
-    <?php print modulekit_include_css(); /* prints all css-includes */ ?>
-    <?php print print_add_html_headers(); /* additional html headers */ ?>
-  </head>
-  <body>
-<?php
-print $ret;
-?>
-  </body>
-</html>
+
+print twig_render("page.html", array(
+  'content' => $ret,
+  'add_headers' =>
+    modulekit_to_javascript() . /* pass modulekit configuration to JavaScript */
+    modulekit_include_js() . /* prints all js-includes */
+    modulekit_include_css() . /* prints all css-includes */
+    get_add_html_headers() , /* additional html headers */
+));
