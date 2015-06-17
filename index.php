@@ -24,6 +24,7 @@ if($ret === null) {
 
 print twig_render("page.html", array(
   'content' => $ret,
+  'messages' => messages_print(),
   'add_headers' =>
     modulekit_to_javascript() . /* pass modulekit configuration to JavaScript */
     modulekit_include_js() . /* prints all js-includes */

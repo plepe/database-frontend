@@ -5,7 +5,7 @@ $id = "pdb";
 
 $version = "0.1-dev";
 
-$depend = array("modulekit-form", "modulekit-table", "page", "twig");
+$depend = array("modulekit-form", "modulekit-table", "page", "twig", "messages");
 
 $include = array(
   'php' => array(
