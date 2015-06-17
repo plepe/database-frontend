@@ -1,4 +1,9 @@
 <?php
+// Configure the look of your application, e.g. title
+$app = array(
+  'title' => "database-frontend",
+);
+
 $db = array(
   'type' => 'sqlite',
   'path' => 'db/db.db',

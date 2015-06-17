@@ -29,4 +29,5 @@ print twig_render("page.html", array(
     modulekit_include_js() . /* prints all js-includes */
     modulekit_include_css() . /* prints all css-includes */
     get_add_html_headers() , /* additional html headers */
+  'app' => $app,
 ));
