@@ -6,11 +6,20 @@
 if(!array_key_exists('page', $_REQUEST))
   $_REQUEST['page'] = 'index';
 
+$ret = null;
 $page = get_page($_REQUEST);
-$ret = $page->content($_REQUEST);
+if($page) {
+  $ret = $page->content($_REQUEST);
 
-if(is_array($ret)) {
-  $ret = twig_render($ret['template'], $ret);
+  if(is_array($ret)) {
+    $ret = twig_render($ret['template'], $ret);
+  }
+}
+
+if($ret === null) {
+  Header("HTTP/1.0 404 Not Found");
+
+  $ret = file_get_contents("templates/404.html");
 }
 ?>
 <!DOCTYPE html>
