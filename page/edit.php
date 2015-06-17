@@ -2,8 +2,15 @@
 class Page_edit extends Page {
   function content($param) {
     $table = get_db_table($param['table']);
-    if(isset($param['id']))
+    if(!$table)
+      return null;
+
+    if(isset($param['id'])) {
       $ob = get_db_entry($param['table'], $param['id']);
+      if(!$ob)
+	return null;
+    }
+
     $form = new form("data", $table->def());
 
     if($form->is_complete()) {

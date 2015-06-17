@@ -1,8 +1,11 @@
 <?php
 class Page_edit_table extends Page {
   function content($param) {
-    if(isset($param['table']))
+    if(isset($param['table'])) {
       $table = get_db_table($param['table']);
+      if(!$table)
+	return null;
+    }
 
     foreach(get_db_tables() as $t)
       $tables_data[$t->id] = $t->view();

@@ -2,6 +2,8 @@
 class Page_list extends Page {
   function content($param) {
     $table = get_db_table($param['table']);
+    if(!$table)
+      return null;
 
     $data = array();
     foreach(get_db_entries($param['table']) as $o) {
