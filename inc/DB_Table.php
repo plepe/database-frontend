@@ -200,6 +200,9 @@ function get_db_table($type) {
     $res->closeCursor();
   }
 
+  if(!array_key_exists($type, $db_table_cache))
+    return null;
+
   return $db_table_cache[$type];
 }
 

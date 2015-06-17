@@ -92,6 +92,9 @@ function get_db_entry($type, $id) {
     $res->closeCursor();
   }
 
+  if(!array_key_exists($id, $db_entry_cache[$type]))
+    return null;
+
   return $db_entry_cache[$type][$id];
 }
 
