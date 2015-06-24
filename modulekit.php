@@ -17,6 +17,6 @@ $include = array(
     'page/*',
   ),
   'js' => array(
-    'inc/str_to_id.php',
+    'inc/str_to_id.js',
   ),
 );
