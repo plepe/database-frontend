@@ -1,0 +1,36 @@
+
+
+.MainBox{
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border-collapse: collapse;
+  border: solid 2px #DEDEDE;
+  border-radius: 4px;
+}
+
+.Panel{
+  background: #DEE7F7;
+  border: 2px solid #DEDEDE;
+  margin: 14px;
+  border-radius: 4px;
+  padding: 7px 14px 14px;
+}
+
+.LinkButton{
+  background: #EDEDED;
+  border: 1px solid #cccccc;
+  padding: 1px 8px 4px;
+  margin: 6px;
+  height: 40px;
+  color: #5E5E5E;
+  cursor: hand;
+  border-radius: 4px;
+  text-decoration: none;
+}
+.LinkButton:hover{
+  background: #D5D5D5;
+}
+.LinkButton:active{
+  background: #C5C5C5;
+}

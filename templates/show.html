@@ -2,5 +2,5 @@
 
 {{ view|show('html-transposed') }}
 
-<a href='{{ page_url({ "page": "edit", "table": table, "id": id }) }}'>Edit</a> |
-<a href='{{ page_url({ "page": "list", "table": table }) }}'>Back</a>
+<a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table, "id": id }) }}'>Edit</a>
+<a class='LinkButton' href='{{ page_url({ "page": "list", "table": table }) }}'>Back</a>

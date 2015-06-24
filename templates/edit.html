@@ -4,7 +4,7 @@
 </form>
 
 {% if id %}
-<a href='{{ page_url({ "page": "show", "table": table, "id": id }) }}'>Back</a>
+<a class='LinkButton' href='{{ page_url({ "page": "show", "table": table, "id": id }) }}'>Back</a>
 {% else %}
-<a href='{{ page_url({ "page": "list", "table": table }) }}'>Back</a>
+<a class='LinkButton' href='{{ page_url({ "page": "list", "table": table }) }}'>Back</a>
 {% endif %}

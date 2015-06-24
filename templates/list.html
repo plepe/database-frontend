@@ -2,5 +2,7 @@
 
 {{ view|show }}
 
-<a href='{{ page_url({ "page": "index"}) }}'>Index</a> |
-<a href='{{ page_url({ "page": "edit", "table": table }) }}'>Create new entry</a>
+<div class='Panel'>
+  <a class='LinkButton' href='{{ page_url({ "page": "index"}) }}'>Index</a> 
+  <a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table }) }}'>Create new entry</a>
+</div>

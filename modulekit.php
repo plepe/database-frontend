@@ -19,4 +19,8 @@ $include = array(
   'js' => array(
     'inc/str_to_id.js',
   ),
+
+  'css' => array(
+    'style.css',
+  ),
 );
