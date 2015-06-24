@@ -33,7 +33,7 @@ EOT
 	  ),
 	  'type'	=>"text",
 	  'req'	=>true,
-	  'check'	=>array("regexp", "^[a-zA-Z0-9_]+$"),
+	  'check'	=>array("regexp", "^[a-zA-Z0-9_]+$", "Use only characters, digits and underscores."),
 	),
       ),
       'def_additional' => array(
