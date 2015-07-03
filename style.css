@@ -34,3 +34,43 @@
 .LinkButton:active{
   background: #C5C5C5;
 }
+
+table.table {
+  border: solid 2px #CCCCCC;
+  border-collapse: collapse;
+}
+
+th.table,
+table.table th{
+  border: solid 2px #CCCCCC;
+  color: #5E5E5E;
+  background: #DEE7F7; 
+  padding: 2px;
+}
+
+td.table,
+table.table td{
+  border: solid 2px #CCCCCC;
+  color: #5E5E5E;
+  padding: 2px;
+}
+
+
+<!--TODO: find out what that _exactly_ does -->
+tr.group,
+th.group,
+td.group{
+  background: #FF0000;
+}
+
+tr.odd,
+th.odd,
+td.odd{
+  background: #D5D5D5;
+}
+
+tr.even,
+th.even,
+td.even{
+  background: #EDEDED;
+}
