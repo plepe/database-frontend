@@ -14,10 +14,10 @@ class Page_list extends Page {
     $def['__links'] = array(
       "name" => "",
       "format" => 
-        "<a href='" .  
+        "<a class='TableLink' href='" .  
 	strtr(page_url(array('page' => 'show', 'table' => $param['table'], 'id' => "ID")
 	), array("ID" => "{{ id }}")) .
-	"'>Show</a> <a href='" .
+	"'>Show</a> <a class='TableLink' href='" .
 	strtr(page_url(array('page' => 'edit', 'table' => $param['table'], 'id' => "ID")
 	), array("ID" => "{{ id }}")) .
 	"'>Edit</a>",

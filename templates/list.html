@@ -1,8 +1,16 @@
-{{ table }}:
+<div class='MainBox'>
 
-{{ view|show }}
+  <div class='Panel'>
+    <div class='PanelH1'>
+     {{ table }}:
+    </div>
+  </div>
 
-<div class='Panel'>
-  <a class='LinkButton' href='{{ page_url({ "page": "index"}) }}'>Index</a> 
-  <a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table }) }}'>Create new entry</a>
+  {{ view|show }}
+
+  <div class='Panel'>
+    <a class='LinkButton' href='{{ page_url({ "page": "index"}) }}'>Index</a> 
+    <a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table }) }}'>Create new entry</a>
+  </div>
+
 </div>

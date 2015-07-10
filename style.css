@@ -17,6 +17,14 @@
   padding: 7px 14px 14px;
 }
 
+.PanelH1{
+  color: #5E5E5E;
+  font-family: "Courier New", Courir, monospace;
+  font-size: 1.25em;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
 .LinkButton{
   background: #EDEDED;
   border: 1px solid #cccccc;
@@ -35,9 +43,22 @@
   background: #C5C5C5;
 }
 
+.TableLink{
+  color: #5371AA;
+  text-decoration: none;
+}
+.TableLink:hover{
+  background: #D5D5D5;
+}
+.TableLink:active{
+  background: #C5C5C5;
+}
+
+
 table.table {
   border: solid 2px #CCCCCC;
   border-collapse: collapse;
+  margin-left: 15px;
 }
 
 th.table,
@@ -56,7 +77,6 @@ table.table td{
 }
 
 
-<!--TODO: find out what that _exactly_ does -->
 tr.group,
 th.group,
 td.group{
