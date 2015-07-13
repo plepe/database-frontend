@@ -1,6 +1,24 @@
-<form method='post'>
-{{ form|show }}
-<input type='submit' value='Save'>
-</form>
+<div class='MainBox'>
 
-<a class='LinkButton' href='{{ page_url({ "page": "index"}) }}'>Index</a>
+  <div class='Panel'>
+    <div class=PanelH1>
+	   Table: {{table}}
+    </div>
+  </div>
+  </br>
+
+
+  <form method='post'>
+    <div class='Margin'>	  
+      {{ form|show }}
+      <input type='submit' value='Save'>
+    </div>
+  </form>
+
+  </br>  
+  <a class='LinkButton' href='{{ page_url({ "page": "index"}) }}'>Index</a>
+  </br>
+  </br>
+</div>
+ </br>
+</div>

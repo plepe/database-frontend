@@ -1,6 +1,18 @@
-Import CSV:
+<div class='MainBox'>
+  
+  <div class='Panel'>
+    <div class='PanelH1'>Import CSV:</div>
+  </div>
+  
+  <div class='Margin'>
+    <form method='post' enctype='multipart/form-data'>
+    {{ form|show() }}
+    <input type='submit' value='Upload'>
+    </form>
+    </br>
+  </div>
 
-<form method='post' enctype='multipart/form-data'>
-{{ form|show() }}
-<input type='submit' value='Upload'>
-</form>
+  <a class='LinkButton' href='{{page_url({ "page": "index"}) }}'>Index</a>
+  </br>
+  </br>
+</div>
