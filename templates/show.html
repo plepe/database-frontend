@@ -1,6 +1,19 @@
-{{ table }} / {{ id }}
+</br>
+</br>
 
-{{ view|show('html-transposed') }}
+<div class='MainBox'>
 
-<a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table, "id": id }) }}'>Edit</a>
-<a class='LinkButton' href='{{ page_url({ "page": "list", "table": table }) }}'>Back</a>
+  <div class='Panel'>
+    <div class='PanelH1'>
+	   Table:  {{ table }} / Row: {{ id }}
+    </div>
+  </div>
+
+  {{ view|show('html-transposed') }}
+
+  <div class='Panel'>
+    <a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table, "id": id }) }}'>Edit</a>
+    <a class='LinkButton' href='{{ page_url({ "page": "list", "table": table }) }}'>Back</a>
+  </div>
+
+</div>
