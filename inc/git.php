@@ -1,6 +1,13 @@
 <?php
+/**
+ * git_dump() - save all data to the git repository
+ * parameter: message: git commit message; if message is boolean false, do not save to git repository
+ */
 function git_dump($message="") {
   global $git;
+
+  if($message === false)
+    return;
 
   if(!isset($git))
     return;
