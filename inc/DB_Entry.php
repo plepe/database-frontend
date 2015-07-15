@@ -68,6 +68,8 @@ class DB_Entry {
     }
 
     $this->load();
+
+    git_dump();
   }
 
   /**

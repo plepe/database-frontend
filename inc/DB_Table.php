@@ -218,6 +218,8 @@ class DB_Table {
 
     $this->data = $data;
     $this->def = $data['fields'];
+
+    git_dump();
   }
 
   function view() {
