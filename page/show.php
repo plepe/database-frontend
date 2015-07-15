@@ -22,13 +22,15 @@ class Page_show extends Page {
     }
 
     $def = $table->view_def($view);
-    $table = new table($def, array($object->view()), array("template_engine"=>"twig"));
+    $view = new table($def, array($object->view()), array("template_engine"=>"twig"));
 
     return array(
       'template' => "show.html",
       'table' => $param['table'],
       'id' => $param['id'],
-      'view' => $table,
+      'view' => $view,
+      'param' => $param,
+      'views' => $table->views('show'),
       'data' => $object->view(),
     );
   }

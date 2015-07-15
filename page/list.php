@@ -33,12 +33,14 @@ class Page_list extends Page {
 	"'>Edit</a>",
     );
 
-    $table = new table($def, $data, array("template_engine"=>"twig"));
+    $view = new table($def, $data, array("template_engine"=>"twig"));
 
     return array(
       'template' => 'list.html',
       'table' => $param['table'],
-      'view' => $table,
+      'view' => $view,
+      'param' => $param,
+      'views' => $table->views('show'),
     );
   }
 }
