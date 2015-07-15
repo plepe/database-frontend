@@ -32,7 +32,7 @@ class DB_Entry {
    * $data: a hash array with key/values to update. if a key does not exist in
    *   $data, it will not be modified in the database.
    */
-  function save($data) {
+  function save($data, $message="") {
     global $db_conn;
     $set = array();
     $insert_columns = array();
@@ -69,7 +69,7 @@ class DB_Entry {
 
     $this->load();
 
-    git_dump();
+    git_dump($message);
   }
 
   /**

@@ -74,7 +74,7 @@ class Page_admin_views extends Page {
       $data = $table->data;
       $data['views'] = $views;
 
-      $table->save($data);
+      $table->save($data, $param['message']);
 
       messages_add("View saved.");
 

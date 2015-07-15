@@ -68,7 +68,7 @@ EOT
       if(!isset($table))
 	$table = new DB_table(null);
 
-      $table->save($data);
+      $table->save($data, $param['message']);
     }
     
     if($form->is_empty()) {

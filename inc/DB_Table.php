@@ -178,7 +178,7 @@ class DB_Table {
     return $view[0];
   }
 
-  function save($data) {
+  function save($data, $message="") {
     global $db_conn;
 
     if($this->id === null) {
@@ -219,7 +219,7 @@ class DB_Table {
     $this->data = $data;
     $this->def = $data['fields'];
 
-    git_dump();
+    git_dump($message);
   }
 
   function view() {
