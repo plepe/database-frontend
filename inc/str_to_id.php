@@ -1,4 +1,4 @@
-<?
+<?php
 function str_to_id($str) {
   $str = strtolower($str);
 

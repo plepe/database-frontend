@@ -1,4 +1,4 @@
-<?
+<?php
 class Page_index extends Page {
   function content($param) {
     $data = array(
