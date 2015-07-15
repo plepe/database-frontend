@@ -62,7 +62,14 @@ class Page_admin_views extends Page {
       else
 	$views = $table->data['views'];
 
-      $views[$view_data['title']] = $view_data;
+      $view_key = $view_data['title'];
+
+      // if view has been renamed, remove old view name
+      if(array_key_exists('view', $param) && ($view_key != $param['view']))
+        unset($views[$param['view']]);
+
+      // set new view name
+      $views[$view_key] = $view_data;
 
       $data = $table->data;
       $data['views'] = $views;
@@ -71,7 +78,12 @@ class Page_admin_views extends Page {
 
       messages_add("View saved.");
 
-      page_reload();
+      // reload page resp. redirect to admin_view page with new key
+      page_reload(array(
+        "page" => "admin_views",
+        "table" => $param['table'],
+        "view" => $view_key,
+      ));
     }
 
     if($form->is_empty()) {
