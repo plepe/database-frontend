@@ -127,7 +127,7 @@ class DB_Table {
     return $ret;
   }
 
-  function views() {
+  function views($type) { // type: 'list' or 'show'
     $views = array();
 
     if(array_key_exists('views', $this->data))
@@ -135,10 +135,10 @@ class DB_Table {
 
     $views['default'] = array(
       'title' => 'Default',
-      'weight' => 1,
+      "weight_{$type}" => -1,
     );
 
-    $views = weight_sort($views);
+    $views = weight_sort($views, "weight_{$type}");
 
     return $views;
   }

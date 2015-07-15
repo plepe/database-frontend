@@ -38,11 +38,17 @@ class Page_admin_views extends Page {
 	  ),
 	),
       ),
-      'weight' => array(
+      'weight_show' => array(
         'type'   => 'integer',
-	'name'   => 'Weight',
+	'name'   => 'Weight (Show)',
 	'default' => 0,
-	'desc'   => 'Specify order of Views',
+	'desc'   => 'Specify order of Views, when a single entry is shown',
+      ),
+      'weight_list' => array(
+        'type'   => 'integer',
+	'name'   => 'Weight (List)',
+	'default' => 0,
+	'desc'   => 'Specify order of Views, when a list is shown',
       ),
     );
 
