@@ -173,6 +173,11 @@ class DB_Table {
     return $ret;
   }
 
+  function default_view($type) { // type: 'list' or 'show'
+    $view = array_keys($this->views($type));
+    return $view[0];
+  }
+
   function save($data) {
     global $db_conn;
 

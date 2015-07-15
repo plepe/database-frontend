@@ -10,7 +10,17 @@ class Page_list extends Page {
       $data[$o->id] = $o->view();
     }
 
-    $def = $table->def();
+    // if no 'view'-parameter is set, use view with lowest weight
+    if(!isset($param['view'])) {
+      $view = $table->default_view('list');
+
+      page_reload($this->url() . "&view=" . urlencode($view));
+    }
+    else {
+      $view = $param['view'];
+    }
+
+    $def = $table->view_def($view);
     $def['__links'] = array(
       "name" => "",
       "format" => 

@@ -11,7 +11,17 @@ class Page_show extends Page {
     if(!$object)
       return null;
 
-    $def = $table->def();
+    // if no 'view'-parameter is set, use view with lowest weight
+    if(!isset($param['view'])) {
+      $view = $table->default_view('show');
+
+      page_reload($this->url() . "&view=" . urlencode($view));
+    }
+    else {
+      $view = $param['view'];
+    }
+
+    $def = $table->view_def($view);
     $table = new table($def, array($object->view()), array("template_engine"=>"twig"));
 
     return array(
