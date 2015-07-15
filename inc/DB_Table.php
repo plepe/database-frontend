@@ -127,6 +127,52 @@ class DB_Table {
     return $ret;
   }
 
+  function views() {
+    $views = array();
+
+    if(array_key_exists('views', $this->data))
+      $views = $this->data['views'];
+
+    $views['default'] = array(
+      'title' => 'Default',
+      'weight' => 1,
+    );
+
+    $views = weight_sort($views);
+
+    return $views;
+  }
+
+  function view_def($k) {
+    if($k == 'default')
+      return $this->def();
+
+    if(!array_key_exists($k, $this->data['views'])) {
+      messages_add("View does not exist!", MSG_ERROR);
+      return array();
+    }
+
+    $def = $this->def();
+    $ret = array();
+    foreach($this->data['views'][$k]['fields'] as $i=>$d) {
+      $key = $d['key'];
+      if($key == '__default__')
+	$key = "__custom{$i}__";
+
+      $r = array(
+        'name' => $d['title'] ? $d['title'] : $def[$d['key']]['name'],
+      );
+
+      if($d['format']) {
+	$r['format'] = $d['format'];
+      }
+
+      $ret[$key] = $r;
+    }
+
+    return $ret;
+  }
+
   function save($data) {
     global $db_conn;
 
