@@ -85,6 +85,7 @@ EOT
     return array(
       'template' => 'edit_table.html',
       'table' => $param['table'],
+      'views' => $table ? $table->views() : null,
       'form' => $form,
       'data' => $table ? $table->view() : null,
     );
