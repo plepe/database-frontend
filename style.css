@@ -98,3 +98,12 @@ th.even,
 td.even{
   background: #E8F4EF;
 }
+
+pre.view_json {
+  margin-left: 15px;
+  margin-right: 15px;
+  border: 2px solid #C7C6E1;
+  background-color: #E8EEF3;
+  color: #5E5E5E;
+  padding: 2px;
+}

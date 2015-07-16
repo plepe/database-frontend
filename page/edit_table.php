@@ -69,6 +69,8 @@ EOT
 	$table = new DB_table(null);
 
       $table->save($data, $param['message']);
+
+      page_reload(page_url(array("page" => "edit_table", "table" => $table->id)));
     }
     
     if($form->is_empty()) {
