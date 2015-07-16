@@ -10,15 +10,18 @@ class Page_list extends Page {
       $data[$o->id] = $o->view();
     }
 
-    // if no 'view'-parameter is set, use view with lowest weight
+    // if no 'view'-parameter is set, use session or view with lowest weight
     if(!isset($param['view'])) {
-      $view = $table->default_view('list');
-
-      page_reload($this->url() . "&view=" . urlencode($view));
+      if(array_key_exists("{$table->id}_view_list", $_SESSION))
+        $view = $_SESSION["{$table->id}_view_list"];
+      else
+        $view = $table->default_view('list');
     }
     else {
       $view = $param['view'];
+      $_SESSION["{$table->id}_view_list"] = $view;
     }
+    $param['view'] = $view;
 
     $def = $table->view_def($view);
     $def['fields']['__links'] = array(
@@ -40,7 +43,7 @@ class Page_list extends Page {
       'table' => $param['table'],
       'view' => $view,
       'param' => $param,
-      'views' => $table->views('show'),
+      'views' => $table->views('list'),
     );
   }
 }

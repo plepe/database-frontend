@@ -11,15 +11,18 @@ class Page_show extends Page {
     if(!$object)
       return null;
 
-    // if no 'view'-parameter is set, use view with lowest weight
+    // if no 'view'-parameter is set, use session or view with lowest weight
     if(!isset($param['view'])) {
-      $view = $table->default_view('show');
-
-      page_reload($this->url() . "&view=" . urlencode($view));
+      if(array_key_exists("{$table->id}_view_show", $_SESSION))
+        $view = $_SESSION["{$table->id}_view_show"];
+      else
+        $view = $table->default_view('show');
     }
     else {
       $view = $param['view'];
+      $_SESSION["{$table->id}_view_show"] = $view;
     }
+    $param['view'] = $view;
 
     $def = $table->view_def($view);
 

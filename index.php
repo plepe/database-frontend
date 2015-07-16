@@ -2,6 +2,7 @@
 <?php include "modulekit/loader.php"; /* loads all php-includes */ ?>
 <?php call_hooks("init"); ?>
 <?php Header('Content-Type: text/html; charset=utf-8'); ?>
+<?php session_start(); ?>
 <?php
 if(!array_key_exists('page', $_REQUEST))
   $_REQUEST['page'] = 'index';
