@@ -21,30 +21,40 @@
   padding: 7px 14px 14px;
 }
 
+.Panel form{
+  display: inline;
+}
+
+.Panel select{
+  background: #E8EEF3;
+  font-family: inherit;
+  border: solid 1px #C7C6E1;
+}
+
 .PanelH1{
   color: #5E5E5E;
   font-family: "Courier New", Courir, monospace;
   font-size: 1.25em;
-  font-weight: bold;
+  font-weight: bolder;
   text-transform: uppercase;
+  margin-left: 15px;
 }
 
 .LinkButton{
-  background: #BFCFDB;
   border: solid 1px #C7C6E1;
   padding: 1px 8px 4px;
-  margin: 6px;
   height: 40px;
   color: #5E5E5E;
   cursor: hand;
   border-radius: 4px;
   text-decoration: none;
 }
+
 .LinkButton:hover{
-  background: #8FA8BC;
+  background: #BFCFDB;
 }
 .LinkButton:active{
-  background: #61819B;
+  background: #8FA8BC;
 }
 
 .TableLink{
@@ -63,6 +73,7 @@ table.table {
   border: solid 2px #C7C6E1;
   border-collapse: collapse;
   margin-left: 15px;
+  margin-top: 15px;
 }
 
 th.table,
