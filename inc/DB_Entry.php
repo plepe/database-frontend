@@ -16,11 +16,23 @@ class DB_Entry {
   }
 
   /**
+   * load - (re-)load data from database
+   */
+  function load() {
+    global $db_conn;
+
+    $res = $db_conn->query("select * from " . db_quote_ident($this->type) . " where id=" . $db_conn->quote($this->id));
+    $this->data = $res->fetch();
+
+    $res->closeCursor();
+  }
+
+  /**
    * save - save new data to database for current object
    * $data: a hash array with key/values to update. if a key does not exist in
    *   $data, it will not be modified in the database.
    */
-  function save($data) {
+  function save($data, $message="") {
     global $db_conn;
     $set = array();
     $insert_columns = array();
@@ -54,6 +66,10 @@ class DB_Entry {
     if(array_key_exists('id', $data)) {
       $this->id = $data['id'];
     }
+
+    $this->load();
+
+    git_dump($message);
   }
 
   /**

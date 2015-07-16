@@ -1,4 +1,4 @@
-<?
+<?php
 class Page_edit extends Page {
   function content($param) {
     $table = get_db_table($param['table']);
@@ -18,7 +18,7 @@ class Page_edit extends Page {
       if(!isset($param['id']))
 	$ob = new DB_Entry($param['table'], null);
 
-      $ob->save($data);
+      $ob->save($data, $param['message']);
 
       page_reload(page_url(array("page" => "show", "table" => $param['table'], "id" => $ob->id)));
     }

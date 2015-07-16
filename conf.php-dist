@@ -8,3 +8,10 @@ $db = array(
   'type' => 'sqlite',
   'path' => 'db/db.db',
 );
+
+// Configuration for Git History
+$git = array(
+  'path' => 'db/git/',
+  'user' => 'Database Frontend',
+  'email' => 'db@example.com',
+);

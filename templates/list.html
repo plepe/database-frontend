@@ -11,6 +11,19 @@
   <div class='Panel'>
     <a class='LinkButton' href='{{ page_url({ "page": "index"}) }}'>Index</a> 
     <a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table }) }}'>Create new entry</a>
+    view: <form method='get'>
+    <input type='hidden' name='page' value='list'/>
+    <input type='hidden' name='table' value='{{table}}'/>
+    <select name='view' onchange='this.form.submit()'>
+    {% for k, v in views %}
+    <option value='{{ k }}'
+    {% if param.view == k %}
+     selected
+    {% endif %}
+    >{{ v.title }}</option>
+    {% endfor %}
+    </select>
+    </form>
   </div>
 
 </div>

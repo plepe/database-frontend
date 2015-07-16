@@ -22,3 +22,6 @@
 [submodule "lib/twig.js"]
 	path = lib/twig.js
 	url = https://github.com/justjohn/twig.js
+[submodule "lib/modulekit/lib"]
+	path = lib/modulekit/lib
+	url = https://github.com/plepe/modulekit-lib.git

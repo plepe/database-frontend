@@ -1,4 +1,4 @@
-<?
+<?php
 class Page_list extends Page {
   function content($param) {
     $table = get_db_table($param['table']);
@@ -10,8 +10,21 @@ class Page_list extends Page {
       $data[$o->id] = $o->view();
     }
 
-    $def = $table->def();
-    $def['__links'] = array(
+    // if no 'view'-parameter is set, use session or view with lowest weight
+    if(!isset($param['view'])) {
+      if(array_key_exists("{$table->id}_view_list", $_SESSION))
+        $view = $_SESSION["{$table->id}_view_list"];
+      else
+        $view = $table->default_view('list');
+    }
+    else {
+      $view = $param['view'];
+      $_SESSION["{$table->id}_view_list"] = $view;
+    }
+    $param['view'] = $view;
+
+    $def = $table->view_def($view);
+    $def['fields']['__links'] = array(
       "name" => "",
       "format" => 
         "<a class='TableLink' href='" .  
@@ -23,12 +36,14 @@ class Page_list extends Page {
 	"'>Edit</a>",
     );
 
-    $table = new table($def, $data, array("template_engine"=>"twig"));
+    $view = new table($def['fields'], $data, array("template_engine"=>"twig"));
 
     return array(
       'template' => 'list.html',
       'table' => $param['table'],
-      'view' => $table,
+      'view' => $view,
+      'param' => $param,
+      'views' => $table->views('list'),
     );
   }
 }

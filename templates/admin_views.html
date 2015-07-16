@@ -1,0 +1,7 @@
+<form method='post'>
+{{ form|show }}
+<input type='submit' value='Save'>
+<input type='text' name='message' placeholder='commit message'>
+</form>
+
+<a href='{{ page_url({ "page": "edit_table", "table": table }) }}'>Back</a>

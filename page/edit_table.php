@@ -33,7 +33,7 @@ EOT
 	  ),
 	  'type'	=>"text",
 	  'req'	=>true,
-	  'check'	=>array("regexp", "^[a-zA-Z0-9_]+$"),
+	  'check'	=>array("regexp", "^[a-zA-Z0-9_]+$", "Use only characters, digits and underscores."),
 	),
       ),
       'def_additional' => array(
@@ -68,7 +68,7 @@ EOT
       if(!isset($table))
 	$table = new DB_table(null);
 
-      $table->save($data);
+      $table->save($data, $param['message']);
     }
     
     if($form->is_empty()) {
@@ -85,6 +85,7 @@ EOT
     return array(
       'template' => 'edit_table.html',
       'table' => $param['table'],
+      'views' => $table ? $table->views() : null,
       'form' => $form,
       'data' => $table ? $table->view() : null,
     );

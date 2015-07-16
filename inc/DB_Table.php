@@ -127,7 +127,79 @@ class DB_Table {
     return $ret;
   }
 
-  function save($data) {
+  function views($type) { // type: 'list' or 'show'
+    $views = array();
+
+    if(array_key_exists('views', $this->data))
+      $views = $this->data['views'];
+
+    $views['default'] = array(
+      'title' => 'Default',
+      "weight_{$type}" => -1,
+    );
+    if($type == 'show') {
+      $views['json'] = array(
+        'title' => 'JSON',
+        "weight_{$type}" => 100,
+        'class' => 'View_JSON',
+      );
+    }
+
+    $views = weight_sort($views, "weight_{$type}");
+
+    return $views;
+  }
+
+  function view_def($k) {
+    if($k == 'default')
+      return array(
+        'title' => 'Default',
+        'weight_show' => -1,
+        'weight_list' => -1,
+        'fields' => $this->def(),
+      );
+
+    if($k == 'json')
+      return array(
+        'title' => 'JSON',
+        'class' => 'View_JSON',
+        'weight_show' => 100,
+        'fields' => $this->def(),
+      );
+
+    if(!array_key_exists($k, $this->data['views'])) {
+      messages_add("View does not exist!", MSG_ERROR);
+      return array();
+    }
+
+    $def = $this->def();
+    $ret = $this->data['views'][$k];
+    $ret['fields'] = array();
+    foreach($this->data['views'][$k]['fields'] as $i=>$d) {
+      $key = $d['key'];
+      if($key == '__default__')
+	$key = "__custom{$i}__";
+
+      $r = array(
+        'name' => $d['title'] ? $d['title'] : $def[$d['key']]['name'],
+      );
+
+      if($d['format']) {
+	$r['format'] = $d['format'];
+      }
+
+      $ret['fields'][$key] = $r;
+    }
+
+    return $ret;
+  }
+
+  function default_view($type) { // type: 'list' or 'show'
+    $view = array_keys($this->views($type));
+    return $view[0];
+  }
+
+  function save($data, $message="") {
     global $db_conn;
 
     if($this->id === null) {
@@ -167,6 +239,8 @@ class DB_Table {
 
     $this->data = $data;
     $this->def = $data['fields'];
+
+    git_dump($message);
   }
 
   function view() {
