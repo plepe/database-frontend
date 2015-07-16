@@ -32,11 +32,28 @@ class DB_Table {
     return $this->id;
   }
 
+  function column_tables($data=null) {
+    if($data === null)
+      $data = $this->data;
+
+    $ret = array();
+
+    foreach($data['fields'] as $column_id=>$column_def) {
+      if($column_def['count']) {
+	$ret[] = $column_id;
+      }
+    }
+
+    return $ret;
+  }
+
   function update_database_structure($data=null) {
     global $db_conn;
     $columns = array();
     $constraints = array();
     $column_copy = array();
+
+    $old_data = $this->data;
 
     if($data === null)
       $data = $this->data;
@@ -60,30 +77,77 @@ class DB_Table {
     if(!array_key_exists('id', $data['fields'])) {
       $columns[] = db_quote_ident('id'). " INTEGER PRIMARY KEY";
       $column_copy[] = db_quote_ident('id');
+      $id_type = "integer";
     }
+
+    $column_cmds = array();
 
     foreach($data['fields'] as $column=>$column_def) {
       $r = db_quote_ident($column) . " text";
+      $id_type = "text";
 
-      if($column == "id")
-        $r .= " primary key";
+      if($column_def['count']) {
+	$column_cmds[] = "create table " . db_quote_ident($data['id'] . '_' . $column) . "(\n" .
+		  "  id {$id_type} not null,\n" .
+		  "  sequence int not null,\n" .
+		  "  key text not null,\n" .
+		  "  value text null,\n" .
+		  "  primary key(id, key),\n" .
+		  // foreign key
+		  ((array_key_exists('reference', $column_def) && ($column_def['reference'] != null)) ? "foreign key(value) references " . db_quote_ident($column_def['reference']) . "(id)" : "") .
+		  // /foreign key
+		  "  foreign key(id) references " . db_quote_ident($data['id']) . "(id)" .
+		  ");";
 
-      if(array_key_exists('reference', $column_def) && ($column_def['reference'] != null)) {
-        $constraints[] = "foreign key(" . db_quote_ident($column ). ") references " .
-          db_quote_ident($column_def['reference']) . "(id)";
+	if((!$new_table) && array_key_exists('old_key', $column_def) && ($column_def['old_key'])) {
+	  $old_def = $old_data['fields'][$column_def['old_key']];
+
+	  if($old_def['count']) {
+	    $column_cmds[] = "insert into " . db_quote_ident($data['id'] . '_' . $column) .
+	          "  select * from " . db_quote_ident('__tmp___' . $column_def['old_key']) . ";";
+	  }
+	  else {
+	    $column_cmds[] = "insert into " . db_quote_ident($data['id'] . '_' . $column) .
+	          "  select id, 0, '0', " . db_quote_ident($column_def['old_key']) . " from __tmp__;";
+	  }
+	}
       }
+      else {
+	if($column == "id")
+	  $r .= " primary key";
 
-      $columns[] = $r;
-      if(array_key_exists('old_key', $column_def) && ($column_def['old_key']))
-	$column_copy[] = db_quote_ident($column_def['old_key']);
-      else
-	$column_copy[] = "null";
+	if(array_key_exists('reference', $column_def) && ($column_def['reference'] != null)) {
+	  $constraints[] = "foreign key(" . db_quote_ident($column ). ") references " .
+	    db_quote_ident($column_def['reference']) . "(id)";
+	}
+
+	$columns[] = $r;
+	if(array_key_exists('old_key', $column_def) && ($column_def['old_key'])) {
+	  $old_def = $old_data['fields'][$column_def['old_key']];
+
+	  if($old_def['count']) {
+	    $column_copy[] = "(select group_concat(value, ';') from " . db_quote_ident('__tmp___' . $column_def['old_key']) . " __sub__ where __sub__.id=__tmp__.id group by __sub__.id)";
+	  }
+	  else {
+	    $column_copy[] = db_quote_ident($column_def['old_key']);
+	  }
+	}
+	else
+	  $column_copy[] = "null";
+      }
     }
 
     $cmds = array();
     $cmds[] = "pragma foreign_keys=off;";
-    if(!$new_table)
+    if(!$new_table) {
       $cmds[] = "alter table {$old_table_name_quoted} rename to __tmp__;";
+
+      foreach($old_data['fields'] as $column=>$column_def) {
+	if($column_def['count'])
+	  $cmds[] = "alter table " . db_quote_ident($this->old_id . '_' . $column_def['old_key']) .
+	    " rename to " . db_quote_ident('__tmp___' . $column_def['old_key']) . ";";
+      }
+    }
 
     $cmds[] = "create table {$table_name_quoted} (\n  ".
               implode(",\n  ", $columns) .
@@ -91,13 +155,21 @@ class DB_Table {
 	        ", " . implode(",\n  ", $constraints) : "") .
               "\n);";
 
+    $cmds = array_merge($cmds, $column_cmds);
+
     if(!$new_table) {
       $cmds[] = "insert into {$table_name_quoted} select " . implode(", ", $column_copy) . " from __tmp__;";
       $cmds[] = "drop table __tmp__;";
+
+      foreach($old_data['fields'] as $column=>$column_def) {
+	if($column_def['count'])
+	  $cmds[] = "drop table " . db_quote_ident('__tmp___' . $column_def['old_key']) . ";";
+      }
     }
 
     $cmds[] = "pragma foreign_keys=on;";
 
+    messages_debug($cmds);
     foreach($cmds as $cmd) {
       // print "<pre>" . htmlspecialchars($cmd) . "</pre>\n";
       $res = $db_conn->query($cmd);

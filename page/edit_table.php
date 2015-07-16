@@ -37,6 +37,17 @@ EOT
 	),
       ),
       'def_additional' => array(
+	'count' => array(
+	  'type' => 'select',
+	  'name' => 'Multiple values',
+	  'values' => array(
+	    'no' => 'single value',
+	    'ordered' => 'multiple values, ordered',
+	    'unordered' => 'multiple values, unordered',
+	  ),
+	  'default' => 'no',
+	  'req' => true,
+	),
         'old_key' => array(
 	  'type' => 'hidden',
 	),
@@ -65,6 +76,21 @@ EOT
     if($form->is_complete()) {
       $data = $form->get_data();
       
+      // update multiple value information
+      foreach($data['fields'] as $i=>$d) {
+	switch($d['count']) {
+	  case 'no':
+	    $data['fields'][$i]['count'] = null;
+	    break;
+	  case 'ordered':
+	    $data['fields'][$i]['count'] = array('default' => 1);
+	    break;
+	  case 'unordered':
+	    $data['fields'][$i]['count'] = array('default' => 1, 'order' => false);
+	    break;
+	}
+      }
+
       if(!isset($table))
 	$table = new DB_table(null);
 
@@ -78,6 +104,16 @@ EOT
 	$data = $table->def;
 	foreach($data as $k=>$d) {
 	  $data[$k]['old_key'] = $k;
+	}
+
+	// update multiple value information
+	foreach($data as $i=>$d) {
+	  if($d['count'] === null)
+	    $data[$i]['count'] = 'no';
+	  elseif(array_key_exists('order', $d['count']) && ($d['count']['order'] === false))
+	    $data[$i]['count'] = 'unordered';
+	  else
+	    $data[$i]['count'] = 'ordered';
 	}
 
 	$form->set_data(array('id' => $table->id, 'fields' => $data));
