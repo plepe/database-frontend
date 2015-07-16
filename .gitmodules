@@ -25,3 +25,6 @@
 [submodule "lib/modulekit/lib"]
 	path = lib/modulekit/lib
 	url = https://github.com/plepe/modulekit-lib.git
+[submodule "lib/modulekit/adv_exec"]
+	path = lib/modulekit/adv_exec
+	url = https://github.com/plepe/adv_exec.git

@@ -3,9 +3,7 @@ class Page_admin_views extends Page {
   function content($param) {
     $table = get_db_table($param['table']);
     $keys = $table->def();
-    $keys = array_merge(array(
-	'__custom__' => 'Custom Field',
-      ), $keys);
+    $keys['__custom__'] = 'Custom Field';
 
     $form_def = array(
       'title' => array(
@@ -22,6 +20,7 @@ class Page_admin_views extends Page {
 	    'type' => 'select',
 	    'name' => 'Field',
 	    'values' => $keys,
+	    'values_mode' => 'keys',
 	    'req'  => 'true',
 	    'default' => '__custom__',
 	  ),

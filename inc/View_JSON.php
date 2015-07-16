@@ -6,7 +6,7 @@ class View_JSON {
 
   function show() {
     return
-      "<pre>\n" .
+      "<pre class='view_json'>\n" .
       htmlspecialchars(json_readable_encode($this->data)) .
       "</pre>\n";
   }
