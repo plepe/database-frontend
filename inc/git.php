@@ -31,12 +31,12 @@ function git_dump($message="") {
     }
   }
 
-  system("git add *");
+  system("git add .");
   $result = adv_exec("git " .
            "-c user.name=" . shell_escape($git['user']) . " " .
            "-c user.email=" . shell_escape($git['email']) . " " .
            "commit " .
-           "-m " . shell_escape($message) . " " .
+           "-a -m " . shell_escape($message) . " " .
            "--allow-empty-message ".
            "--author=\"Web User <no@body.com>\""
         );
