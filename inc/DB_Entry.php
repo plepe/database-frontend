@@ -13,6 +13,8 @@ class DB_Entry {
       $this->id = $data['id'];
       $this->data = $data;
     }
+
+    $this->load();
   }
 
   /**
@@ -23,8 +25,15 @@ class DB_Entry {
 
     $res = $db_conn->query("select * from " . db_quote_ident($this->type) . " where id=" . $db_conn->quote($this->id));
     $this->data = $res->fetch();
-
     $res->closeCursor();
+
+    foreach(get_db_table($this->type)->column_tables() as $table) {
+      $res = $db_conn->query("select * from " . db_quote_ident($this->type . '_' . $table) . " where id=" . $db_conn->quote($this->id) . " order by sequence");
+      $this->data[$table] = array();
+      while($elem = $res->fetch())
+	$this->data[$table][$elem['key']] = $elem['value'];
+      $res->closeCursor();
+    }
   }
 
   /**
@@ -35,14 +44,34 @@ class DB_Entry {
   function save($data, $message="") {
     global $db_conn;
     $set = array();
+    $cmds = array();
     $insert_columns = array();
     $insert_values = array();
 
+    if(array_key_exists('id', $data))
+      $new_id = $data['id'];
+    else
+      $new_id = $this->id;
+
     foreach($data as $column_id=>$d) {
-      $set[] = db_quote_ident($column_id) . "=" . $db_conn->quote($d);
-      $insert_columns[] = db_quote_ident($column_id);
-      $insert_values[] = $db_conn->quote($d);
+      if(get_db_table($this->type)->data['fields'][$column_id]['count']) {
+	if($this->id !== null)
+	  $cmds[] = "delete from " . db_quote_ident($this->type . '_' . $column_id) .
+	    " where \"id\"=" . $db_conn->quote($this->id);
+      }
+      else {
+	$set[] = db_quote_ident($column_id) . "=" . $db_conn->quote($d);
+	$insert_columns[] = db_quote_ident($column_id);
+	$insert_values[] = $db_conn->quote($d);
+      }
     }
+
+    foreach($cmds as $cmd) {
+      if($db_conn->query($cmd) === false) {
+	print_r($db_conn->errorInfo());
+      }
+    }
+    $cmds = array();
 
     if($this->id === null) {
       $query = "insert into " . db_quote_ident($this->type) . " (" .
@@ -62,6 +91,26 @@ class DB_Entry {
     if($this->id === null) {
       $this->id = $db_conn->lastInsertId();
     }
+
+    foreach($data as $column_id=>$d) {
+      if(get_db_table($this->type)->data['fields'][$column_id]['count']) {
+	$sequence = 0;
+	foreach($d as $k=>$v) {
+	  $cmds[] = "insert into " . db_quote_ident($this->type . '_' . $column_id) .
+	    " values (" . $db_conn->quote($this->id) . ", " . $db_conn->quote($sequence) . ", " .
+	    $db_conn->quote($k) . ", " . $db_conn->quote($v) . ")";
+
+	  $sequence++;
+	}
+      }
+    }
+
+    foreach($cmds as $cmd) {
+      if($db_conn->query($cmd) === false) {
+	print_r($db_conn->errorInfo());
+      }
+    }
+    $cmds = array();
 
     if(array_key_exists('id', $data)) {
       $this->id = $data['id'];
