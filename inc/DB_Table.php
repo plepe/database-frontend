@@ -139,9 +139,9 @@ class DB_Table {
     );
     if($type == 'show') {
       $views['json'] = array(
-        'title' => 'Default',
+        'title' => 'JSON',
         "weight_{$type}" => 100,
-        'class' => 'json_view',
+        'class' => 'View_JSON',
       );
     }
 
@@ -156,6 +156,14 @@ class DB_Table {
         'title' => 'Default',
         'weight_show' => -1,
         'weight_list' => -1,
+        'fields' => $this->def(),
+      );
+
+    if($k == 'json')
+      return array(
+        'title' => 'JSON',
+        'class' => 'View_JSON',
+        'weight_show' => 100,
         'fields' => $this->def(),
       );
 
