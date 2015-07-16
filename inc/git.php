@@ -18,6 +18,8 @@ function git_dump($message="") {
     system("git init");
   }
 
+  system("rm -r *");
+
   foreach(get_db_tables() as $table) {
     mkdir($table->id);
 
