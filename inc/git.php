@@ -12,7 +12,10 @@ function git_dump($message="") {
   if(!isset($git))
     return;
 
-  chdir($git['path']);
+  if(chdir($git['path']) === false) {
+    messages_add("Git: cannot chdir to git directory", MSG_ERROR);
+    return;
+  }
 
   if(!is_dir(".git")) {
     system("git init");
