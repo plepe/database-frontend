@@ -1,16 +1,33 @@
-<form method='post'>
-{{ form|show }}
-<input type='submit' value='Save'>
-<input type='text' name='message' placeholder='commit message'>
-</form>
+<div class='MainBox'>
 
-<h4>Views</h4>
-<ul>
-{% for k, v in views %}
-<li><a href='{{ page_url({ "page": "admin_views", "table": table, "view": k }) }}'>{{ v.title }}</a></li>
-{% endfor %}
-<li><a href='{{ page_url({ "page": "admin_views", "table": table }) }}'>New view</a></li>
-</ul>
+  <div class='Panel'>
+    <div class=PanelH1>
+	   Table: {{table}}
+    </div>
+  </div>
+  </br>
 
-<br/>
-<a href='{{ page_url({ "page": "index"}) }}'>Index</a>
+
+  <form method='post'>
+    <div class='Margin'>	  
+      {{ form|show }}
+      <input type='submit' value='Save'>
+	<input type='text' name='message' placeholder='commit message'>
+    </div>
+  </form>
+  <h4>Views</h4>
+    <ul>
+    {% for k, v in views %}
+    <li><a href='{{ page_url({ "page": "admin_views", "table": table, "view": k }) }}'>{{ v.title }}</a></li>
+    {% endfor %}
+    <li><a href='{{ page_url({ "page": "admin_views", "table": table }) }}'>New view</a></li>
+    </ul>
+
+
+  </br>  
+  <a class='LinkButton' href='{{ page_url({ "page": "index"}) }}'>Index</a>
+  </br>
+  </br>
+</div>
+ </br>
+</div>

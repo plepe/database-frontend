@@ -1,0 +1,100 @@
+
+
+.MainBox{
+  width: 100%;
+  margin-top: 20px;
+  padding: 0;
+  border-collapse: collapse;
+  border: solid 2px #C7C6E1;
+  border-radius: 4px;
+}
+
+.Margin{
+  margin-left: 15px;
+}
+
+.Panel{
+  background: #E8EEF3;
+  border: solid 2px #C7C6E1;
+  margin: 14px;
+  border-radius: 4px;
+  padding: 7px 14px 14px;
+}
+
+.PanelH1{
+  color: #5E5E5E;
+  font-family: "Courier New", Courir, monospace;
+  font-size: 1.25em;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.LinkButton{
+  background: #BFCFDB;
+  border: solid 1px #C7C6E1;
+  padding: 1px 8px 4px;
+  margin: 6px;
+  height: 40px;
+  color: #5E5E5E;
+  cursor: hand;
+  border-radius: 4px;
+  text-decoration: none;
+}
+.LinkButton:hover{
+  background: #8FA8BC;
+}
+.LinkButton:active{
+  background: #61819B;
+}
+
+.TableLink{
+  color: #61819B;
+  text-decoration: none;
+}
+.TableLink:hover{
+  background: #91C3AF;
+}
+.TableLink:active{
+  background: #62A489;
+}
+
+
+table.table {
+  border: solid 2px #C7C6E1;
+  border-collapse: collapse;
+  margin-left: 15px;
+}
+
+th.table,
+table.table th{
+  border: solid 2px #C7C6E1;
+  color: #5E5E5E;
+  background: #DEE7F7; 
+  padding: 2px;
+}
+
+td.table,
+table.table td{
+  border: solid 2px #C7C6E1;
+  color: #5E5E5E;
+  padding: 2px;
+}
+
+
+tr.group,
+th.group,
+td.group{
+  background: #FF0000;
+}
+
+tr.odd,
+th.odd,
+td.odd{
+  background: #C0DFD3;
+}
+
+tr.even,
+th.even,
+td.even{
+  background: #E8F4EF;
+}

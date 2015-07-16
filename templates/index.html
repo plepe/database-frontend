@@ -1,9 +1,27 @@
-The following tables exist:
-<ul>
-{% for table in data.tables %}
-  <li><a href='{{ page_url({ 'page': 'list', 'table': table.id }) }}'>{{ table.id }}</a> (<a href='{{ page_url({ 'page': 'edit_table', 'table': table.id }) }}'>edit</a>)</li>
-{% endfor %}
-</ul>
 
-<a href='{{ page_url({ 'page': 'edit_table' }) }}'>Create new table</a> |
-<a href='{{ page_url({ 'page': 'import' }) }}'>Create new table from CSV</a>
+<div class='MainBox'>
+
+  <div class='Panel'> 
+	  <h2> All your Tables</h2> 
+  </div>
+
+  <div>
+    <ul>
+    {% for table in data.tables %}
+    <li>
+    <strong>{{ table.id }}</strong>
+    <a class='LinkButton' href='{{ page_url({'page':'list', 'table': table.id }) }}'>View</a> 
+    <a class='LinkButton' href='{{ page_url({ 'page': 'edit_table', 'table':table.id }) }}'>Edit</a>
+    </li></br>
+    {% endfor %}
+    </ul>
+
+  </div>
+
+  <div class='Panel'>
+    <a class='LinkButton' href='{{ page_url({ 'page': 'edit_table' }) }}'>Create new table</a>
+    <a class='LinkButton' href='{{ page_url({ 'page': 'import' }) }}'>Create new table from CSV</a>
+  </div>
+
+
+</div>
