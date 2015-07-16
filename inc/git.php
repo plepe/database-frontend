@@ -32,7 +32,7 @@ function git_dump($message="") {
   }
 
   system("git add *");
-  system("git " .
+  $result = adv_exec("git " .
            "-c user.name=" . shell_escape($git['user']) . " " .
            "-c user.email=" . shell_escape($git['email']) . " " .
            "commit " .
@@ -40,4 +40,11 @@ function git_dump($message="") {
            "--allow-empty-message ".
            "--author=\"Web User <no@body.com>\""
         );
+
+  if($result[0] == 0) {
+    messages_add("<pre>Git commit:\n" . htmlspecialchars($result[1]) . "</pre>\n");
+  }
+  else {
+    messages_add("<pre>Git commit failed:\n" . htmlspecialchars($result[1]) . "</pre>\n", MSG_ERROR);
+  }
 }
