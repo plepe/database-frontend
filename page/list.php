@@ -21,7 +21,7 @@ class Page_list extends Page {
     }
 
     $def = $table->view_def($view);
-    $def['__links'] = array(
+    $def['fields']['__links'] = array(
       "name" => "",
       "format" => 
         "<a href='" .  
@@ -33,7 +33,7 @@ class Page_list extends Page {
 	"'>Edit</a>",
     );
 
-    $view = new table($def, $data, array("template_engine"=>"twig"));
+    $view = new table($def['fields'], $data, array("template_engine"=>"twig"));
 
     return array(
       'template' => 'list.html',

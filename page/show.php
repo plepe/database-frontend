@@ -22,7 +22,7 @@ class Page_show extends Page {
     }
 
     $def = $table->view_def($view);
-    $view = new table($def, array($object->view()), array("template_engine"=>"twig"));
+    $view = new table($def['fields'], array($object->view()), array("template_engine"=>"twig"));
 
     return array(
       'template' => "show.html",

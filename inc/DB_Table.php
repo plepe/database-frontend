@@ -137,6 +137,13 @@ class DB_Table {
       'title' => 'Default',
       "weight_{$type}" => -1,
     );
+    if($type == 'show') {
+      $views['json'] = array(
+        'title' => 'Default',
+        "weight_{$type}" => 100,
+        'class' => 'json_view',
+      );
+    }
 
     $views = weight_sort($views, "weight_{$type}");
 
@@ -145,7 +152,12 @@ class DB_Table {
 
   function view_def($k) {
     if($k == 'default')
-      return $this->def();
+      return array(
+        'title' => 'Default',
+        'weight_show' => -1,
+        'weight_list' => -1,
+        'fields' => $this->def(),
+      );
 
     if(!array_key_exists($k, $this->data['views'])) {
       messages_add("View does not exist!", MSG_ERROR);
@@ -153,7 +165,8 @@ class DB_Table {
     }
 
     $def = $this->def();
-    $ret = array();
+    $ret = $this->data['views'][$k];
+    $ret['fields'] = array();
     foreach($this->data['views'][$k]['fields'] as $i=>$d) {
       $key = $d['key'];
       if($key == '__default__')
@@ -167,7 +180,7 @@ class DB_Table {
 	$r['format'] = $d['format'];
       }
 
-      $ret[$key] = $r;
+      $ret['fields'][$key] = $r;
     }
 
     return $ret;
