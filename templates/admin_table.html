@@ -1,0 +1,52 @@
+<div class='MainBox'>
+
+  <div class='Panel'>
+    <a class='LinkButton' href='{{ page_url({ "page": "admin"}) }}'>Settings</a>
+  </div>
+
+  <div class='Content'>
+
+  <h1>Table: {{table}}</h1>
+
+  <h4>General Settings</h4>
+      <ul>
+	  <li>ID: {{ data.id }}</li>
+      </ul>
+
+    <div class='SubPanel'>
+	<a class='LinkButton' href='{{ page_url({ "page": "admin_table_general", "table": table }) }}'>Edit general settings</a>
+    </div>
+
+  <h4>Fields</h4>
+    <ul>
+    {% for k, v in data.fields %}
+    <li>{{ v.name }} ({{ k }})</li>
+    {% endfor %}
+    </ul>
+
+    <div class='SubPanel'>
+	<a class='LinkButton' href='{{ page_url({ "page": "admin_table_fields", "table": table }) }}'>Edit Fields</a>
+    </div>
+
+  <h4>Views</h4>
+    <ul>
+    {% for k, v in views %}
+      {% if k == 'default' %}
+	<li>{{ v.title }}</li>
+      {% else %}
+	<li>{{ v.title }} <a class='LinkButton' href='{{ page_url({ "page": "admin_table_views", "table": table, "view": k }) }}'>Edit</a></li>
+      {% endif %}
+    {% endfor %}
+    </ul>
+
+    <div class='SubPanel'>
+	<a class='LinkButton' href='{{ page_url({ "page": "admin_table_views", "table": table }) }}'>New view</a>
+    </div>
+
+  </div>
+
+  <div class='Panel'>
+    <a class='LinkButton' href='{{ page_url({ "page": "admin"}) }}'>Settings</a>
+  </div>
+
+</div>

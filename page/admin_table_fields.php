@@ -1,5 +1,5 @@
 <?php
-class Page_edit_table extends Page {
+class Page_admin_table_fields extends Page {
   function content($param) {
     if(isset($param['table'])) {
       $table = get_db_table($param['table']);
@@ -61,15 +61,7 @@ EOT
       ),
     );
 
-    $def = array_merge(array(
-        'id' => array(
-	  'type'	=> 'text',
-	  'name'	=> 'ID',
-	  'req'		=> true,
-	),
-      ),
-      form_template_editor($template_options)
-    );
+    $def = form_template_editor($template_options);
 
     $form = new form("data", $def);
 
@@ -96,7 +88,7 @@ EOT
 
       $table->save($data, $param['message']);
 
-      page_reload(page_url(array("page" => "edit_table", "table" => $table->id)));
+      page_reload(page_url(array("page" => "admin_table", "table" => $table->id)));
     }
     
     if($form->is_empty()) {
@@ -116,14 +108,17 @@ EOT
 	    $data[$i]['count'] = 'ordered';
 	}
 
-	$form->set_data(array('id' => $table->id, 'fields' => $data));
+	if(!sizeof($data)) {
+	  $data = array(array());
+	}
+
+	$form->set_data(array('fields' => $data));
       }
     }
 
     return array(
-      'template' => 'edit_table.html',
+      'template' => 'admin_table_fields.html',
       'table' => $param['table'],
-      'views' => $table ? $table->views() : null,
       'form' => $form,
       'data' => $table ? $table->view() : null,
     );

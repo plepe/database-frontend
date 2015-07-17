@@ -23,12 +23,12 @@ class DB_Entry {
   function load() {
     global $db_conn;
 
-    $res = $db_conn->query("select * from " . db_quote_ident($this->type) . " where id=" . $db_conn->quote($this->id));
+    $res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->type) . " where id=" . $db_conn->quote($this->id));
     $this->data = $res->fetch();
     $res->closeCursor();
 
     foreach(get_db_table($this->type)->column_tables() as $table) {
-      $res = $db_conn->query("select * from " . db_quote_ident($this->type . '_' . $table) . " where id=" . $db_conn->quote($this->id) . " order by sequence");
+      $res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->type . '_' . $table) . " where id=" . $db_conn->quote($this->id) . " order by sequence");
       $this->data[$table] = array();
       while($elem = $res->fetch())
 	$this->data[$table][$elem['key']] = $elem['value'];
@@ -56,12 +56,12 @@ class DB_Entry {
     foreach($data as $column_id=>$d) {
       if(get_db_table($this->type)->data['fields'][$column_id]['count']) {
 	if($this->id !== null)
-	  $cmds[] = "delete from " . db_quote_ident($this->type . '_' . $column_id) .
+	  $cmds[] = "delete from " . $db_conn->quoteIdent($this->type . '_' . $column_id) .
 	    " where \"id\"=" . $db_conn->quote($this->id);
       }
       else {
-	$set[] = db_quote_ident($column_id) . "=" . $db_conn->quote($d);
-	$insert_columns[] = db_quote_ident($column_id);
+	$set[] = $db_conn->quoteIdent($column_id) . "=" . $db_conn->quote($d);
+	$insert_columns[] = $db_conn->quoteIdent($column_id);
 	$insert_values[] = $db_conn->quote($d);
       }
     }
@@ -74,12 +74,12 @@ class DB_Entry {
     $cmds = array();
 
     if($this->id === null) {
-      $query = "insert into " . db_quote_ident($this->type) . " (" .
+      $query = "insert into " . $db_conn->quoteIdent($this->type) . " (" .
         implode(", ", $insert_columns) . ") values (" .
 	implode(", ", $insert_values) . ")";
     }
     else {
-      $query = "update " . db_quote_ident($this->type) . " set " .
+      $query = "update " . $db_conn->quoteIdent($this->type) . " set " .
 	implode(", ", $set) . " where \"id\"=" .
 	$db_conn->quote($this->id);
     }
@@ -96,7 +96,7 @@ class DB_Entry {
       if(get_db_table($this->type)->data['fields'][$column_id]['count']) {
 	$sequence = 0;
 	foreach($d as $k=>$v) {
-	  $cmds[] = "insert into " . db_quote_ident($this->type . '_' . $column_id) .
+	  $cmds[] = "insert into " . $db_conn->quoteIdent($this->type . '_' . $column_id) .
 	    " values (" . $db_conn->quote($this->id) . ", " . $db_conn->quote($sequence) . ", " .
 	    $db_conn->quote($k) . ", " . $db_conn->quote($v) . ")";
 
@@ -150,7 +150,7 @@ function get_db_entry($type, $id) {
     $db_entry_cache[$type] = array();
 
   if(!array_key_exists($id, $db_entry_cache[$type])) {
-    $res = $db_conn->query("select * from " . db_quote_ident($type) . " where id=" . $db_conn->quote($id));
+    $res = $db_conn->query("select * from " . $db_conn->quoteIdent($type) . " where id=" . $db_conn->quote($id));
     if($elem = $res->fetch()) {
       $db_entry_cache[$type][$id] = new DB_Entry($type, $elem);
     }
@@ -170,7 +170,7 @@ function get_db_entries($type) {
   if(!array_key_exists($type, $db_entry_cache))
     $db_entry_cache[$type] = array();
 
-  $res = $db_conn->query("select * from " . db_quote_ident($type));
+  $res = $db_conn->query("select * from " . $db_conn->quoteIdent($type));
   while($elem = $res->fetch()) {
     if(!array_key_exists($elem['id'], $db_entry_cache[$type]))
       $db_entry_cache[$type][$elem['id']] = new DB_Entry($type, $elem);

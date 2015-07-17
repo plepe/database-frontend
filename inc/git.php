@@ -44,7 +44,7 @@ function git_dump($message="") {
            "--author=\"Web User <no@body.com>\""
         );
 
-  if($result[0] == 0) {
+  if(in_array($result[0], array(0, 1))) {
     messages_add("<pre>Git commit:\n" . htmlspecialchars($result[1]) . "</pre>\n");
   }
   else {

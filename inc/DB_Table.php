@@ -47,7 +47,10 @@ class DB_Table {
     return $ret;
   }
 
-  function update_database_structure($data=null) {
+  /**
+   * updates database structure to specified data
+   */
+  function update_database_structure($data) {
     global $db_conn;
     $columns = array();
     $constraints = array();
@@ -55,11 +58,8 @@ class DB_Table {
 
     $old_data = $this->data;
 
-    if($data === null)
-      $data = $this->data;
-
-    $old_table_name_quoted = db_quote_ident($this->old_id);
-    $table_name_quoted = db_quote_ident($data['id']);
+    $old_table_name_quoted = $db_conn->quoteIdent($this->old_id);
+    $table_name_quoted = $db_conn->quoteIdent($data['id']);
 
     // is this a new table?
     if($this->id) {
@@ -74,108 +74,134 @@ class DB_Table {
     else
       $new_table = true;
 
+    // if there's no 'id' field specified, add a generated one
     if(!array_key_exists('id', $data['fields'])) {
-      $columns[] = db_quote_ident('id'). " INTEGER PRIMARY KEY";
-      $column_copy[] = db_quote_ident('id');
+      $columns[] = $db_conn->quoteIdent('id'). " INTEGER PRIMARY KEY";
+      $column_copy[] = $db_conn->quoteIdent('id');
       $id_type = "integer";
     }
 
-    $column_cmds = array();
+    $multifield_cmds = array();
 
+    // iterate over all fields and see what to do with them
     foreach($data['fields'] as $column=>$column_def) {
-      $r = db_quote_ident($column) . " text";
+      $r = $db_conn->quoteIdent($column) . " text";
       $id_type = "text";
 
+      // the field has multiple values -> create a separate table
+      // to hold this data.
       if($column_def['count']) {
-	$column_cmds[] = "create table " . db_quote_ident($data['id'] . '_' . $column) . "(\n" .
+	$multifield_cmds[] = "create table " . $db_conn->quoteIdent($data['id'] . '_' . $column) . "(\n" .
 		  "  id {$id_type} not null,\n" .
 		  "  sequence int not null,\n" .
 		  "  key text not null,\n" .
-		  "  value text null,\n" .
+		  "  value {$id_type} null,\n" .
 		  "  primary key(id, key),\n" .
-		  // foreign key
-		  ((array_key_exists('reference', $column_def) && ($column_def['reference'] != null)) ? "foreign key(value) references " . db_quote_ident($column_def['reference']) . "(id)" : "") .
+		  // foreign key to referenced table
+		  ((array_key_exists('reference', $column_def) && ($column_def['reference'] != null)) ? "foreign key(value) references " . $db_conn->quoteIdent($column_def['reference']) . "(id)" : "") .
 		  // /foreign key
-		  "  foreign key(id) references " . db_quote_ident($data['id']) . "(id)" .
+		  "  foreign key(id) references " . $db_conn->quoteIdent($data['id']) . "(id)" .
 		  ");";
 
+	// if this is not a new table, copy data from ...
 	if((!$new_table) && array_key_exists('old_key', $column_def) && ($column_def['old_key'])) {
 	  $old_def = $old_data['fields'][$column_def['old_key']];
 
+	  // ... it was already a field with multiple values
 	  if($old_def['count']) {
-	    $column_cmds[] = "insert into " . db_quote_ident($data['id'] . '_' . $column) .
-	          "  select * from " . db_quote_ident('__tmp___' . $column_def['old_key']) . ";";
+	    $multifield_cmds[] = "insert into " . $db_conn->quoteIdent($data['id'] . '_' . $column) .
+	          "  select * from " . $db_conn->quoteIdent('__tmp___' . $column_def['old_key']) . ";";
 	  }
+	  // ... it was a field with a single value
 	  else {
-	    $column_cmds[] = "insert into " . db_quote_ident($data['id'] . '_' . $column) .
-	          "  select id, 0, '0', " . db_quote_ident($column_def['old_key']) . " from __tmp__;";
+	    $multifield_cmds[] = "insert into " . $db_conn->quoteIdent($data['id'] . '_' . $column) .
+	          "  select id, 0, '0', " . $db_conn->quoteIdent($column_def['old_key']) . " from __tmp__;";
 	  }
 	}
       }
+
+      // the field only has single value -> add to database table
       else {
+	// primary key
 	if($column == "id")
 	  $r .= " primary key";
 
+	$columns[] = $r;
+
+	// foreign key to referenced table
 	if(array_key_exists('reference', $column_def) && ($column_def['reference'] != null)) {
-	  $constraints[] = "foreign key(" . db_quote_ident($column ). ") references " .
-	    db_quote_ident($column_def['reference']) . "(id)";
+	  $constraints[] = "foreign key(" . $db_conn->quoteIdent($column ). ") references " .
+	    $db_conn->quoteIdent($column_def['reference']) . "(id)";
 	}
 
-	$columns[] = $r;
+	// if this is not a new table, copy data from ...
 	if(array_key_exists('old_key', $column_def) && ($column_def['old_key'])) {
 	  $old_def = $old_data['fields'][$column_def['old_key']];
 
+	  // ... it was a field with multiple values -> aggregate data and concatenate by ';'
 	  if($old_def['count']) {
-	    $column_copy[] = "(select group_concat(value, ';') from " . db_quote_ident('__tmp___' . $column_def['old_key']) . " __sub__ where __sub__.id=__tmp__.id group by __sub__.id)";
+	    $column_copy[] = "(select group_concat(value, ';') from " . $db_conn->quoteIdent('__tmp___' . $column_def['old_key']) . " __sub__ where __sub__.id=__tmp__.id group by __sub__.id)";
 	  }
+	  // single value, simple copy
 	  else {
-	    $column_copy[] = db_quote_ident($column_def['old_key']);
+	    $column_copy[] = $db_conn->quoteIdent($column_def['old_key']);
 	  }
 	}
+
+	// it's a new field -> fill with 'null' values
 	else
 	  $column_copy[] = "null";
       }
     }
 
+    // To update the database structure, we rename the old table(s) to
+    // __tmp__ resp. __tmp___field, then create new table(s) and copy data.
     $cmds = array();
+    $cmds[] = "begin;";
     $cmds[] = "pragma foreign_keys=off;";
     if(!$new_table) {
       $cmds[] = "alter table {$old_table_name_quoted} rename to __tmp__;";
 
       foreach($old_data['fields'] as $column=>$column_def) {
 	if($column_def['count'])
-	  $cmds[] = "alter table " . db_quote_ident($this->old_id . '_' . $column_def['old_key']) .
-	    " rename to " . db_quote_ident('__tmp___' . $column_def['old_key']) . ";";
+	  $cmds[] = "alter table " . $db_conn->quoteIdent($this->old_id . '_' . $column_def['old_key']) .
+	    " rename to " . $db_conn->quoteIdent('__tmp___' . $column_def['old_key']) . ";";
       }
     }
 
+    // the new create table statement
     $cmds[] = "create table {$table_name_quoted} (\n  ".
               implode(",\n  ", $columns) .
               (sizeof($constraints) ?
 	        ", " . implode(",\n  ", $constraints) : "") .
               "\n);";
 
-    $cmds = array_merge($cmds, $column_cmds);
+    // now add the cmds for the fields with multiple values
+    $cmds = array_merge($cmds, $multifield_cmds);
 
+    // add the commands to copy data from the old table(s)
     if(!$new_table) {
       $cmds[] = "insert into {$table_name_quoted} select " . implode(", ", $column_copy) . " from __tmp__;";
       $cmds[] = "drop table __tmp__;";
 
       foreach($old_data['fields'] as $column=>$column_def) {
 	if($column_def['count'])
-	  $cmds[] = "drop table " . db_quote_ident('__tmp___' . $column_def['old_key']) . ";";
+	  $cmds[] = "drop table " . $db_conn->quoteIdent('__tmp___' . $column_def['old_key']) . ";";
       }
     }
 
+    // finish
     $cmds[] = "pragma foreign_keys=on;";
+    $cmds[] = "commit;";
 
-    messages_debug($cmds);
+    // finally, execute all commands
     foreach($cmds as $cmd) {
-      // print "<pre>" . htmlspecialchars($cmd) . "</pre>\n";
       $res = $db_conn->query($cmd);
       if($res === false) {
 	print "Failure executing: {$cmd}";
 	print_r($db_conn->errorInfo());
+
+	throw new Exception("DB_Table::update_database_structure(): Failure executing '{$cmd}', " . print_r($db_conn->errorInfo(), 1));
       }
     }
   }
@@ -271,8 +297,24 @@ class DB_Table {
     return $view[0];
   }
 
+  /**
+   * save - save new data to database for current table
+   * $data: a hash array with key/values to update. if a key does not exist in
+   *   $data, it will not be modified in the database. if the value is null,
+   *   the key will be removed.
+   */
   function save($data, $message="") {
     global $db_conn;
+
+    $new_data = $this->data;
+    foreach($data as $k=>$d) {
+      if($d === null)
+	unset($new_data[$k]);
+      else
+	$new_data[$k] = $d;
+    }
+
+    $data = $new_data;
 
     if($this->id === null) {
       if(!array_key_exists("id", $data)) {
