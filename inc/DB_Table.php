@@ -58,8 +58,8 @@ class DB_Table {
     if($data === null)
       $data = $this->data;
 
-    $old_table_name_quoted = db_quote_ident($this->old_id);
-    $table_name_quoted = db_quote_ident($data['id']);
+    $old_table_name_quoted = $db_conn->quoteIdent($this->old_id);
+    $table_name_quoted = $db_conn->quoteIdent($data['id']);
 
     // is this a new table?
     if($this->id) {
@@ -75,40 +75,40 @@ class DB_Table {
       $new_table = true;
 
     if(!array_key_exists('id', $data['fields'])) {
-      $columns[] = db_quote_ident('id'). " INTEGER PRIMARY KEY";
-      $column_copy[] = db_quote_ident('id');
+      $columns[] = $db_conn->quoteIdent('id'). " INTEGER PRIMARY KEY";
+      $column_copy[] = $db_conn->quoteIdent('id');
       $id_type = "integer";
     }
 
     $column_cmds = array();
 
     foreach($data['fields'] as $column=>$column_def) {
-      $r = db_quote_ident($column) . " text";
+      $r = $db_conn->quoteIdent($column) . " text";
       $id_type = "text";
 
       if($column_def['count']) {
-	$column_cmds[] = "create table " . db_quote_ident($data['id'] . '_' . $column) . "(\n" .
+	$column_cmds[] = "create table " . $db_conn->quoteIdent($data['id'] . '_' . $column) . "(\n" .
 		  "  id {$id_type} not null,\n" .
 		  "  sequence int not null,\n" .
 		  "  key text not null,\n" .
 		  "  value text null,\n" .
 		  "  primary key(id, key),\n" .
 		  // foreign key
-		  ((array_key_exists('reference', $column_def) && ($column_def['reference'] != null)) ? "foreign key(value) references " . db_quote_ident($column_def['reference']) . "(id)" : "") .
+		  ((array_key_exists('reference', $column_def) && ($column_def['reference'] != null)) ? "foreign key(value) references " . $db_conn->quoteIdent($column_def['reference']) . "(id)" : "") .
 		  // /foreign key
-		  "  foreign key(id) references " . db_quote_ident($data['id']) . "(id)" .
+		  "  foreign key(id) references " . $db_conn->quoteIdent($data['id']) . "(id)" .
 		  ");";
 
 	if((!$new_table) && array_key_exists('old_key', $column_def) && ($column_def['old_key'])) {
 	  $old_def = $old_data['fields'][$column_def['old_key']];
 
 	  if($old_def['count']) {
-	    $column_cmds[] = "insert into " . db_quote_ident($data['id'] . '_' . $column) .
-	          "  select * from " . db_quote_ident('__tmp___' . $column_def['old_key']) . ";";
+	    $column_cmds[] = "insert into " . $db_conn->quoteIdent($data['id'] . '_' . $column) .
+	          "  select * from " . $db_conn->quoteIdent('__tmp___' . $column_def['old_key']) . ";";
 	  }
 	  else {
-	    $column_cmds[] = "insert into " . db_quote_ident($data['id'] . '_' . $column) .
-	          "  select id, 0, '0', " . db_quote_ident($column_def['old_key']) . " from __tmp__;";
+	    $column_cmds[] = "insert into " . $db_conn->quoteIdent($data['id'] . '_' . $column) .
+	          "  select id, 0, '0', " . $db_conn->quoteIdent($column_def['old_key']) . " from __tmp__;";
 	  }
 	}
       }
@@ -117,8 +117,8 @@ class DB_Table {
 	  $r .= " primary key";
 
 	if(array_key_exists('reference', $column_def) && ($column_def['reference'] != null)) {
-	  $constraints[] = "foreign key(" . db_quote_ident($column ). ") references " .
-	    db_quote_ident($column_def['reference']) . "(id)";
+	  $constraints[] = "foreign key(" . $db_conn->quoteIdent($column ). ") references " .
+	    $db_conn->quoteIdent($column_def['reference']) . "(id)";
 	}
 
 	$columns[] = $r;
@@ -126,10 +126,10 @@ class DB_Table {
 	  $old_def = $old_data['fields'][$column_def['old_key']];
 
 	  if($old_def['count']) {
-	    $column_copy[] = "(select group_concat(value, ';') from " . db_quote_ident('__tmp___' . $column_def['old_key']) . " __sub__ where __sub__.id=__tmp__.id group by __sub__.id)";
+	    $column_copy[] = "(select group_concat(value, ';') from " . $db_conn->quoteIdent('__tmp___' . $column_def['old_key']) . " __sub__ where __sub__.id=__tmp__.id group by __sub__.id)";
 	  }
 	  else {
-	    $column_copy[] = db_quote_ident($column_def['old_key']);
+	    $column_copy[] = $db_conn->quoteIdent($column_def['old_key']);
 	  }
 	}
 	else
@@ -144,8 +144,8 @@ class DB_Table {
 
       foreach($old_data['fields'] as $column=>$column_def) {
 	if($column_def['count'])
-	  $cmds[] = "alter table " . db_quote_ident($this->old_id . '_' . $column_def['old_key']) .
-	    " rename to " . db_quote_ident('__tmp___' . $column_def['old_key']) . ";";
+	  $cmds[] = "alter table " . $db_conn->quoteIdent($this->old_id . '_' . $column_def['old_key']) .
+	    " rename to " . $db_conn->quoteIdent('__tmp___' . $column_def['old_key']) . ";";
       }
     }
 
@@ -163,7 +163,7 @@ class DB_Table {
 
       foreach($old_data['fields'] as $column=>$column_def) {
 	if($column_def['count'])
-	  $cmds[] = "drop table " . db_quote_ident('__tmp___' . $column_def['old_key']) . ";";
+	  $cmds[] = "drop table " . $db_conn->quoteIdent('__tmp___' . $column_def['old_key']) . ";";
       }
     }
 

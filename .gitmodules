@@ -28,3 +28,6 @@
 [submodule "lib/modulekit/adv_exec"]
 	path = lib/modulekit/adv_exec
 	url = https://github.com/plepe/adv_exec.git
+[submodule "lib/modulekit/PDOext"]
+	path = lib/modulekit/PDOext
+	url = https://github.com/plepe/PDOext.git
