@@ -76,11 +76,14 @@
 }
 
 
+div.table_wrapper {
+  background: red;
+  margin: 15px;
+}
 table.table {
   border: solid 2px #C7C6E1;
   border-collapse: collapse;
-  margin-left: 15px;
-  margin-top: 15px;
+  width: 100%;
 }
 
 th.table,
@@ -97,7 +100,6 @@ table.table td{
   color: #5E5E5E;
   padding: 2px;
 }
-
 
 tr.group,
 th.group,
