@@ -7,14 +7,14 @@
   </div>
   </br>
 
-
   <form method='post'>
     <div class='Margin'>	  
       {{ form|show }}
-      <input type='submit' value='Save'>
-	<input type='text' name='message' placeholder='commit message'>
+      <input type='submit' value='Save'>	
+      <input type='text' name='message' placeholder='commit message'>
     </div>
   </form>
+
   <h4>Views</h4>
     <ul>
     {% for k, v in views %}
@@ -23,9 +23,8 @@
     <li><a href='{{ page_url({ "page": "admin_views", "table": table }) }}'>New view</a></li>
     </ul>
 
-
   </br>  
-  <a class='LinkButton' href='{{ page_url({ "page": "index"}) }}'>Index</a>
+  <a class='LinkButton Margin' href='{{ page_url({ "page": "index"}) }}'>Index</a>
   </br>
   </br>
 </div>

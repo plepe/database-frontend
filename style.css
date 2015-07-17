@@ -1,5 +1,3 @@
-
-
 .MainBox{
   width: 100%;
   margin-top: 20px;
@@ -12,6 +10,8 @@
 .Margin{
   margin-left: 15px;
 }
+
+/*============ PANEL ==========*/
 
 .Panel{
   background: #E8EEF3;
@@ -40,6 +40,8 @@
   margin-left: 15px;
 }
 
+/*============ BUTTONS =========*/
+
 .LinkButton{
   border: solid 1px #C7C6E1;
   padding: 1px 8px 4px;
@@ -56,6 +58,9 @@
 .LinkButton:active{
   background: #8FA8BC;
 }
+
+
+/*=========== TABLE ===========*/
 
 .TableLink{
   color: #61819B;
@@ -108,13 +113,4 @@ tr.even,
 th.even,
 td.even{
   background: #E8F4EF;
-}
-
-pre.view_json {
-  margin-left: 15px;
-  margin-right: 15px;
-  border: 2px solid #C7C6E1;
-  background-color: #E8EEF3;
-  color: #5E5E5E;
-  padding: 2px;
 }

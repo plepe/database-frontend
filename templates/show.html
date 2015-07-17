@@ -10,9 +10,7 @@
   {{ view|show('html-transposed') }}
 
   <div class='Panel'>
-    <a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table, "id": id }) }}'>Edit</a>
-    <a class='LinkButton' href='{{ page_url({ "page": "list", "table": table }) }}'>Back</a>
-    View: <form method='get'>
+    Table View: <form method='get'>
     <input type='hidden' name='page' value='show'/>
     <input type='hidden' name='table' value='{{table}}'/>
     <input type='hidden' name='id' value='{{id}}'/>
@@ -26,6 +24,8 @@
     {% endfor %}
     </select>
     </form>
+    <a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table, "id": id }) }}'>Edit</a>
+    <a class='LinkButton' href='{{ page_url({ "page": "list", "table": table }) }}'>Back</a>
   </div>
 
 </div>
