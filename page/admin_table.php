@@ -1,5 +1,5 @@
 <?php
-class Page_edit_table extends Page {
+class Page_admin_table extends Page {
   function content($param) {
     if(isset($param['table'])) {
       $table = get_db_table($param['table']);
@@ -96,7 +96,7 @@ EOT
 
       $table->save($data, $param['message']);
 
-      page_reload(page_url(array("page" => "edit_table", "table" => $table->id)));
+      page_reload(page_url(array("page" => "admin_table", "table" => $table->id)));
     }
     
     if($form->is_empty()) {
@@ -121,7 +121,7 @@ EOT
     }
 
     return array(
-      'template' => 'edit_table.html',
+      'template' => 'admin_table.html',
       'table' => $param['table'],
       'views' => $table ? $table->views() : null,
       'form' => $form,

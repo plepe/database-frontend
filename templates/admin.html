@@ -14,7 +14,7 @@
       {% for table in data.tables %}
       <li>
       <strong>{{ table.id }}</strong>
-      <a class='LinkButton' href='{{ page_url({ 'page': 'edit_table', 'table':table.id }) }}'>Edit</a>
+      <a class='LinkButton' href='{{ page_url({ 'page': 'admin_table', 'table':table.id }) }}'>Edit</a>
       </li></br>
       {% endfor %}
       </ul>
@@ -22,7 +22,7 @@
   </div>
 
   <div class='Panel'>
-      <a class='LinkButton' href='{{ page_url({ 'page': 'edit_table' }) }}'>Create new table</a>
+      <a class='LinkButton' href='{{ page_url({ 'page': 'admin_table' }) }}'>Create new table</a>
       <a class='LinkButton' href='{{ page_url({ 'page': 'import' }) }}'>Create new table from CSV</a>
   </div>
 
