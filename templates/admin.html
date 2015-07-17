@@ -1,0 +1,30 @@
+
+<div class='MainBox'>
+
+  <div class='Panel'> 
+      <a class='LinkButton' href='{{ page_url({ "page": "index"}) }}'>Index</a> 
+  </div>
+
+  <div class='Content'>
+
+      <h2> Admin Interface </h2> 
+
+      <h3> Tables </h3>
+      <ul>
+      {% for table in data.tables %}
+      <li>
+      <strong>{{ table.id }}</strong>
+      <a class='LinkButton' href='{{ page_url({ 'page': 'edit_table', 'table':table.id }) }}'>Edit</a>
+      </li></br>
+      {% endfor %}
+      </ul>
+
+  </div>
+
+  <div class='Panel'>
+      <a class='LinkButton' href='{{ page_url({ 'page': 'edit_table' }) }}'>Create new table</a>
+      <a class='LinkButton' href='{{ page_url({ 'page': 'import' }) }}'>Create new table from CSV</a>
+  </div>
+
+
+</div>

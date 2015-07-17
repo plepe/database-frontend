@@ -68,6 +68,10 @@
   background: #62A489;
 }
 
+.Content {
+  margin-left: 15px;
+}
+
 
 table.table {
   border: solid 2px #C7C6E1;
