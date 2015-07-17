@@ -70,7 +70,6 @@ class Page_admin_views extends Page {
       // set new view name
       $views[$view_key] = $view_data;
 
-      $data = $table->data;
       $data['views'] = $views;
 
       $table->save($data, $param['message']);

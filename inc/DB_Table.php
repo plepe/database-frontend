@@ -297,8 +297,24 @@ class DB_Table {
     return $view[0];
   }
 
+  /**
+   * save - save new data to database for current table
+   * $data: a hash array with key/values to update. if a key does not exist in
+   *   $data, it will not be modified in the database. if the value is null,
+   *   the key will be removed.
+   */
   function save($data, $message="") {
     global $db_conn;
+
+    $new_data = $this->data;
+    foreach($data as $k=>$d) {
+      if($d === null)
+	unset($new_data[$k]);
+      else
+	$new_data[$k] = $d;
+    }
+
+    $data = $new_data;
 
     if($this->id === null) {
       if(!array_key_exists("id", $data)) {
