@@ -1,5 +1,5 @@
 <?php
-class Page_admin_table extends Page {
+class Page_admin_table_general extends Page {
   function content($param) {
     if(isset($param['table'])) {
       $table = get_db_table($param['table']);
@@ -39,9 +39,8 @@ class Page_admin_table extends Page {
     }
 
     return array(
-      'template' => 'admin_table.html',
+      'template' => 'admin_table_general.html',
       'table' => $param['table'],
-      'views' => $table ? $table->views() : null,
       'form' => $form,
       'data' => $table ? $table->view() : null,
     );

@@ -1,5 +1,5 @@
 <?php
-class Page_admin_views extends Page {
+class Page_admin_table_views extends Page {
   function content($param) {
     $table = get_db_table($param['table']);
     $keys = $table->def();
@@ -78,7 +78,7 @@ class Page_admin_views extends Page {
 
       // reload page resp. redirect to admin_view page with new key
       page_reload(array(
-        "page" => "admin_views",
+        "page" => "admin_table",
         "table" => $param['table'],
         "view" => $view_key,
       ));
@@ -96,7 +96,7 @@ class Page_admin_views extends Page {
     }
 
     return array(
-      'template' => 'admin_views.html',
+      'template' => 'admin_table_views.html',
       'table' => $param['table'],
       'form' => $form,
     );

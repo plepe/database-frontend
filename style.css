@@ -20,6 +20,9 @@
   border-radius: 4px;
   padding: 7px 14px 14px;
 }
+.SubPanel {
+  margin: 0px 14px;
+}
 
 .Panel form{
   display: inline;

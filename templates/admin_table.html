@@ -1,33 +1,52 @@
 <div class='MainBox'>
 
   <div class='Panel'>
-    <div class=PanelH1>
-	   Table: {{table}}
-    </div>
+    <a class='LinkButton' href='{{ page_url({ "page": "admin"}) }}'>Settings</a>
   </div>
-  </br>
 
+  <div class='Content'>
 
-  <form method='post'>
-    <div class='Margin'>	  
-      {{ form|show }}
-      <input type='submit' value='Save'>
-	<input type='text' name='message' placeholder='commit message'>
+  <h1>Table: {{table}}</h1>
+
+  <h4>General Settings</h4>
+      <ul>
+	  <li>ID: {{ data.id }}</li>
+      </ul>
+
+    <div class='SubPanel'>
+	<a class='LinkButton' href='{{ page_url({ "page": "admin_table_general", "table": table }) }}'>Edit general settings</a>
     </div>
-  </form>
+
+  <h4>Fields</h4>
+    <ul>
+    {% for k, v in data.fields %}
+    <li>{{ v.name }} ({{ k }})</li>
+    {% endfor %}
+    </ul>
+
+    <div class='SubPanel'>
+	<a class='LinkButton' href='{{ page_url({ "page": "admin_table_fields", "table": table }) }}'>Edit Fields</a>
+    </div>
+
   <h4>Views</h4>
     <ul>
     {% for k, v in views %}
-    <li><a href='{{ page_url({ "page": "admin_views", "table": table, "view": k }) }}'>{{ v.title }}</a></li>
+      {% if k == 'default' %}
+	<li>{{ v.title }}</li>
+      {% else %}
+	<li>{{ v.title }} <a class='LinkButton' href='{{ page_url({ "page": "admin_table_views", "table": table, "view": k }) }}'>Edit</a></li>
+      {% endif %}
     {% endfor %}
-    <li><a href='{{ page_url({ "page": "admin_views", "table": table }) }}'>New view</a></li>
     </ul>
 
+    <div class='SubPanel'>
+	<a class='LinkButton' href='{{ page_url({ "page": "admin_table_views", "table": table }) }}'>New view</a>
+    </div>
 
-  </br>  
-  <a class='LinkButton' href='{{ page_url({ "page": "admin"}) }}'>Settings</a>
-  </br>
-  </br>
-</div>
- </br>
+  </div>
+
+  <div class='Panel'>
+    <a class='LinkButton' href='{{ page_url({ "page": "admin"}) }}'>Settings</a>
+  </div>
+
 </div>
