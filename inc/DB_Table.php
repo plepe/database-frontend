@@ -157,6 +157,7 @@ class DB_Table {
     // To update the database structure, we rename the old table(s) to
     // __tmp__ resp. __tmp___field, then create new table(s) and copy data.
     $cmds = array();
+    $cmds[] = "begin;";
     $cmds[] = "pragma foreign_keys=off;";
     if(!$new_table) {
       $cmds[] = "alter table {$old_table_name_quoted} rename to __tmp__;";
@@ -191,6 +192,7 @@ class DB_Table {
 
     // finish
     $cmds[] = "pragma foreign_keys=on;";
+    $cmds[] = "commit;";
 
     // finally, execute all commands
     foreach($cmds as $cmd) {
@@ -198,6 +200,8 @@ class DB_Table {
       if($res === false) {
 	print "Failure executing: {$cmd}";
 	print_r($db_conn->errorInfo());
+
+	throw new Exception("DB_Table::update_database_structure(): Failure executing '{$cmd}', " . print_r($db_conn->errorInfo(), 1));
       }
     }
   }
