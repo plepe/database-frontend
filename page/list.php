@@ -24,19 +24,15 @@ class Page_list extends Page {
     $param['view'] = $view;
 
     $def = $table->view_def($view);
-    $def['fields']['__links'] = array(
-      "name" => "",
-      "format" => 
-        "<a class='TableLink' href='" .  
-	strtr(page_url(array('page' => 'show', 'table' => $param['table'], 'id' => "ID")
-	), array("ID" => "{{ id }}")) .
-	"'>Show</a> <a class='TableLink' href='" .
-	strtr(page_url(array('page' => 'edit', 'table' => $param['table'], 'id' => "ID")
-	), array("ID" => "{{ id }}")) .
-	"'>Edit</a>",
-    );
 
-    $view = new table($def['fields'], $data, array("template_engine"=>"twig"));
+    if(array_key_exists('class', $def)) {
+      $view = new $def['class']($def);
+    }
+    else {
+      $view = new View_Table($def);
+    }
+
+    $view->set_data($data);
 
     return array(
       'template' => 'list.html',
