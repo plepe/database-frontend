@@ -19,6 +19,7 @@ $include = array(
     'inc/View_Table.php',
     'inc/View_JSON.php',
     'inc/View_PlainText.php',
+    'inc/View_PlainHTML.php',
     'page/*',
   ),
   'js' => array(

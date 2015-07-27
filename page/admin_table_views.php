@@ -19,6 +19,7 @@ class Page_admin_table_views extends Page {
         'values' => array(
           'Table'       => 'Table of fields',
           'PlainText'   => 'Plain Text',
+          'PlainHTML'   => 'Plain HTML',
         ),
       ),
       'fields' => array(
