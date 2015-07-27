@@ -26,7 +26,8 @@ class Page_list extends Page {
     $def = $table->view_def($view);
 
     if(array_key_exists('class', $def)) {
-      $view = new $def['class']($def);
+      $view_class = "View_{$def['class']}";
+      $view = new $view_class($def);
     }
     else {
       $view = new View_Table($def);
