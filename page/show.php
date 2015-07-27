@@ -27,7 +27,7 @@ class Page_show extends Page {
     $def = $table->view_def($view);
 
     if(array_key_exists('class', $def)) {
-      $view = new $def['class']();
+      $view = new $def['class']($def);
       $view->set_data($object->view());
     }
     else {

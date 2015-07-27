@@ -1,5 +1,5 @@
 <?php
-class View_JSON {
+class View_JSON extends View {
   function set_data($data) {
     $this->data = $data;
   }

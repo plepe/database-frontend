@@ -15,6 +15,7 @@ $include = array(
     'inc/twig_show.php',
     'inc/str_to_id.php',
     'inc/git.php',
+    'inc/View.php',
     'inc/View_JSON.php',
     'page/*',
   ),
