@@ -239,7 +239,7 @@ class DB_Table {
       $views['json'] = array(
         'title' => 'JSON',
         "weight_{$type}" => 100,
-        'class' => 'View_JSON',
+        'class' => 'JSON',
       );
     }
 
@@ -260,7 +260,7 @@ class DB_Table {
     if($k == 'json')
       return array(
         'title' => 'JSON',
-        'class' => 'View_JSON',
+        'class' => 'JSON',
         'weight_show' => 100,
         'fields' => $this->def(),
       );

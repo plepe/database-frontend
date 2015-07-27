@@ -27,12 +27,14 @@ class Page_show extends Page {
     $def = $table->view_def($view);
 
     if(array_key_exists('class', $def)) {
-      $view = new $def['class']();
-      $view->set_data($object->view());
+      $view_class = "View_{$def['class']}";
+      $view = new $view_class($def, $param);
     }
     else {
-      $view = new table($def['fields'], array($object->view()), array("template_engine"=>"twig"));
+      $view = new View_Table($def, $param);
     }
+
+    $view->set_data(array($object->view()));
 
     return array(
       'template' => "show.html",

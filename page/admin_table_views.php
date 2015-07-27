@@ -11,10 +11,26 @@ class Page_admin_table_views extends Page {
 	'name'  => 'View Title',
 	'req'   => true,
       ),
+      'class'   => array(
+        'type'   => 'select',
+        'name'   => 'View Class',
+        'req'    => true,
+        'default'=> 'Table',
+        'values' => array(
+          'Table'       => 'Table of fields',
+          'PlainText'   => 'Plain Text',
+          'PlainHTML'   => 'Plain HTML',
+        ),
+      ),
       'fields' => array(
 	'type'   => 'form',
 	'name'   => 'Fields',
-	'count'  => array('default' => 1),
+	'count'  => array(
+          'default' => 1,
+          'show_depend' => array('check', 'class',
+            array('is', 'Table'),
+          ),
+        ),
 	'def'    => array(
 	  'key' => array(
 	    'type' => 'select',
@@ -36,6 +52,28 @@ class Page_admin_table_views extends Page {
 	    'req' => array("check", "key", array("not", array("is", "__custom__"))),
 	  ),
 	),
+      ),
+      'format_header'   => array(
+        'type' => 'textarea',
+        'name' => 'Format Header',
+        'show_depend' => array('check', 'class',
+          array('not', array('is', 'Table')),
+        ),
+      ),
+      'format_each'   => array(
+        'type' => 'textarea',
+        'name' => 'Format each entry',
+        'desc' => 'Specify a format for every entry. Use replacement patterns.',
+        'show_depend' => array('check', 'class',
+          array('not', array('is', 'Table')),
+        ),
+      ),
+      'format_footer'   => array(
+        'type' => 'textarea',
+        'name' => 'Format Header',
+        'show_depend' => array('check', 'class',
+          array('not', array('is', 'Table')),
+        ),
       ),
       'weight_show' => array(
         'type'   => 'integer',

@@ -1,5 +1,5 @@
 <?php
-class View_JSON {
+class View_JSON extends View {
   function set_data($data) {
     $this->data = $data;
   }
@@ -7,7 +7,7 @@ class View_JSON {
   function show() {
     return
       "<pre class='view_json'>\n" .
-      htmlspecialchars(json_readable_encode($this->data)) .
+      htmlspecialchars(json_readable_encode($this->data[0])) .
       "</pre>\n";
   }
 }
