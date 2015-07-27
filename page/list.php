@@ -27,10 +27,10 @@ class Page_list extends Page {
 
     if(array_key_exists('class', $def)) {
       $view_class = "View_{$def['class']}";
-      $view = new $view_class($def);
+      $view = new $view_class($def, $param);
     }
     else {
-      $view = new View_Table($def);
+      $view = new View_Table($def, $param);
     }
 
     $view->set_data($data);

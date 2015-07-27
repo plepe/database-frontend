@@ -14,10 +14,10 @@ class View_Table extends View {
       "name" => "",
       "format" => 
         "<a class='TableLink' href='" .  
-	strtr(page_url(array('page' => 'show', 'table' => $param['table'], 'id' => "ID")
+	strtr(page_url(array('page' => 'show', 'table' => $this->param['table'], 'id' => "ID")
 	), array("ID" => "{{ id }}")) .
 	"'>Show</a> <a class='TableLink' href='" .
-	strtr(page_url(array('page' => 'edit', 'table' => $param['table'], 'id' => "ID")
+	strtr(page_url(array('page' => 'edit', 'table' => $this->param['table'], 'id' => "ID")
 	), array("ID" => "{{ id }}")) .
 	"'>Edit</a>",
     );
