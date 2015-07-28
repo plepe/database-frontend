@@ -118,10 +118,16 @@ class DB_Table {
 
 	// if this is not a new table, copy data from ...
 	if((!$new_table) && array_key_exists('old_key', $column_def) && ($column_def['old_key'])) {
+
 	  $old_def = $old_data['fields'][$column_def['old_key']];
 
+	  if(array_key_exists($old_def['type'], $field_types))
+	    $old_field_type = $field_types[$old_def['type']];
+	  else
+	    $old_field_type = new FieldType();
+
 	  // ... it was already a field with multiple values
-	  if($old_def['count']) {
+	  if(($old_field_type->is_multiple() === true) || ($old_def['count'])) {
 	    $multifield_cmds[] = "insert into " . $db_conn->quoteIdent($data['id'] . '_' . $column) .
 	          "  select * from " . $db_conn->quoteIdent('__tmp___' . $column_def['old_key']) . ";";
 	  }
@@ -151,8 +157,13 @@ class DB_Table {
 	if(array_key_exists('old_key', $column_def) && ($column_def['old_key'])) {
 	  $old_def = $old_data['fields'][$column_def['old_key']];
 
+	  if(array_key_exists($old_def['type'], $field_types))
+	    $old_field_type = $field_types[$old_def['type']];
+	  else
+	    $old_field_type = new FieldType();
+
 	  // ... it was a field with multiple values -> aggregate data and concatenate by ';'
-	  if($old_def['count']) {
+	  if(($old_field_type->is_multiple() === true) || ($old_def['count'])) {
 	    $column_copy[] = "(select group_concat(value, ';') from " . $db_conn->quoteIdent('__tmp___' . $column_def['old_key']) . " __sub__ where __sub__.id=__tmp__.id group by __sub__.id)";
 	  }
 	  // single value, simple copy
@@ -176,9 +187,18 @@ class DB_Table {
       $cmds[] = "alter table {$old_table_name_quoted} rename to __tmp__;";
 
       foreach($old_data['fields'] as $column=>$column_def) {
-	if($column_def['count'])
+	$old_def = $old_data['fields'][$column_def['old_key']];
+
+	if(array_key_exists($old_def['type'], $field_types))
+	  $old_field_type = $field_types[$old_def['type']];
+	else
+	  $old_field_type = new FieldType();
+
+	// ... it was already a field with multiple values
+	if(($old_field_type->is_multiple() === true) || ($old_def['count'])) {
 	  $cmds[] = "alter table " . $db_conn->quoteIdent($this->old_id . '_' . $column_def['old_key']) .
 	    " rename to " . $db_conn->quoteIdent('__tmp___' . $column_def['old_key']) . ";";
+	}
       }
     }
 
@@ -198,8 +218,17 @@ class DB_Table {
       $cmds[] = "drop table __tmp__;";
 
       foreach($old_data['fields'] as $column=>$column_def) {
-	if($column_def['count'])
+	$old_def = $old_data['fields'][$column_def['old_key']];
+
+	if(array_key_exists($old_def['type'], $field_types))
+	  $old_field_type = $field_types[$old_def['type']];
+	else
+	  $old_field_type = new FieldType();
+
+	// ... it was already a field with multiple values
+	if(($old_field_type->is_multiple() === true) || ($old_def['count'])) {
 	  $cmds[] = "drop table " . $db_conn->quoteIdent('__tmp___' . $column_def['old_key']) . ";";
+	}
       }
     }
 
