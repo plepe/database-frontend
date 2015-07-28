@@ -20,6 +20,7 @@ $include = array(
     'inc/View_JSON.php',
     'inc/View_PlainText.php',
     'inc/View_PlainHTML.php',
+    'inc/FieldTypes.php',
     'page/*',
   ),
   'js' => array(
