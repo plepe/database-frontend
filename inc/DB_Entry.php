@@ -61,7 +61,7 @@ class DB_Entry {
       if(array_key_exists($column_def['type'], $field_types))
 	$field_type = $field_types[$column_def['type']];
       else
-	$field_type = FieldType;
+	$field_type = new FieldType();
 
       // the field has multiple values -> use extra table
       if(($field_type->is_multiple() === true) || ($column_def['count'])) {
@@ -108,7 +108,7 @@ class DB_Entry {
       if(array_key_exists($column_def['type'], $field_types))
 	$field_type = $field_types[$column_def['type']];
       else
-	$field_type = FieldType;
+	$field_type = new FieldType();
 
       // the field has multiple values -> use extra table
       if(($field_type->is_multiple() === true) || ($column_def['count'])) {

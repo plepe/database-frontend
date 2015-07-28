@@ -44,7 +44,7 @@ class DB_Table {
       if(array_key_exists($column_def['type'], $field_types))
 	$field_type = $field_types[$column_def['type']];
       else
-	$field_type = FieldType;
+	$field_type = new FieldType();
 
       if(($field_type->is_multiple() === true) || ($column_def['count'])) {
 	$ret[] = $column_id;
@@ -99,7 +99,7 @@ class DB_Table {
       if(array_key_exists($column_def['type'], $field_types))
 	$field_type = $field_types[$column_def['type']];
       else
-	$field_type = FieldType;
+	$field_type = new FieldType();
 
       // the field has multiple values -> create a separate table
       // to hold this data.
