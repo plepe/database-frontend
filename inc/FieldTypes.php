@@ -24,6 +24,12 @@ class FieldType_text extends FieldType {
   }
 }
 
+class FieldType_textarea extends FieldType {
+  function db_type() {
+    return 'text';
+  }
+}
+
 class FieldType_radio extends FieldType {
   function is_multiple() {
     return false;
@@ -33,6 +39,12 @@ class FieldType_radio extends FieldType {
 class FieldType_checkbox extends FieldType {
   function is_multiple() {
     return true;
+  }
+}
+
+class FieldType_select extends FieldType {
+  function db_type() {
+    return 'text';
   }
 }
 
