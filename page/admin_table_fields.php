@@ -13,6 +13,12 @@ class Page_admin_table_fields extends Page {
     $has_values = array("check", "type", array("or", array("is", "radio"), array("is", "select"), array("is", "checkbox"), array("is", "text"), array("is", "autocomplete"), array("is", "keywords")));
     $field_types = get_field_types();
 
+    $show_depend_count = array("check", "type", array("or"));
+    foreach($field_types as $k=>$type) {
+      if($type->is_multiple() === null)
+	$show_depend_count[2][] = array("is", $k);
+    }
+
     $def = array(
       'fields'	=> array(
 	'name'	=>"Fields",
@@ -80,6 +86,8 @@ EOT
 		'ordered' => 'multiple values, ordered',
 		'unordered' => 'multiple values, unordered',
 	      ),
+	      'show_depend' => $show_depend_count,
+	      'include_data'=>$show_depend_count,
 	      'default' => 'no',
 	      'req' => true,
 	    ),
