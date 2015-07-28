@@ -3,8 +3,6 @@ class Page_admin_table_general extends Page {
   function content($param) {
     if(isset($param['table'])) {
       $table = get_db_table($param['table']);
-      if(!$table)
-	return null;
     }
 
     foreach(get_db_tables() as $t)
