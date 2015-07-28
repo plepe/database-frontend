@@ -33,13 +33,20 @@ class DB_Table {
   }
 
   function column_tables($data=null) {
+    $field_types = get_field_types();
+
     if($data === null)
       $data = $this->data;
 
     $ret = array();
 
     foreach($data['fields'] as $column_id=>$column_def) {
-      if($column_def['count']) {
+      if(array_key_exists($column_def['type'], $field_types))
+	$field_type = $field_types[$column_def['type']];
+      else
+	$field_type = FieldType;
+
+      if(($field_type->is_multiple() === true) || ($column_def['count'])) {
 	$ret[] = $column_id;
       }
     }
@@ -55,6 +62,7 @@ class DB_Table {
     $columns = array();
     $constraints = array();
     $column_copy = array();
+    $field_types = get_field_types();
 
     $old_data = $this->data;
 
@@ -88,9 +96,14 @@ class DB_Table {
       $r = $db_conn->quoteIdent($column) . " text";
       $id_type = "text";
 
+      if(array_key_exists($column_def['type'], $field_types))
+	$field_type = $field_types[$column_def['type']];
+      else
+	$field_type = FieldType;
+
       // the field has multiple values -> create a separate table
       // to hold this data.
-      if($column_def['count']) {
+      if(($field_type->is_multiple() === true) || ($column_def['count'])) {
 	$multifield_cmds[] = "create table " . $db_conn->quoteIdent($data['id'] . '_' . $column) . "(\n" .
 		  "  id {$id_type} not null,\n" .
 		  "  sequence int not null,\n" .

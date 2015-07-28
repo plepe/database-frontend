@@ -22,6 +22,7 @@ class DB_Entry {
    */
   function load() {
     global $db_conn;
+    $field_types = get_field_types();
 
     $res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->type) . " where id=" . $db_conn->quote($this->id));
     $this->data = $res->fetch();
@@ -47,6 +48,7 @@ class DB_Entry {
     $cmds = array();
     $insert_columns = array();
     $insert_values = array();
+    $field_types = get_field_types();
 
     if(array_key_exists('id', $data))
       $new_id = $data['id'];
@@ -54,7 +56,15 @@ class DB_Entry {
       $new_id = $this->id;
 
     foreach($data as $column_id=>$d) {
-      if(get_db_table($this->type)->data['fields'][$column_id]['count']) {
+      $column_def = get_db_table($this->type)->data['fields'][$column_id];
+
+      if(array_key_exists($column_def['type'], $field_types))
+	$field_type = $field_types[$column_def['type']];
+      else
+	$field_type = FieldType;
+
+      // the field has multiple values -> use extra table
+      if(($field_type->is_multiple() === true) || ($column_def['count'])) {
 	if($this->id !== null)
 	  $cmds[] = "delete from " . $db_conn->quoteIdent($this->type . '_' . $column_id) .
 	    " where \"id\"=" . $db_conn->quote($this->id);
@@ -93,7 +103,16 @@ class DB_Entry {
     }
 
     foreach($data as $column_id=>$d) {
-      if(get_db_table($this->type)->data['fields'][$column_id]['count']) {
+      $column_def = get_db_table($this->type)->data['fields'][$column_id];
+
+      if(array_key_exists($column_def['type'], $field_types))
+	$field_type = $field_types[$column_def['type']];
+      else
+	$field_type = FieldType;
+
+      // the field has multiple values -> use extra table
+      if(($field_type->is_multiple() === true) || ($column_def['count'])) {
+
 	$sequence = 0;
 	foreach($d as $k=>$v) {
 	  $cmds[] = "insert into " . $db_conn->quoteIdent($this->type . '_' . $column_id) .
