@@ -101,6 +101,10 @@ class DB_Table {
 	$column_type = "varchar(255)";
       }
 
+      if(array_key_exists('reference', $column_def) && ($column_def['reference'] != null)) {
+	$column_type = "varchar(255)";
+      }
+
       $r = $db_conn->quoteIdent($column) . " " . $column_type;
 
       if(array_key_exists($column_def['type'], $field_types))
