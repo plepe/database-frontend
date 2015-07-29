@@ -67,7 +67,7 @@ class DB_Entry {
       if(($field_type->is_multiple() === true) || ($column_def['count'])) {
 	if($this->id !== null)
 	  $cmds[] = "delete from " . $db_conn->quoteIdent($this->type . '_' . $column_id) .
-	    " where \"id\"=" . $db_conn->quote($this->id);
+	    " where " . $db_conn->quoteIdent('id') . "=" . $db_conn->quote($this->id);
       }
       else {
 	$set[] = $db_conn->quoteIdent($column_id) . "=" . $db_conn->quote($d);
@@ -90,7 +90,7 @@ class DB_Entry {
     }
     else {
       $query = "update " . $db_conn->quoteIdent($this->type) . " set " .
-	implode(", ", $set) . " where \"id\"=" .
+	implode(", ", $set) . " where " . $db_conn->quoteIdent('id') . "=" .
 	$db_conn->quote($this->id);
     }
 

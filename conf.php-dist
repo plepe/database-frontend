@@ -4,10 +4,21 @@ $app = array(
   'title' => "database-frontend",
 );
 
-$db = array(
-  'type' => 'sqlite',
-  'path' => 'db/db.db',
-);
+//// Configure database ////
+// Example: SQLite
+#$db = array(
+#  'type' => 'sqlite',
+#  'path' => 'db/db.db',
+#);
+
+// Example: MYSQL
+#$db = array(
+#  'type' => 'mysql',
+#  'username' => 'USER',
+#  'dbname' => 'DB',
+#  'host' => 'localhost',
+#  'password' => 'PASSWORD',
+#);
 
 // Configuration for Git History
 $git = array(

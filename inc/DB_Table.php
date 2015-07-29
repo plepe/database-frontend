@@ -12,7 +12,7 @@ function db_table_init() {
   if($db_conn->query("select 1 from __system__") === false) {
     $db_conn->query(<<<EOT
 create table __system__ (
-  id		text	not null,
+  id		varchar(255) not null,
   data		text	null,
   primary key(id)
 );
@@ -84,17 +84,24 @@ class DB_Table {
 
     // if there's no 'id' field specified, add a generated one
     if(!array_key_exists('id', $data['fields'])) {
-      $columns[] = $db_conn->quoteIdent('id'). " INTEGER PRIMARY KEY";
+      $columns[] = $db_conn->quoteIdent('id'). " INTEGER auto_increment PRIMARY KEY";
       $column_copy[] = $db_conn->quoteIdent('id');
       $id_type = "integer";
+    }
+    else {
+      $id_type = "varchar(255)";
     }
 
     $multifield_cmds = array();
 
     // iterate over all fields and see what to do with them
     foreach($data['fields'] as $column=>$column_def) {
-      $r = $db_conn->quoteIdent($column) . " text";
-      $id_type = "text";
+      $column_type = "text";
+      if($column == "id") {
+	$column_type = "varchar(255)";
+      }
+
+      $r = $db_conn->quoteIdent($column) . " " . $column_type;
 
       if(array_key_exists($column_def['type'], $field_types))
 	$field_type = $field_types[$column_def['type']];
@@ -105,15 +112,15 @@ class DB_Table {
       // to hold this data.
       if(($field_type->is_multiple() === true) || ($column_def['count'])) {
 	$multifield_cmds[] = "create table " . $db_conn->quoteIdent($data['id'] . '_' . $column) . "(\n" .
-		  "  id {$id_type} not null,\n" .
-		  "  sequence int not null,\n" .
-		  "  key text not null,\n" .
-		  "  value {$id_type} null,\n" .
-		  "  primary key(id, key),\n" .
+		  "  " . $db_conn->quoteIdent('id') . " {$id_type} not null,\n" .
+		  "  " . $db_conn->quoteIdent('sequence') . " int not null,\n" .
+		  "  " . $db_conn->quoteIdent('key') . " varchar(255) not null,\n" .
+		  "  " . $db_conn->quoteIdent('value') . " {$column_type} null,\n" .
+		  "  primary key(" . $db_conn->quoteIdent('id'). ", " . $db_conn->quoteIdent('key') . "),\n" .
 		  // foreign key to referenced table
-		  ((array_key_exists('reference', $column_def) && ($column_def['reference'] != null)) ? "foreign key(value) references " . $db_conn->quoteIdent($column_def['reference']) . "(id)" : "") .
+		  ((array_key_exists('reference', $column_def) && ($column_def['reference'] != null)) ? "foreign key(" . $db_conn->quoteIdent('value') . ") references " . $db_conn->quoteIdent($column_def['reference']) . "(" . $db_conn->quoteIdent('id') . ")" : "") .
 		  // /foreign key
-		  "  foreign key(id) references " . $db_conn->quoteIdent($data['id']) . "(id)" .
+		  "  foreign key(" . $db_conn->quoteIdent('id') . ") references " . $db_conn->quoteIdent($data['id']) . "(" . $db_conn->quoteIdent('id') . ")" .
 		  ");";
 
 	// if this is not a new table, copy data from ...
@@ -181,8 +188,6 @@ class DB_Table {
     // To update the database structure, we rename the old table(s) to
     // __tmp__ resp. __tmp___field, then create new table(s) and copy data.
     $cmds = array();
-    $cmds[] = "begin;";
-    $cmds[] = "pragma foreign_keys=off;";
     if(!$new_table) {
       $cmds[] = "alter table {$old_table_name_quoted} rename to __tmp__;";
 
@@ -232,9 +237,9 @@ class DB_Table {
       }
     }
 
-    // finish
-    $cmds[] = "pragma foreign_keys=on;";
-    $cmds[] = "commit;";
+    // start
+    $db_conn->query("begin;");
+    $db_conn->disableForeignKeyChecks();
 
     // finally, execute all commands
     foreach($cmds as $cmd) {
@@ -246,6 +251,10 @@ class DB_Table {
 	throw new Exception("DB_Table::update_database_structure(): Failure executing '{$cmd}', " . print_r($db_conn->errorInfo(), 1));
       }
     }
+
+    // finish
+    $db_conn->enableForeignKeyChecks();
+    $db_conn->query("commit;");
   }
 
   function def() {
