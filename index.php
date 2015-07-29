@@ -1,4 +1,10 @@
 <?php include "conf.php"; /* load a local configuration */ ?>
+<?php
+if(!isset($db)) {
+  print "Database not configured. Please edit conf.php.";
+  exit;
+}
+?>
 <?php include "modulekit/loader.php"; /* loads all php-includes */ ?>
 <?php call_hooks("init"); ?>
 <?php Header('Content-Type: text/html; charset=utf-8'); ?>
