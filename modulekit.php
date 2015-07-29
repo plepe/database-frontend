@@ -5,11 +5,12 @@ $id = "pdb";
 
 $version = "0.1-dev";
 
-$depend = array("modulekit-form", "modulekit-table", "page", "twig", "messages", "json_readable_encode", "shell_escape", "adv_exec", "PDOext");
+$depend = array("modulekit-form", "modulekit-table", "page", "twig", "messages", "json_readable_encode", "shell_escape", "adv_exec", "PDOext", "modulekit-auth");
 
 $include = array(
   'php' => array(
     'inc/database.php',
+    'inc/auth.php',
     'inc/DB_Entry.php',
     'inc/DB_Table.php',
     'inc/twig_show.php',

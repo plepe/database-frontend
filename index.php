@@ -6,9 +6,9 @@ if(!isset($db)) {
 }
 ?>
 <?php include "modulekit/loader.php"; /* loads all php-includes */ ?>
+<?php session_start(); ?>
 <?php call_hooks("init"); ?>
 <?php Header('Content-Type: text/html; charset=utf-8'); ?>
-<?php session_start(); ?>
 <?php
 if(!array_key_exists('page', $_REQUEST))
   $_REQUEST['page'] = 'index';
@@ -38,4 +38,5 @@ print twig_render("page.html", array(
     modulekit_include_css() . /* prints all css-includes */
     get_add_html_headers() , /* additional html headers */
   'app' => $app,
+  'user_info' => auth_user_info() ,
 ));

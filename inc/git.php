@@ -34,14 +34,21 @@ function git_dump($message="") {
     }
   }
 
+  global $auth;
+  $user = $auth->current_user()->name();
+  $email = $auth->current_user()->email();
+
+  if(!$email)
+    $email = "unknown@unknown";
+
   system("git add .");
   $result = adv_exec("git " .
-           "-c user.name=" . shell_escape($git['user']) . " " .
-           "-c user.email=" . shell_escape($git['email']) . " " .
+           "-c user.name=" . shell_escape($user) . " " .
+           "-c user.email=" . shell_escape($email) . " " .
            "commit " .
            "-a -m " . shell_escape($message) . " " .
            "--allow-empty-message ".
-           "--author=\"Web User <no@body.com>\""
+           "--author=" . shell_escape("{$user} <{$email}>")
         );
 
   if(in_array($result[0], array(0, 1))) {
