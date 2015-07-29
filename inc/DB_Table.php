@@ -192,12 +192,11 @@ class DB_Table {
     // To update the database structure, we rename the old table(s) to
     // __tmp__ resp. __tmp___field, then create new table(s) and copy data.
     $cmds = array();
+    $drop_cmds = array();
     if(!$new_table) {
       $cmds[] = "alter table {$old_table_name_quoted} rename to __tmp__;";
 
-      foreach($old_data['fields'] as $column=>$column_def) {
-	$old_def = $old_data['fields'][$column_def['old_key']];
-
+      foreach($old_data['fields'] as $old_column_id=>$old_def) {
 	if(array_key_exists($old_def['type'], $field_types))
 	  $old_field_type = $field_types[$old_def['type']];
 	else
@@ -205,8 +204,9 @@ class DB_Table {
 
 	// ... it was already a field with multiple values
 	if(($old_field_type->is_multiple() === true) || ($old_def['count'])) {
-	  $cmds[] = "alter table " . $db_conn->quoteIdent($this->old_id . '_' . $column_def['old_key']) .
-	    " rename to " . $db_conn->quoteIdent('__tmp___' . $column_def['old_key']) . ";";
+	  $cmds[] = "alter table " . $db_conn->quoteIdent($this->old_id . '_' . $old_column_id) .
+	    " rename to " . $db_conn->quoteIdent('__tmp___' . $old_column_id) . ";";
+	  $drop_cmds[] = "drop table " . $db_conn->quoteIdent('__tmp___' . $column_def['old_key']) . ";";
 	}
       }
     }
@@ -225,21 +225,9 @@ class DB_Table {
     if(!$new_table) {
       $cmds[] = "insert into {$table_name_quoted} select " . implode(", ", $column_copy) . " from __tmp__;";
       $cmds[] = "drop table __tmp__;";
-
-      foreach($old_data['fields'] as $column=>$column_def) {
-	$old_def = $old_data['fields'][$column_def['old_key']];
-
-	if(array_key_exists($old_def['type'], $field_types))
-	  $old_field_type = $field_types[$old_def['type']];
-	else
-	  $old_field_type = new FieldType();
-
-	// ... it was already a field with multiple values
-	if(($old_field_type->is_multiple() === true) || ($old_def['count'])) {
-	  $cmds[] = "drop table " . $db_conn->quoteIdent('__tmp___' . $column_def['old_key']) . ";";
-	}
-      }
     }
+
+    $cmds = array_merge($cmds, $drop_cmds);
 
     // start
     $db_conn->query("begin;");
