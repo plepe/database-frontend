@@ -48,7 +48,7 @@ class Page_admin_table_views extends Page {
 	  'format' => array(
 	    'type' => 'textarea',
 	    'name' => 'Override Format',
-	    'desc' => 'Specify a different format for this field (mandatory for custom fields). You may use replacement patterns (see below).',
+	    'desc' => 'Specify a different format for this field (mandatory for custom fields). This field uses the <a href="http://twig.sensiolabs.org/">Twig template engine</a>. You can use replacement patterns (see below).',
 	    'req' => array("check", "key", array("not", array("is", "__custom__"))),
 	  ),
 	),
@@ -63,7 +63,7 @@ class Page_admin_table_views extends Page {
       'format_each'   => array(
         'type' => 'textarea',
         'name' => 'Format each entry',
-        'desc' => 'Specify a format for every entry. Use replacement patterns (see below).',
+        'desc' => 'Specify a format for every entry. This field uses the <a href="http://twig.sensiolabs.org/">Twig template engine</a>. You can use replacement patterns (see below).',
         'show_depend' => array('check', 'class',
           array('not', array('is', 'Table')),
         ),
