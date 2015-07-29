@@ -26,3 +26,36 @@ $git = array(
   'user' => 'Database Frontend',
   'email' => 'db@example.com',
 );
+
+// Authentication configuration
+// see https://github.com/plepe/modulekit-auth for more information
+$auth_config = array(
+  'domains' => array(
+    'default' => array(
+      'type'    => "htpasswd",
+      'file'    => ".htpasswd"
+    ),
+    'some_ldap_domain'=>array(
+      'type'    => "ldap",
+      'host'    => 'ldap.example.com',
+      'basedn'  => 'dc=example,dc=com',
+      'userdn'  => 'ou=people,dc=example,dc=com',
+      'groupdn' => 'ou=groups,dc=example,dc=com',
+    ),
+  ),
+  'groups'=>array(
+    'admin'=>array('user1@default', 'user2@default'),
+  ),
+);
+
+// groups my also be specified as 'user1@default' (where 'user1@default' is the
+// only member) or '&group@default', where the domain is queried for the member
+// list. You can also concatenate two or more users/groups together by
+// separating by ';', e.g. 'user1@default;&group@default'
+//
+// To create .htpasswd file, use
+// > htpasswd -c -d .htpasswd USERNAME
+// To update a .htpasswd file, use:
+// > htpasswd -d .htpasswd USERNAME
+// Note: '-d' uses a weak password algorithm; other htpasswd algorithms are not
+// compatible with PHP as of version 5.4
