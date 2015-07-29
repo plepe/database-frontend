@@ -48,7 +48,7 @@ class Page_admin_table_views extends Page {
 	  'format' => array(
 	    'type' => 'textarea',
 	    'name' => 'Override Format',
-	    'desc' => 'Specify a different format for this field (mandatory for custom fields). You may use replacement patterns.',
+	    'desc' => 'Specify a different format for this field (mandatory for custom fields). You may use replacement patterns (see below).',
 	    'req' => array("check", "key", array("not", array("is", "__custom__"))),
 	  ),
 	),
@@ -63,7 +63,7 @@ class Page_admin_table_views extends Page {
       'format_each'   => array(
         'type' => 'textarea',
         'name' => 'Format each entry',
-        'desc' => 'Specify a format for every entry. Use replacement patterns.',
+        'desc' => 'Specify a format for every entry. Use replacement patterns (see below).',
         'show_depend' => array('check', 'class',
           array('not', array('is', 'Table')),
         ),
@@ -133,10 +133,28 @@ class Page_admin_table_views extends Page {
       $form->set_data($view_data);
     }
 
+    $replacement_patterns = array();
+    foreach($table->data['fields'] as $field_id=>$field) {
+      $replacement_patterns[] = array(
+	'pattern' => "{{ {$field_id} }}",
+        'name'    => $field['name'],
+      );
+    }
+
+    $replacement_patterns = new table(array(
+      'pattern' => array(
+        'name' => "Pattern",
+      ),
+      'name' => array(
+        'name' => "Name",
+      ),
+    ), $replacement_patterns);
+
     return array(
       'template' => 'admin_table_views.html',
       'table' => $param['table'],
       'form' => $form,
+      'replacement_patterns' => $replacement_patterns,
     );
   }
 }
