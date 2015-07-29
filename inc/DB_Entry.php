@@ -170,6 +170,12 @@ function get_db_entry($type, $id) {
 
   if(!array_key_exists($id, $db_entry_cache[$type])) {
     $res = $db_conn->query("select * from " . $db_conn->quoteIdent($type) . " where id=" . $db_conn->quote($id));
+
+    if($res === false) {
+      messages_debug("get_db_entry('{$type}', '{$id}'): query failed");
+      return null;
+    }
+
     if($elem = $res->fetch()) {
       $db_entry_cache[$type][$id] = new DB_Entry($type, $elem);
     }
@@ -190,6 +196,12 @@ function get_db_entries($type) {
     $db_entry_cache[$type] = array();
 
   $res = $db_conn->query("select * from " . $db_conn->quoteIdent($type));
+
+  if($res === false) {
+    messages_debug("get_db_entries('{$type}'): query failed");
+    return array();
+  }
+
   while($elem = $res->fetch()) {
     if(!array_key_exists($elem['id'], $db_entry_cache[$type]))
       $db_entry_cache[$type][$elem['id']] = new DB_Entry($type, $elem);
