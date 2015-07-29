@@ -26,11 +26,11 @@ function git_dump($message="") {
   mkdir("__system__");
 
   foreach(get_db_tables() as $table) {
-    file_put_contents("__system__/{$table->id}.json", json_readable_encode($table->data));
+    file_put_contents("__system__/{$table->id}.json", json_readable_encode($table->data) . "\n");
 
     mkdir($table->id);
     foreach(get_db_entries($table->id) as $entry) {
-      file_put_contents("{$table->id}/{$entry->id}.json", json_readable_encode($entry->data));
+      file_put_contents("{$table->id}/{$entry->id}.json", json_readable_encode($entry->data) . "\n");
     }
   }
 

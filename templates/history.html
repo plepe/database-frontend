@@ -1,0 +1,18 @@
+<div class='MainBox'>
+
+  <div class='Panel'>
+    <div class='PanelH1'>
+	   Table:  {{ table }}
+    </div>
+  </div>
+
+{{ data|raw }}
+
+  <div class='Panel'>
+{% if id %}
+    <a class='LinkButton' href='{{ page_url({ "page": "show", "table": table, "id": id }) }}'>Show</a>
+{% endif %}
+    <a class='LinkButton' href='{{ page_url({ "page": "list", "table": table }) }}'>List</a>
+  </div>
+
+</div>
