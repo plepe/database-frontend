@@ -23,8 +23,6 @@ $app = array(
 // Configuration for Git History
 $git = array(
   'path' => 'db/git/',
-  'user' => 'Database Frontend',
-  'email' => 'db@example.com',
 );
 
 // Authentication configuration
