@@ -9,7 +9,7 @@ function db_table_init() {
   if($db_table_is_init)
     return;
 
-  if($db_conn->query("select 1 from __system__") === false) {
+  if(!$db_conn->tableExists('__system__')) {
     $db_conn->query(<<<EOT
 create table __system__ (
   id		varchar(255) not null,
@@ -71,13 +71,7 @@ class DB_Table {
 
     // is this a new table?
     if($this->id) {
-      $new_table = false;
-      $res = $db_conn->query("select 1 from {$old_table_name_quoted}");
-      if($res === false) {
-	$new_table = true;
-      }
-      else
-	$res->closeCursor();
+      $new_table = !$db_conn->tableExists($this->old_id);
     }
     else
       $new_table = true;
