@@ -303,13 +303,52 @@ class DB_Table {
   }
 
   function view_def($k) {
-    if($k == 'default')
+    $field_types = get_field_types();
+
+    if($k == 'default') {
+      $def = $this->def();
+
+      // special formats for default view
+      // * referenced tables
+      // * fields with multiple values
+      foreach($def as $column_id => $column_def) {
+	if(array_key_exists($column_def['type'], $field_types))
+	  $field_type = $field_types[$column_def['type']];
+	else
+	  $field_type = new FieldType();
+
+	if($column_def['reference']) {
+	  if(($field_type->is_multiple() === true) || ($column_def['count'])) {
+	    $def[$column_id]['format'] =
+	      "<ul>\n" .
+	      "{% for __v__ in {$column_id} %}\n" .
+	      "<li><a href='{{ page_url({ \"page\": \"show\", \"table\": \"{$column_def['reference']}\", \"id\": __v__.id }) }}'>{{ __v__.id }}</a>" .
+	      "{% endfor %}\n" .
+	      "</ul>\n";
+	  }
+	  else {
+	    $def[$column_id]['format'] = "<a href='{{ page_url({ \"page\": \"show\", \"table\": \"{$column_def['reference']}\", \"id\": {$column_id}.id }) }}'>{{ {$column_id}.id }}</a>";
+	  }
+	}
+	else {
+	  if(($field_type->is_multiple() === true) || ($column_def['count'])) {
+	    $def[$column_id]['format'] =
+	      "<ul>\n" .
+	      "{% for __v__ in {$column_id} %}\n" .
+	      "<li>{{ __v__ }}</li>\n" .
+	      "{% endfor %}\n" .
+	      "</ul>\n";
+	  }
+	}
+      }
+
       return array(
         'title' => 'Default',
         'weight_show' => -1,
         'weight_list' => -1,
-        'fields' => $this->def(),
+        'fields' => $def,
       );
+    }
 
     if($k == 'json')
       return array(
