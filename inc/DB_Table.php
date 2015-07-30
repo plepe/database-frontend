@@ -133,7 +133,7 @@ class DB_Table {
 
 	  // ... it was already a field with multiple values
 	  if(($old_field_type->is_multiple() === true) || ($old_def['count'])) {
-	    if($db_conn->tableExists($this->old_id . '_' . $old_column_id))
+	    if($db_conn->tableExists($this->old_id . '_' . $column_def['old_key']))
 	      $multifield_cmds[] = "insert into " . $db_conn->quoteIdent($data['id'] . '_' . $column) .
 		    "  select * from " . $db_conn->quoteIdent('__tmp___' . $column_def['old_key']) . ";";
 	  }
