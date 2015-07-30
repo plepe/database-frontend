@@ -170,8 +170,10 @@ class DB_Table {
 
 	  // ... it was a field with multiple values -> aggregate data and concatenate by ';'
 	  if(($old_field_type->is_multiple() === true) || ($old_def['count'])) {
-	    if($db_conn->tableExists($this->old_id . '_' . $old_column_id))
+	    if($db_conn->tableExists($this->old_id . '_' . $column_def['old_key']))
 	      $column_copy[] = "(select group_concat(value, ';') from " . $db_conn->quoteIdent('__tmp___' . $column_def['old_key']) . " __sub__ where __sub__.id=__tmp__.id group by __sub__.id)";
+	    else
+	      $column_copy[] = "null";
 	  }
 	  // single value, simple copy
 	  else {
