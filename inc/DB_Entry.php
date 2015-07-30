@@ -146,8 +146,11 @@ class DB_Entry {
   function view() {
     $field_types = get_field_types();
 
+    if(isset($this->view_cache))
+      return $this->view_cache;
+
     $type = get_db_table($this->type);
-    $ret = $this->data;
+    $this->view_cache = $this->data;
 
     foreach($type->def as $k=>$column_def) {
       if(array_key_exists('reference', $column_def) && ($column_def['reference'] != null)) {
@@ -157,24 +160,24 @@ class DB_Entry {
 	  $field_type = new FieldType();
 
 	if(($field_type->is_multiple() === true) || ($column_def['count'])) {
-	  $ret[$k] = array();
+	  $this->view_cache[$k] = array();
 	  foreach($this->data[$k] as $v) {
 	    $o = get_db_entry($column_def['reference'], $v);
 	    if($o)
-	      $ret[$k][] = $o->view();
+	      $this->view_cache[$k][] = &$o->view();
 	  }
 	}
 	else {
 	  if($this->data[$k]) {
 	    $o = get_db_entry($column_def['reference'], $this->data[$k]);
 	    if($o)
-	      $ret[$k] = $o->view();
+	      $this->view_cache[$k] = &$o->view();
 	  }
 	}
       }
     }
 
-    return $ret;
+    return $this->view_cache;
   }
 }
 
