@@ -24,6 +24,8 @@ class DB_Entry {
     global $db_conn;
     $field_types = get_field_types();
 
+    $db_conn->query("begin");
+
     $res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->type) . " where id=" . $db_conn->quote($this->id));
     $this->data = $res->fetch();
     $res->closeCursor();
@@ -35,6 +37,8 @@ class DB_Entry {
 	$this->data[$table][$elem['key']] = $elem['value'];
       $res->closeCursor();
     }
+
+    $db_conn->query("commit");
   }
 
   /**
@@ -54,6 +58,8 @@ class DB_Entry {
       $new_id = $data['id'];
     else
       $new_id = $this->id;
+
+    $db_conn->query("begin");
 
     foreach($data as $column_id=>$d) {
       $column_def = get_db_table($this->type)->data['fields'][$column_id];
@@ -145,6 +151,8 @@ class DB_Entry {
     $this->load();
 
     git_dump($message);
+
+    $db_conn->query("commit");
   }
 
   /**
@@ -154,6 +162,8 @@ class DB_Entry {
     global $db_conn;
     global $debug;
     $field_types = get_field_types();
+
+    $db_conn->query("begin");
 
     foreach(get_db_table($this->type)->column_tables() as $table) {
       $query = "delete from " . $db_conn->quoteIdent($this->type . '_' . $table) . " where id=" . $db_conn->quote($this->id);
@@ -172,6 +182,8 @@ class DB_Entry {
     $res = $db_conn->query($query);
 
     git_dump($message);
+
+    $db_conn->query("commit");
   }
 
   /**
