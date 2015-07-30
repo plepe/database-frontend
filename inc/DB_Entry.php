@@ -94,6 +94,10 @@ class DB_Entry {
 	$db_conn->quote($this->id);
     }
 
+    global $debug;
+    if(isset($debug) && $debug)
+      messages_debug($query);
+
     if($db_conn->query($query) === false) {
       print_r($db_conn->errorInfo());
     }
@@ -127,6 +131,9 @@ class DB_Entry {
 	}
       }
     }
+
+    if(isset($debug) && $debug)
+      messages_debug(implode("\n\n", $cmds));
 
     foreach($cmds as $cmd) {
       if($db_conn->query($cmd) === false) {
