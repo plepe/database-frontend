@@ -144,15 +144,32 @@ class DB_Entry {
    * view - return data including references to other tables
    */
   function view() {
+    $field_types = get_field_types();
+
     $type = get_db_table($this->type);
     $ret = $this->data;
 
-    foreach($type->def as $k=>$d) {
-      if(array_key_exists('reference', $d) && ($d['reference'] != null)) {
-	if($this->data[$k]) {
-	  $o = get_db_entry($d['reference'], $this->data[$k]);
-	  if($o)
-	    $ret[$k] = $o->view();
+    foreach($type->def as $k=>$column_def) {
+      if(array_key_exists('reference', $column_def) && ($column_def['reference'] != null)) {
+	if(array_key_exists($column_def['type'], $field_types))
+	  $field_type = $field_types[$column_def['type']];
+	else
+	  $field_type = new FieldType();
+
+	if(($field_type->is_multiple() === true) || ($column_def['count'])) {
+	  $ret[$k] = array();
+	  foreach($this->data[$k] as $v) {
+	    $o = get_db_entry($column_def['reference'], $v);
+	    if($o)
+	      $ret[$k][] = $o->view();
+	  }
+	}
+	else {
+	  if($this->data[$k]) {
+	    $o = get_db_entry($column_def['reference'], $this->data[$k]);
+	    if($o)
+	      $ret[$k] = $o->view();
+	  }
 	}
       }
     }
