@@ -148,6 +148,33 @@ class DB_Entry {
   }
 
   /**
+   * remove - remove this entry
+   */
+  function remove($message="") {
+    global $db_conn;
+    global $debug;
+    $field_types = get_field_types();
+
+    foreach(get_db_table($this->type)->column_tables() as $table) {
+      $query = "delete from " . $db_conn->quoteIdent($this->type . '_' . $table) . " where id=" . $db_conn->quote($this->id);
+
+      if(isset($debug) && $debug)
+	messages_debug($query);
+
+      $db_conn->query($query);
+    }
+
+    $query = "delete from " . $db_conn->quoteIdent($this->type) . " where id=" . $db_conn->quote($this->id);
+
+    if(isset($debug) && $debug)
+      messages_debug($query);
+
+    $res = $db_conn->query($query);
+
+    git_dump($message);
+  }
+
+  /**
    * view - return data including references to other tables
    */
   function view() {

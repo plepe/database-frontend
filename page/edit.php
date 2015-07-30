@@ -11,6 +11,18 @@ class Page_edit extends Page {
 	return null;
     }
 
+    // if requested, delete entry
+    if(isset($param['delete']) && $param['delete']) {
+      if($ob) {
+	$ob->remove($param['message']);
+	messages_add("Entry deleted", MSG_NOTICE);
+      }
+
+      page_reload(page_url(array("page" => "list", "table" => $param['table'])));
+
+      return array();
+    }
+
     $form = new form("data", $table->def());
 
     if($form->is_complete()) {
