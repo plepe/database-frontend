@@ -102,6 +102,10 @@ class DB_Entry {
       $this->id = $db_conn->lastInsertId();
     }
 
+    if(array_key_exists('id', $data)) {
+      $this->id = $data['id'];
+    }
+
     foreach($data as $column_id=>$d) {
       $column_def = get_db_table($this->type)->data['fields'][$column_id];
 
@@ -130,10 +134,6 @@ class DB_Entry {
       }
     }
     $cmds = array();
-
-    if(array_key_exists('id', $data)) {
-      $this->id = $data['id'];
-    }
 
     $this->load();
 
