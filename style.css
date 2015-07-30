@@ -15,6 +15,11 @@
   margin-left: 15px;
 }
 
+ul.MultipleValues {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
 /*============ PANEL ==========*/
 
 .Panel{

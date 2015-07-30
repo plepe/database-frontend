@@ -320,7 +320,7 @@ class DB_Table {
 	if($column_def['reference']) {
 	  if(($field_type->is_multiple() === true) || ($column_def['count'])) {
 	    $def[$column_id]['format'] =
-	      "<ul>\n" .
+	      "<ul class='MultipleValues'>\n" .
 	      "{% for __v__ in {$column_id} %}\n" .
 	      "<li><a href='{{ page_url({ \"page\": \"show\", \"table\": \"{$column_def['reference']}\", \"id\": __v__.id }) }}'>{{ __v__.id }}</a>" .
 	      "{% endfor %}\n" .
@@ -333,7 +333,7 @@ class DB_Table {
 	else {
 	  if(($field_type->is_multiple() === true) || ($column_def['count'])) {
 	    $def[$column_id]['format'] =
-	      "<ul>\n" .
+	      "<ul class='MultipleValues'>\n" .
 	      "{% for __v__ in {$column_id} %}\n" .
 	      "<li>{{ __v__ }}</li>\n" .
 	      "{% endfor %}\n" .
