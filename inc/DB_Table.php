@@ -133,8 +133,9 @@ class DB_Table {
 
 	  // ... it was already a field with multiple values
 	  if(($old_field_type->is_multiple() === true) || ($old_def['count'])) {
-	    $multifield_cmds[] = "insert into " . $db_conn->quoteIdent($data['id'] . '_' . $column) .
-	          "  select * from " . $db_conn->quoteIdent('__tmp___' . $column_def['old_key']) . ";";
+	    if($db_conn->tableExists($this->old_id . '_' . $old_column_id))
+	      $multifield_cmds[] = "insert into " . $db_conn->quoteIdent($data['id'] . '_' . $column) .
+		    "  select * from " . $db_conn->quoteIdent('__tmp___' . $column_def['old_key']) . ";";
 	  }
 	  // ... it was a field with a single value
 	  else {
@@ -169,7 +170,8 @@ class DB_Table {
 
 	  // ... it was a field with multiple values -> aggregate data and concatenate by ';'
 	  if(($old_field_type->is_multiple() === true) || ($old_def['count'])) {
-	    $column_copy[] = "(select group_concat(value, ';') from " . $db_conn->quoteIdent('__tmp___' . $column_def['old_key']) . " __sub__ where __sub__.id=__tmp__.id group by __sub__.id)";
+	    if($db_conn->tableExists($this->old_id . '_' . $old_column_id))
+	      $column_copy[] = "(select group_concat(value, ';') from " . $db_conn->quoteIdent('__tmp___' . $column_def['old_key']) . " __sub__ where __sub__.id=__tmp__.id group by __sub__.id)";
 	  }
 	  // single value, simple copy
 	  else {
@@ -198,9 +200,11 @@ class DB_Table {
 
 	// ... it was already a field with multiple values
 	if(($old_field_type->is_multiple() === true) || ($old_def['count'])) {
-	  $cmds[] = "alter table " . $db_conn->quoteIdent($this->old_id . '_' . $old_column_id) .
-	    " rename to " . $db_conn->quoteIdent('__tmp___' . $old_column_id) . ";";
-	  $drop_cmds[] = "drop table " . $db_conn->quoteIdent('__tmp___' . $column_def['old_key']) . ";";
+	  if($db_conn->tableExists($this->old_id . '_' . $old_column_id)) {
+	    $cmds[] = "alter table " . $db_conn->quoteIdent($this->old_id . '_' . $old_column_id) .
+	      " rename to " . $db_conn->quoteIdent('__tmp___' . $old_column_id) . ";";
+	    $drop_cmds[] = "drop table " . $db_conn->quoteIdent('__tmp___' . $old_column_id) . ";";
+	  }
 	}
       }
     }
