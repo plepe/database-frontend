@@ -231,6 +231,17 @@ class DB_Table {
     $db_conn->query("begin;");
     $db_conn->disableForeignKeyChecks();
 
+    global $debug;
+    if(isset($debug) && $debug) {
+      $debug_msg  = "SQL commands for updating database structure:\n";
+      $debug_msg .= "<pre wrap>\n";
+      $debug_msg .= implode("\n\n", $cmds);
+      $debug_msg .= "</pre>\n";
+
+      print $debug_msg;
+      messages_debug($debug_msg);
+    }
+
     // finally, execute all commands
     foreach($cmds as $cmd) {
       $res = $db_conn->query($cmd);

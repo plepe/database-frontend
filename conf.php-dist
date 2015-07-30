@@ -57,3 +57,6 @@ $auth_config = array(
 // > htpasswd -d .htpasswd USERNAME
 // Note: '-d' uses a weak password algorithm; other htpasswd algorithms are not
 // compatible with PHP as of version 5.4
+
+// Debugging
+$debug = false;
