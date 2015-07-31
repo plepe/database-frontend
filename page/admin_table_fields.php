@@ -101,11 +101,6 @@ EOT
 	      'desc'	=> 'Use this to reference another table as possibles values for this field. Leave \'Values\' empty.',
 	      'values'	=> $tables_data,
 	    ),
-	    'sortable'	=> array(
-	      'type'	  => 'boolean',
-	      'name'	  => 'Sortable',
-	      'default'	  => false,
-	    ),
 	  ),
 	),
       ),

@@ -51,6 +51,11 @@ class Page_admin_table_views extends Page {
 	    'desc' => 'Specify a different format for this field (mandatory for custom fields). This field uses the <a href="http://twig.sensiolabs.org/">Twig template engine</a>. You can use replacement patterns (see below).',
 	    'req' => array("check", "key", array("not", array("is", "__custom__"))),
 	  ),
+	  'sortable'    => array(
+	    'type'	  => 'boolean',
+	    'name'	  => 'Sortable',
+	    'default'     => true,
+	  ),
 	),
       ),
       'format_header'   => array(

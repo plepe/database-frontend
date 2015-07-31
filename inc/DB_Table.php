@@ -379,15 +379,9 @@ class DB_Table {
       if($key == '__default__')
 	$key = "__custom{$i}__";
 
-      $r = array(
-        'name' => $d['title'] ? $d['title'] : $def[$d['key']]['name'],
-      );
+      $d['name'] = $d['title'] ? $d['title'] : $def[$d['key']]['name'];
 
-      if($d['format']) {
-	$r['format'] = $d['format'];
-      }
-
-      $ret['fields'][$key] = $r;
+      $ret['fields'][$key] = $d;
     }
 
     return $ret;
