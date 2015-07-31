@@ -137,9 +137,6 @@ EOT
     if($form->is_empty()) {
       if(isset($table)) {
 	$data = $table->def;
-	foreach($data as $k=>$d) {
-	  $data[$k]['old_key'] = $k;
-	}
 
 	// update multiple value information
 	foreach($data as $i=>$d) {

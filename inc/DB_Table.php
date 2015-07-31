@@ -25,7 +25,15 @@ class DB_Table {
   function __construct($type, $data) {
     $this->id = $type;
     $this->data = $data;
-    $this->def = $data['fields'];
+
+    // set 'old_key' for each field, so that later save() will leave
+    // database structure intact. $new_data still has old_key information from
+    // before
+    foreach($this->data['fields'] as $k=>$d) {
+      $this->data['fields'][$k]['old_key'] = $k;
+    }
+
+    $this->def = &$this->data['fields'];
   }
   
   function name() {
