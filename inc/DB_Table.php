@@ -376,7 +376,7 @@ class DB_Table {
     $ret['fields'] = array();
     foreach($this->data['views'][$k]['fields'] as $i=>$d) {
       $key = $d['key'];
-      if($key == '__default__')
+      if($key == '__custom__')
 	$key = "__custom{$i}__";
 
       $d['name'] = $d['title'] ? $d['title'] : $def[$d['key']]['name'];
