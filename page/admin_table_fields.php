@@ -129,9 +129,14 @@ EOT
       if(!isset($table))
 	$table = new DB_table(null);
 
-      $table->save($data, $param['message']);
+      $result = $table->save($data, $param['message']);
 
-      page_reload(page_url(array("page" => "admin_table", "table" => $table->id)));
+      if($result === true) {
+	page_reload(page_url(array("page" => "admin_table", "table" => $table->id)));
+      }
+      else {
+	messages_add("An error occured while saving: {$result}", MSG_ERROR);
+      }
     }
     
     if($form->is_empty()) {

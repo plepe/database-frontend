@@ -115,16 +115,15 @@ class Page_admin_table_views extends Page {
 
       $data['views'] = $views;
 
-      $table->save($data, $param['message']);
+      $result = $table->save($data, $param['message']);
 
-      messages_add("View saved.");
-
-      // reload page resp. redirect to admin_view page with new key
-      page_reload(array(
-        "page" => "admin_table",
-        "table" => $param['table'],
-        "view" => $view_key,
-      ));
+      if($result === true) {
+	messages_add("View saved.");
+	page_reload(page_url(array("page" => "admin_table", "table" => $table->id)));
+      }
+      else {
+	messages_add("An error occured while saving: {$result}", MSG_ERROR);
+      }
     }
 
     if($form->is_empty()) {

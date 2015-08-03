@@ -397,6 +397,9 @@ class DB_Table {
    * $data: a hash array with key/values to update. if a key does not exist in
    *   $data, it will not be modified in the database. if the value is null,
    *   the key will be removed.
+   * Return:
+   *   true: saving successful
+   *   <string>: error message
    */
   function save($data, $message="") {
     global $db_conn;
@@ -450,6 +453,8 @@ class DB_Table {
     $this->def = $data['fields'];
 
     git_dump($message);
+
+    return true;
   }
 
   function view() {
