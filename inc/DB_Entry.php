@@ -64,6 +64,17 @@ class DB_Entry {
 
     $db_conn->query("begin");
 
+    if($new_id != $this->id) {
+      $res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->type) . " where " . $db_conn->quoteIdent('id') . "=" . $db_conn->quote($new_id));
+      if($res->rowCount()) {
+	$res->closeCursor();
+	$db_conn->query("rollback");
+
+	return "Entry already exists.";
+      }
+      $res->closeCursor();
+    }
+
     foreach($data as $column_id=>$d) {
       $column_def = get_db_table($this->type)->data['fields'][$column_id];
 
