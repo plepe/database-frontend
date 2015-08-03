@@ -436,7 +436,7 @@ class DB_Table {
     }
 
     if($db_conn->query($query) === false) {
-      print_r($db_conn->errorInfo());
+      return db_return_error_info($db_conn);
     }
 
     $this->old_id = $this->id;

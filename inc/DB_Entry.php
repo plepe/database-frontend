@@ -102,7 +102,7 @@ class DB_Entry {
 
     foreach($cmds as $cmd) {
       if($db_conn->query($cmd) === false) {
-	print_r($db_conn->errorInfo());
+	return db_return_error_info($db_conn);
       }
     }
     $cmds = array();
@@ -122,7 +122,7 @@ class DB_Entry {
       messages_debug($query);
 
     if($db_conn->query($query) === false) {
-      print_r($db_conn->errorInfo());
+      return db_return_error_info($db_conn);
     }
 
     if($this->id === null) {
@@ -160,7 +160,7 @@ class DB_Entry {
 
     foreach($cmds as $cmd) {
       if($db_conn->query($cmd) === false) {
-	print_r($db_conn->errorInfo());
+	return db_return_error_info($db_conn);
       }
     }
     $cmds = array();
