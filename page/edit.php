@@ -30,9 +30,14 @@ class Page_edit extends Page {
       if(!isset($param['id']))
 	$ob = new DB_Entry($param['table'], null);
 
-      $ob->save($data, $param['message']);
+      $result = $ob->save($data, $param['message']);
 
-      page_reload(page_url(array("page" => "show", "table" => $param['table'], "id" => $ob->id)));
+      if($result === true) {
+	page_reload(page_url(array("page" => "show", "table" => $param['table'], "id" => $ob->id)));
+      }
+      else {
+	messages_add("An error occured while saving: {$result}", MSG_ERROR);
+      }
     }
 
     if($form->is_empty()) {

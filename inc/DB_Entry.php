@@ -45,6 +45,9 @@ class DB_Entry {
    * save - save new data to database for current object
    * $data: a hash array with key/values to update. if a key does not exist in
    *   $data, it will not be modified in the database.
+   * Return:
+   *   true: saving successful
+   *   <string>: error message
    */
   function save($data, $message="") {
     global $db_conn;
@@ -153,6 +156,8 @@ class DB_Entry {
     git_dump($message);
 
     $db_conn->query("commit");
+
+    return true;
   }
 
   /**
