@@ -416,8 +416,7 @@ class DB_Table {
 
     if($this->id === null) {
       if(!array_key_exists("id", $data)) {
-	print "DB_Table::save(): require id for new types\n";
-	return;
+	return "require id for new types\n";
       }
 
       $query = "insert into __system__ values (" .
