@@ -16,6 +16,10 @@ class FieldType {
   function is_multiple() {
     return null;
   }
+
+  function default_format($key) {
+    return "{{ {$key} }}";
+  }
 }
 
 class FieldType_text extends FieldType {

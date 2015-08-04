@@ -325,8 +325,7 @@ class DB_Table {
 	else
 	  $field_type = new FieldType();
 
-	if(method_exists($field_type, "default_format"))
-	  $def[$column_id]['format'] = $field_type->default_format($column_id);
+	$def[$column_id]['format'] = $field_type->default_format($column_id);
 
 	if($column_def['reference']) {
 	  if(($field_type->is_multiple() === true) || ($column_def['count'])) {
@@ -392,8 +391,7 @@ class DB_Table {
 
       $d['name'] = $d['title'] ? $d['title'] : $def[$d['key']]['name'];
 
-      if((!array_key_exists('format', $d) || ($d['format'] === null)) &&
-	 method_exists($field_type, "default_format"))
+      if((!array_key_exists('format', $d) || ($d['format'] === null)))
 	$d['format'] = $field_type->default_format($key);
 
       $ret['fields'][$key] = $d;
