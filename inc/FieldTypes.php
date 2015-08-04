@@ -28,6 +28,10 @@ class FieldType_textarea extends FieldType {
   function db_type() {
     return 'text';
   }
+
+  function default_format($key) {
+    return "{{ {$key}|nl2br }}";
+  }
 }
 
 class FieldType_radio extends FieldType {
