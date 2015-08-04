@@ -325,6 +325,9 @@ class DB_Table {
 	else
 	  $field_type = new FieldType();
 
+	if(method_exists($field_type, "default_format"))
+	  $def[$column_id]['format'] = $field_type->default_format($column_id);
+
 	if($column_def['reference']) {
 	  if(($field_type->is_multiple() === true) || ($column_def['count'])) {
 	    $def[$column_id]['format'] =
@@ -376,10 +379,22 @@ class DB_Table {
     $ret['fields'] = array();
     foreach($this->data['views'][$k]['fields'] as $i=>$d) {
       $key = $d['key'];
+
+      $field = array_key_exists($key, $def) ? $def[$key] : null;
+
+      if($field && array_key_exists($field['type'], $field_types))
+	$field_type = $field_types[$field['type']];
+      else
+	$field_type = new FieldType();
+
       if($key == '__custom__')
 	$key = "__custom{$i}__";
 
       $d['name'] = $d['title'] ? $d['title'] : $def[$d['key']]['name'];
+
+      if((!array_key_exists('format', $d) || ($d['format'] === null)) &&
+	 method_exists($field_type, "default_format"))
+	$d['format'] = $field_type->default_format($key);
 
       $ret['fields'][$key] = $d;
     }
