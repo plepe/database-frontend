@@ -146,6 +146,10 @@ class DB_Entry {
 
 	$sequence = 0;
 	foreach($d as $k=>$v) {
+	  // don't save null values
+	  if($v === null)
+	    continue;
+
 	  $cmds[] = "insert into " . $db_conn->quoteIdent($this->type . '_' . $column_id) .
 	    " values (" . $db_conn->quote($this->id) . ", " . $db_conn->quote($sequence) . ", " .
 	    $db_conn->quote($k) . ", " . $db_conn->quote($v) . ")";
