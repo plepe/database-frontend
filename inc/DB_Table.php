@@ -380,10 +380,10 @@ class DB_Table {
     foreach($this->data['views'][$k]['fields'] as $i=>$d) {
       $key = $d['key'];
 
-      $field = array_key_exists($key, $def) ? $def[$key] : null;
+      $column_def = array_key_exists($key, $def) ? $def[$key] : null;
 
-      if($field && array_key_exists($field['type'], $field_types))
-	$field_type = $field_types[$field['type']];
+      if($column_def && array_key_exists($column_def['type'], $field_types))
+	$field_type = $field_types[$column_def['type']];
       else
 	$field_type = new FieldType();
 
