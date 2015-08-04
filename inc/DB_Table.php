@@ -325,29 +325,34 @@ class DB_Table {
 	else
 	  $field_type = new FieldType();
 
-	$def[$column_id]['format'] = $field_type->default_format($column_id);
-
 	if($column_def['reference']) {
 	  if(($field_type->is_multiple() === true) || ($column_def['count'])) {
 	    $def[$column_id]['format'] =
 	      "<ul class='MultipleValues'>\n" .
-	      "{% for __v__ in {$column_id} %}\n" .
-	      "<li><a href='{{ page_url({ \"page\": \"show\", \"table\": \"{$column_def['reference']}\", \"id\": __v__.id }) }}'>{{ __v__.id }}</a>" .
+	      "{% for _ in {$column_id} %}\n" .
+	      "<li><a href='{{ page_url({ \"page\": \"show\", \"table\": \"{$column_def['reference']}\", \"id\": _.id }) }}'>" .
+	      $field_type->default_format("_.id") .
+	      "</a>" .
 	      "{% endfor %}\n" .
 	      "</ul>\n";
 	  }
 	  else {
-	    $def[$column_id]['format'] = "<a href='{{ page_url({ \"page\": \"show\", \"table\": \"{$column_def['reference']}\", \"id\": {$column_id}.id }) }}'>{{ {$column_id}.id }}</a>";
+	    $def[$column_id]['format'] = "<a href='{{ page_url({ \"page\": \"show\", \"table\": \"{$column_def['reference']}\", \"id\": {$column_id}.id }) }}'>" .
+	    $field_type->default_format("{$column_id}.id") .
+	    "</a>";
 	  }
 	}
 	else {
 	  if(($field_type->is_multiple() === true) || ($column_def['count'])) {
 	    $def[$column_id]['format'] =
 	      "<ul class='MultipleValues'>\n" .
-	      "{% for __v__ in {$column_id} %}\n" .
-	      "<li>{{ __v__ }}</li>\n" .
+	      "{% for _ in {$column_id} %}\n" .
+	      "<li>" . $field_type->default_format('_') . "</li>\n" .
 	      "{% endfor %}\n" .
 	      "</ul>\n";
+	  }
+	  else {
+	    $def[$column_id]['format'] = $field_type->default_format($column_id);
 	  }
 	}
       }
@@ -391,8 +396,19 @@ class DB_Table {
 
       $d['name'] = $d['title'] ? $d['title'] : $def[$d['key']]['name'];
 
-      if((!array_key_exists('format', $d) || ($d['format'] === null)))
-	$d['format'] = $field_type->default_format($key);
+      $is_multiple = (($field_type->is_multiple() === true) || ($column_def['count']));
+
+      if(!array_key_exists('format', $d) || ($d['format'] === null)) {
+	if($is_multiple)
+	  $d['format'] =
+	    "<ul>\n" .
+	    "{% for _ in {$key} %}\n" .
+	    "  <li>" . $field_type->default_format('_') . "</li>\n" .
+	    "{% endfor %}\n" .
+	    "</ul>\n";
+	else
+	  $d['format'] = $field_type->default_format($key);
+      }
 
       $ret['fields'][$key] = $d;
     }
