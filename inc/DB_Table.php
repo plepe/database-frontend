@@ -355,6 +355,12 @@ class DB_Table {
 	    $def[$column_id]['format'] = $field_type->default_format($column_id);
 	  }
 	}
+
+	if(!array_key_exists('sortable', $column_def)) {
+	  $def[$column_id]['sortable'] = array(
+	    'type' => 'nat',
+	  );
+	}
       }
 
       return array(
