@@ -12,6 +12,8 @@ function git_dump($message="") {
   if(!isset($git))
     return;
 
+  $cwd = getcwd();
+
   if(chdir($git['path']) === false) {
     messages_add("Git: cannot chdir to git directory", MSG_ERROR);
     return;
@@ -57,4 +59,6 @@ function git_dump($message="") {
   else {
     messages_add("<pre>Git commit failed:\n" . htmlspecialchars($result[1]) . "</pre>\n", MSG_ERROR);
   }
+
+  chdir($cwd);
 }
