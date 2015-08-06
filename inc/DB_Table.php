@@ -40,6 +40,13 @@ class DB_Table {
     return $this->id;
   }
 
+  function data($key=null) {
+    if($key !== null)
+      return $this->data[$key];
+
+    return $this->data;
+  }
+
   function column_tables($data=null) {
     $field_types = get_field_types();
 

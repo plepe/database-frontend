@@ -17,6 +17,13 @@ class DB_Entry {
     $this->load();
   }
 
+  function data($key=null) {
+    if($key !== null)
+      return $this->data[$key];
+
+    return $this->data;
+  }
+
   /**
    * load - (re-)load data from database
    */
