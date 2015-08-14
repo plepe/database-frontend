@@ -8,7 +8,7 @@ class Page_admin_table_fields extends Page {
     }
 
     foreach(get_db_tables() as $t)
-      $tables_data[$t->id] = $t->view();
+      $tables_data[$t->id] = $t->data('name') ?: $t->id;
 
     $field_types = get_field_types();
 
