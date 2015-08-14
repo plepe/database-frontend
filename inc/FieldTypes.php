@@ -17,6 +17,10 @@ class FieldType {
     return null;
   }
 
+  function need_values() {
+    return false;
+  }
+
   function default_format($key) {
     return "{{ {$key} }}";
   }
@@ -42,10 +46,18 @@ class FieldType_radio extends FieldType {
   function is_multiple() {
     return false;
   }
+
+  function need_values() {
+    return true;
+  }
 }
 
 class FieldType_checkbox extends FieldType {
   function is_multiple() {
+    return true;
+  }
+
+  function need_values() {
     return true;
   }
 }
@@ -53,6 +65,10 @@ class FieldType_checkbox extends FieldType {
 class FieldType_select extends FieldType {
   function db_type() {
     return 'text';
+  }
+
+  function need_values() {
+    return true;
   }
 }
 

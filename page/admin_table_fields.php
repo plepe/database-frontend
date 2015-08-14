@@ -10,13 +10,15 @@ class Page_admin_table_fields extends Page {
     foreach(get_db_tables() as $t)
       $tables_data[$t->id] = $t->view();
 
-    $has_values = array("check", "type", array("or", array("is", "radio"), array("is", "select"), array("is", "checkbox"), array("is", "text"), array("is", "autocomplete"), array("is", "keywords")));
     $field_types = get_field_types();
 
+    $has_values = array("check", "type", array("or"));
     $show_depend_count = array("check", "type", array("or"));
     foreach($field_types as $k=>$type) {
       if($type->is_multiple() === null)
 	$show_depend_count[2][] = array("is", $k);
+      if($type->need_values())
+	$has_values[2][] = array("is", $k);
     }
 
     $def = array(
@@ -90,6 +92,8 @@ EOT
 	      'placeholder' => 'No reference, specify possible values',
 	      'desc'	=> 'Use this to reference another table as possibles values for this field.',
 	      'values'	=> $tables_data,
+	      'show_depend'=>$has_values,
+	      'include_data'=>$has_values,
 	    ),
 	    'values'	=>array(
 	      'name'	=>"Values",
