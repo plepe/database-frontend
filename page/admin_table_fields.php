@@ -70,19 +70,6 @@ EOT
 	      }, $field_types),
 	      'default'     =>'text',
 	    ),
-	    'values'	=>array(
-	      'name'	=>"Values",
-	      'type'	=>"hash",
-	      'def'	=>array(
-		'name'	=>lang('form:hash_value_field_name'),
-		'type'	=>"text",
-	      ),
-	      'default'=>0,
-	      'button:add_element' => "Add value",
-	      'show_depend'=>$has_values,
-	      // 'include_data'=>array('and', array('not_empty'), $has_values),
-	      'include_data'=>$has_values,
-	    ),
 	    'count' => array(
 	      'type' => 'select',
 	      'name' => 'Multiple values',
@@ -96,15 +83,28 @@ EOT
 	      'default' => 'no',
 	      'req' => true,
 	    ),
-	    'old_key' => array(
-	      'type' => 'hidden',
-	    ),
 	    'reference' => array(
 	      'type'	=> 'select',
 	      'req'		=> false,
 	      'name'	=> 'Reference',
 	      'desc'	=> 'Use this to reference another table as possibles values for this field. Leave \'Values\' empty.',
 	      'values'	=> $tables_data,
+	    ),
+	    'values'	=>array(
+	      'name'	=>"Values",
+	      'type'	=>"hash",
+	      'def'	=>array(
+		'name'	=>lang('form:hash_value_field_name'),
+		'type'	=>"text",
+	      ),
+	      'default'=>0,
+	      'button:add_element' => "Add value",
+	      'show_depend'=>$has_values,
+	      // 'include_data'=>array('and', array('not_empty'), $has_values),
+	      'include_data'=>$has_values,
+	    ),
+	    'old_key' => array(
+	      'type' => 'hidden',
 	    ),
 	  ),
 	),
