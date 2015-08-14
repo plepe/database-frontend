@@ -15,6 +15,10 @@ class Page_admin_table_general extends Page {
 	  'name'	=> 'ID',
 	  'req'		=> true,
 	),
+	'name' => array(
+	  'type'	=> 'text',
+	  'name'	=> 'Name',
+	),
     );
 
     $form = new form("data", $def);

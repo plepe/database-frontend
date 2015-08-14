@@ -13,7 +13,7 @@
       <ul>
       {% for table in data.tables %}
       <li>
-      <strong>{{ table.id }}</strong>
+      <strong>{{ table.name|default(table.id) }}</strong>
       <a class='LinkButton' href='{{ page_url({ 'page': 'admin_table', 'table':table.id }) }}'>Edit</a>
       </li></br>
       {% endfor %}
