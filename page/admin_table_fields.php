@@ -56,6 +56,11 @@ EOT
 	      'name'	=>"Name",
 	      'type'	=>"text",
 	    ),
+	    'desc'	=>array(
+	      'name'	=>"Description",
+	      'type'	=>"textarea",
+	      'desc'	=>"Instructions for using this field (may contain HTML)",
+	    ),
 	    'type'	=>array(
 	      'name'	=>"Type",
 	      'type'	=>"select",
