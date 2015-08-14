@@ -1,0 +1,7 @@
+DirectoryIndex .htaccess
+Options None
+<IfModule mod_rewrite.c>
+RewriteEngine off
+</IfModule>
+Order allow,deny
+Deny from all

@@ -4,11 +4,17 @@ $app = array(
   'title' => "database-frontend",
 );
 
+//// Basic configuration ////
+// $data_path - all user content (beside the database) will be saved there.
+// It has to be writeable by the webserver. You might consider to use a
+// directory outside the webserver accessible data for security reasons.
+$data_path = "data/";
+
 //// Configure database ////
 // Example: SQLite
 #$db = array(
 #  'type' => 'sqlite',
-#  'path' => 'db/db.db',
+#  'path' => "{$data_path}/db.db",
 #);
 
 // Example: MYSQL
@@ -22,7 +28,7 @@ $app = array(
 
 // Configuration for Git History
 $git = array(
-  'path' => 'db/git/',
+  'path' => "{$data_path}/git/",
 );
 
 // Authentication configuration
