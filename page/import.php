@@ -22,6 +22,21 @@ class Page_import {
 	'path' => 'db/',
 	'req' => true,
       ),
+      'delimiter' => array(
+        'name' => "CSV Delimiter",
+	'type' => 'text',
+	'default' => ',',
+      ),
+      'enclosure' => array(
+        'name' => "CSV Enclosure Character",
+	'type' => 'text',
+	'default' => '"',
+      ),
+      'escape' => array(
+        'name' => "CSV Escape Character",
+	'type' => 'text',
+	'default' => '\\',
+      ),
     );
 
     $form = new form('data', $form_def);
@@ -35,7 +50,7 @@ class Page_import {
 
       // analyze file
       $f = fopen('db/' . $data['file']['name'], "r");
-      $header = fgetcsv($f);
+      $header = fgetcsv($f, 0, $data['delimiter'], $data['enclosure'], $data['escape']);
       $fields = array();
 
       foreach($header as $col) {
@@ -52,7 +67,7 @@ class Page_import {
       $table = new DB_Table(null);
       $table->save($create_data, false);
 
-      while($r = fgetcsv($f)) {
+      while($r = fgetcsv($f, 0, $data['delimiter'], $data['enclosure'], $data['escape'])) {
 	$d = array();
 	foreach($r as $i=>$ri) {
 	  $d[$fields[$i]] = $ri;
