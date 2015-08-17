@@ -2,7 +2,9 @@
 class Page_import {
   function content() {
     if(!base_access('admin')) {
-      page_reload(array("page" => "login", "return_to" => array("page" => "import")));
+      global $auth;
+      if(!$auth->is_logged_in())
+	page_reload(array("page" => "login", "return_to" => array("page" => "import")));
       return "Permission denied.";
     }
 

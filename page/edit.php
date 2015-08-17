@@ -2,7 +2,9 @@
 class Page_edit extends Page {
   function content($param) {
     if(!base_access('view')) {
-      page_reload(array("page" => "login", "return_to" => array("page" => "edit", "table" => $param['table'], "id" => $param['id'])));
+      global $auth;
+      if(!$auth->is_logged_in())
+	page_reload(array("page" => "login", "return_to" => array("page" => "edit", "table" => $param['table'], "id" => $param['id'])));
       return "Permission denied.";
     }
 

@@ -2,7 +2,9 @@
 class Page_admin_table_views extends Page {
   function content($param) {
      if(!base_access('admin')) {
-      page_reload(array("page" => "login", "return_to" => array("page" => "admin_table_views", "table" => $param['table'], "view" => $param['view'])));
+      global $auth;
+      if(!$auth->is_logged_in())
+	page_reload(array("page" => "login", "return_to" => array("page" => "admin_table_views", "table" => $param['table'], "view" => $param['view'])));
       return "Permission denied.";
     }
 
