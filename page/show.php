@@ -1,6 +1,11 @@
 <?php
 class Page_show extends Page {
   function content($param) {
+    if(!base_access('view')) {
+      page_reload(array("page" => "login", "return_to" => array("page" => "show", "table" => $param['table'], "id" => $param['id'])));
+      return "Permission denied.";
+    }
+
     $ret = "";
 
     $table = get_db_table($param['table']);

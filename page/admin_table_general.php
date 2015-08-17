@@ -1,6 +1,11 @@
 <?php
 class Page_admin_table_general extends Page {
   function content($param) {
+    if(!base_access('admin')) {
+      page_reload(array("page" => "login", "return_to" => array("page" => "admin_table_general", "table" => $param['table'])));
+      return "Permission denied.";
+    }
+
     if(isset($param['table'])) {
       $table = get_db_table($param['table']);
     }

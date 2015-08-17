@@ -1,6 +1,11 @@
 <?php
 class Page_admin {
   function content() {
+    if(!base_access('admin')) {
+      page_reload(array("page" => "login", "return_to" => array("page" => "admin")));
+      return "Permission denied.";
+    }
+
     $data = array(
       'tables' => array()
     );

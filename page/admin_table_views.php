@@ -1,7 +1,12 @@
 <?php
 class Page_admin_table_views extends Page {
   function content($param) {
-    $table = get_db_table($param['table']);
+     if(!base_access('admin')) {
+      page_reload(array("page" => "login", "return_to" => array("page" => "admin_table_views", "table" => $param['table'], "view" => $param['view'])));
+      return "Permission denied.";
+    }
+
+   $table = get_db_table($param['table']);
     $keys = $table->def();
     $keys['__custom__'] = 'Custom Field';
 

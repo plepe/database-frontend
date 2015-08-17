@@ -1,6 +1,11 @@
 <?php
 class Page_list extends Page {
   function content($param) {
+    if(!base_access('view')) {
+      page_reload(array("page" => "login", "return_to" => array("page" => "list", "table" => $param['table'])));
+      return "Permission denied.";
+    }
+
     $table = get_db_table($param['table']);
     if(!$table)
       return null;

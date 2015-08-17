@@ -1,6 +1,11 @@
 <?php
 class Page_import {
   function content() {
+    if(!base_access('admin')) {
+      page_reload(array("page" => "login", "return_to" => array("page" => "import")));
+      return "Permission denied.";
+    }
+
     global $db_conn;
 
     $form_def = array(
