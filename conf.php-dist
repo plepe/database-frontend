@@ -68,5 +68,16 @@ $auth_config = array(
 // Note: '-d' uses a weak password algorithm; other htpasswd algorithms are not
 // compatible with PHP as of version 5.4
 
+// The access configuration defines basic access rules.
+// The following values can be used:
+// * null: doesn't need any special access
+// * true: need to be logged in
+// * 'user@domain': access is allowed only for user@domain
+// * '&group@domain': access is allowed only for users which are members of the group
+$base_access = array(
+  'index' => null, // access to index page
+  'admin' => true, // access to admin page
+);
+
 // Debugging
 $debug = false;
