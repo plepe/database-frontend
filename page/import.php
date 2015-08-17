@@ -37,6 +37,14 @@ class Page_import {
 	'type' => 'text',
 	'default' => '\\',
       ),
+      'encoding' => array(
+        'name' => "CSV Encoding",
+	'type' => 'select',
+	'default' => 'UTF-8',
+	'values' => array(
+	  'UTF-8', 'ISO-8859-1',
+	),
+      ),
     );
 
     $form = new form('data', $form_def);
@@ -54,6 +62,13 @@ class Page_import {
       $fields = array();
 
       foreach($header as $col) {
+	if($data['encoding'] == "UTF-8")
+	  ; // do nothing
+	elseif($data['encoding'] == "ISO-8859-1")
+	  $col = utf8_encode($col);
+	else
+	  $col = iconv($data['encoding'], "UTF-8", $col);
+
 	$create_data['fields'][str_to_id($col)] = array(
 	  'type' => 'text',
 	  'name' => $col,
@@ -70,6 +85,13 @@ class Page_import {
       while($r = fgetcsv($f, 0, $data['delimiter'], $data['enclosure'], $data['escape'])) {
 	$d = array();
 	foreach($r as $i=>$ri) {
+	  if($data['encoding'] == "UTF-8")
+	    ; // do nothing
+	  elseif($data['encoding'] == "ISO-8859-1")
+	    $ri = utf8_encode($ri);
+	  else
+	    $ri = iconv($data['encoding'], "UTF-8", $ri);
+
 	  $d[$fields[$i]] = $ri;
 	}
 
