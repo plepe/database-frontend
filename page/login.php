@@ -46,7 +46,11 @@ class Page_login {
 	  $login_error = implode("<br>", $result);
       }
       else {
-	page_reload(array());
+	if(array_key_exists('return_to', $param))
+	  page_reload($param['return_to']);
+	else
+	  page_reload(array());
+
 	return "Login successful";
       }
     }
@@ -60,6 +64,14 @@ class Page_login {
       $ret .= "<div id='login_error'>$login_error</div>";
     }
     $ret .= "<input type='submit' value='Login' />\n";
+
+    if(array_key_exists('return_to', $param)) {
+      $ret .= "<input type='hidden' name='return_to' value='" . htmlspecialchars(page_url($param['return_to'])) . "'/>";
+    }
+    elseif(array_key_exists('HTTP_REFERER', $_SERVER)) {
+      $ret .= "<input type='hidden' name='return_to' value='" . htmlspecialchars($_SERVER['HTTP_REFERER']) . "'/>";
+    }
+
     $ret .= "</form>\n";
 
     return $ret;
