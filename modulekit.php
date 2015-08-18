@@ -23,6 +23,7 @@ $include = array(
     'inc/View_PlainHTML.php',
     'inc/FieldTypes.php',
     'inc/Changeset.php',
+    'inc/Field.php',
     'page/*',
   ),
   'js' => array(
