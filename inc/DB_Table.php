@@ -47,6 +47,25 @@ class DB_Table {
     return $this->data;
   }
 
+  /**
+   * return list of fields
+   */
+  function fields() {
+    if(!isset($this->_fields)) {
+      $this->_fields = array();
+
+      foreach($this->def as $column_id=>$column_def) {
+        $type = "Field";
+        if(isset($column_def['type']) && class_exists("Field_{$column_def['type']}"))
+          $type = "Field_{$column_def['type']}";
+
+        $this->_fields[$column_id] = new $type($column_id, $column_def, $this);
+      }
+    }
+
+    return $this->_fields;
+  }
+
   function column_tables($data=null) {
     $field_types = get_field_types();
 
