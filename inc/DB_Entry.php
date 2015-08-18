@@ -52,11 +52,12 @@ class DB_Entry {
    * save - save new data to database for current object
    * $data: a hash array with key/values to update. if a key does not exist in
    *   $data, it will not be modified in the database.
+   * $changeset: either a message (string) or a Changeset
    * Return:
    *   true: saving successful
    *   <string>: error message
    */
-  function save($data, $message="") {
+  function save($data, $changeset=null) {
     global $db_conn;
     $set = array();
     $cmds = array();
@@ -178,7 +179,10 @@ class DB_Entry {
 
     $this->load();
 
-    git_dump($message);
+    if(($changeset === null) || is_string($changeset))
+      $changeset = new Changeset($changeset);
+
+    $changeset->add($this);
 
     $db_conn->query("commit");
 
@@ -187,8 +191,9 @@ class DB_Entry {
 
   /**
    * remove - remove this entry
+   * $changeset: either a message (string) or a Changeset
    */
-  function remove($message="") {
+  function remove($changeset=null) {
     global $db_conn;
     global $debug;
     $field_types = get_field_types();
@@ -211,7 +216,10 @@ class DB_Entry {
 
     $res = $db_conn->query($query);
 
-    git_dump($message);
+    if(($changeset === null) || is_string($changeset))
+      $changeset = new Changeset($changeset);
+
+    $changeset->add($this);
 
     $db_conn->query("commit");
   }

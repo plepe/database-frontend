@@ -439,11 +439,12 @@ class DB_Table {
    * $data: a hash array with key/values to update. if a key does not exist in
    *   $data, it will not be modified in the database. if the value is null,
    *   the key will be removed.
+   * $changeset: either a message (string) or a Changeset
    * Return:
    *   true: saving successful
    *   <string>: error message
    */
-  function save($data, $message="") {
+  function save($data, $changeset=null) {
     global $db_conn;
 
     $new_data = $this->data;
@@ -493,7 +494,11 @@ class DB_Table {
     $this->data = $data;
     $this->def = $data['fields'];
 
-    git_dump($message);
+    if(($changeset === null) || is_string($changeset))
+      $changeset = new Changeset($changeset);
+
+    var_dump($changeset);
+    $changeset->add($this);
 
     return true;
   }

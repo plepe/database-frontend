@@ -1,13 +1,12 @@
 <?php
 /**
  * git_dump() - save all data to the git repository
- * parameter: message: git commit message; if message is boolean false, do not save to git repository
+ * parameter: $changeset - see class Changeset
  */
-function git_dump($message="") {
+function git_dump($changeset) {
   global $git;
 
-  if($message === false)
-    return;
+  $message = $changeset->message;
 
   if(!isset($git))
     return;
@@ -62,3 +61,5 @@ function git_dump($message="") {
 
   chdir($cwd);
 }
+
+register_hook("changeset_commit", "git_dump");
