@@ -72,7 +72,7 @@ class DB_Table {
   /**
    * updates database structure to specified data
    */
-  function update_database_structure($data) {
+  function update_database_structure($data, $changeset) {
     global $db_conn;
     $columns = array();
     $constraints = array();
@@ -245,8 +245,7 @@ class DB_Table {
     $cmds = array_merge($cmds, $drop_cmds);
 
     // start
-    $db_conn->query("begin;");
-    $db_conn->disableForeignKeyChecks();
+    $changeset->disableForeignKeyChecks();
 
     global $debug;
     if(isset($debug) && $debug) {
@@ -270,9 +269,7 @@ class DB_Table {
       }
     }
 
-    // finish
-    $db_conn->enableForeignKeyChecks();
-    $db_conn->query("commit;");
+    $changeset->enableForeignKeyChecks();
   }
 
   function def() {
@@ -492,7 +489,7 @@ class DB_Table {
       $this->id = $data['id'];
     }
 
-    $this->update_database_structure($data);
+    $this->update_database_structure($data, $changeset);
 
     $this->data = $data;
     $this->def = $data['fields'];

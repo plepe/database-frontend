@@ -9,6 +9,20 @@ class Changeset {
     $db_conn->beginTransaction();
   }
 
+  function disableForeignKeyChecks() {
+    global $db_conn;
+
+    $db_conn->disableForeignKeyChecks();
+    $this->foreign_key_checks_disabled = true;
+  }
+
+  function enableForeignKeyChecks() {
+    global $db_conn;
+
+    $db_conn->enableForeignKeyChecks();
+    unset($this->foreign_key_checks_disabled);
+  }
+
   function add($object) {
     if($this->status === false) {
       $this->open();
@@ -26,12 +40,18 @@ class Changeset {
     global $db_conn;
     call_hooks("changeset_rollback", $this);
 
+    if(isset($this->foreign_key_checks_disabled))
+      $db_conn->enableForeignKeyChecks();
+
     $this->status = false;
     $db_conn->rollBack();
   }
 
   function commit() {
     global $db_conn;
+
+    if(isset($this->foreign_key_checks_disabled))
+      $db_conn->enableForeignKeyChecks();
 
     $this->status = false;
     $db_conn->commit();
