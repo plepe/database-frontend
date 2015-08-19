@@ -77,7 +77,7 @@ class DB_Entry {
 
     if($new_id != $this->id) {
       $res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->type) . " where " . $db_conn->quoteIdent('id') . "=" . $db_conn->quote($new_id));
-      if($res->rowCount()) {
+      if($res->fetch()) {
 	$res->closeCursor();
 	$changeset->rollBack();
 
