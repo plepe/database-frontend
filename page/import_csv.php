@@ -1,10 +1,10 @@
 <?php
-class Page_import {
+class Page_import_csv {
   function content() {
     if(!base_access('admin')) {
       global $auth;
       if(!$auth->is_logged_in())
-	page_reload(array("page" => "login", "return_to" => array("page" => "import")));
+	page_reload(array("page" => "login", "return_to" => array("page" => "import_csv")));
       return "Permission denied.";
     }
 
@@ -110,7 +110,7 @@ class Page_import {
     }
 
     return array(
-      'template' => 'import.html',
+      'template' => 'import_csv.html',
       'form' => $form,
     );
   }
