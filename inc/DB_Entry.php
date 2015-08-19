@@ -31,7 +31,7 @@ class DB_Entry {
     global $db_conn;
     $field_types = get_field_types();
 
-    $db_conn->query("begin");
+    $db_conn->beginTransaction();
 
     $res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->type) . " where id=" . $db_conn->quote($this->id));
     $this->data = $res->fetch();
@@ -45,7 +45,7 @@ class DB_Entry {
       $res->closeCursor();
     }
 
-    $db_conn->query("commit");
+    $db_conn->commit();
   }
 
   /**
@@ -70,13 +70,14 @@ class DB_Entry {
     else
       $new_id = $this->id;
 
-    $db_conn->query("begin");
+    if(($changeset === null) || is_string($changeset))
+      $changeset = new Changeset($changeset);
 
     if($new_id != $this->id) {
       $res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->type) . " where " . $db_conn->quoteIdent('id') . "=" . $db_conn->quote($new_id));
       if($res->rowCount()) {
 	$res->closeCursor();
-	$db_conn->query("rollback");
+	$changeset->rollBack();
 
 	return "Entry already exists.";
       }
@@ -179,12 +180,7 @@ class DB_Entry {
 
     $this->load();
 
-    if(($changeset === null) || is_string($changeset))
-      $changeset = new Changeset($changeset);
-
     $changeset->add($this);
-
-    $db_conn->query("commit");
 
     return true;
   }
@@ -198,7 +194,8 @@ class DB_Entry {
     global $debug;
     $field_types = get_field_types();
 
-    $db_conn->query("begin");
+    if(($changeset === null) || is_string($changeset))
+      $changeset = new Changeset($changeset);
 
     foreach(get_db_table($this->type)->column_tables() as $table) {
       $query = "delete from " . $db_conn->quoteIdent($this->type . '_' . $table) . " where id=" . $db_conn->quote($this->id);
@@ -216,12 +213,7 @@ class DB_Entry {
 
     $res = $db_conn->query($query);
 
-    if(($changeset === null) || is_string($changeset))
-      $changeset = new Changeset($changeset);
-
     $changeset->add($this);
-
-    $db_conn->query("commit");
   }
 
   /**

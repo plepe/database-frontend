@@ -480,6 +480,9 @@ class DB_Table {
       }
     }
 
+    if(($changeset === null) || is_string($changeset))
+      $changeset = new Changeset($changeset);
+
     if($db_conn->query($query) === false) {
       return db_return_error_info($db_conn);
     }
@@ -494,10 +497,6 @@ class DB_Table {
     $this->data = $data;
     $this->def = $data['fields'];
 
-    if(($changeset === null) || is_string($changeset))
-      $changeset = new Changeset($changeset);
-
-    var_dump($changeset);
     $changeset->add($this);
 
     return true;
