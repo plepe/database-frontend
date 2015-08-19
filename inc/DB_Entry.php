@@ -12,12 +12,14 @@ class DB_Entry {
     else {
       $this->id = $data['id'];
       $this->data = $data;
+      $this->load();
     }
-
-    $this->load();
   }
 
   function data($key=null) {
+    if($this->data === null)
+      $this->load();
+
     if($key !== null)
       return $this->data[$key];
 
@@ -178,7 +180,7 @@ class DB_Entry {
     }
     $cmds = array();
 
-    $this->load();
+    $this->data = null;
 
     $changeset->add($this);
 
