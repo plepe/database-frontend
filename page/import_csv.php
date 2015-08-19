@@ -77,7 +77,6 @@ class Page_import_csv {
 	$fields[] = str_to_id($col);
       }
 
-      $db_conn->query("begin");
       db_table_init();
 
       $changeset = new Changeset($param['message']);
@@ -102,7 +101,6 @@ class Page_import_csv {
 	$entry = new DB_Entry($data['table'], null);
 	$entry->save($d, $changeset);
       }
-      $db_conn->query("commit");
 
       $changeset->commit();
 
