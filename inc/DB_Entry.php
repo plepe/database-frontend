@@ -12,12 +12,14 @@ class DB_Entry {
     else {
       $this->id = $data['id'];
       $this->data = $data;
+      $this->load();
     }
-
-    $this->load();
   }
 
   function data($key=null) {
+    if($this->data === null)
+      $this->load();
+
     if($key !== null)
       return $this->data[$key];
 
@@ -31,7 +33,7 @@ class DB_Entry {
     global $db_conn;
     $field_types = get_field_types();
 
-    $db_conn->query("begin");
+    $db_conn->beginTransaction();
 
     $res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->type) . " where id=" . $db_conn->quote($this->id));
     $this->data = $res->fetch();
@@ -45,18 +47,19 @@ class DB_Entry {
       $res->closeCursor();
     }
 
-    $db_conn->query("commit");
+    $db_conn->commit();
   }
 
   /**
    * save - save new data to database for current object
    * $data: a hash array with key/values to update. if a key does not exist in
    *   $data, it will not be modified in the database.
+   * $changeset: either a message (string) or a Changeset
    * Return:
    *   true: saving successful
    *   <string>: error message
    */
-  function save($data, $message="") {
+  function save($data, $changeset=null) {
     global $db_conn;
     $set = array();
     $cmds = array();
@@ -69,13 +72,14 @@ class DB_Entry {
     else
       $new_id = $this->id;
 
-    $db_conn->query("begin");
+    if(($changeset === null) || is_string($changeset))
+      $changeset = new Changeset($changeset);
 
     if($new_id != $this->id) {
       $res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->type) . " where " . $db_conn->quoteIdent('id') . "=" . $db_conn->quote($new_id));
-      if($res->rowCount()) {
+      if($res->fetch()) {
 	$res->closeCursor();
-	$db_conn->query("rollback");
+	$changeset->rollBack();
 
 	return "Entry already exists.";
       }
@@ -176,24 +180,24 @@ class DB_Entry {
     }
     $cmds = array();
 
-    $this->load();
+    $this->data = null;
 
-    git_dump($message);
-
-    $db_conn->query("commit");
+    $changeset->add($this);
 
     return true;
   }
 
   /**
    * remove - remove this entry
+   * $changeset: either a message (string) or a Changeset
    */
-  function remove($message="") {
+  function remove($changeset=null) {
     global $db_conn;
     global $debug;
     $field_types = get_field_types();
 
-    $db_conn->query("begin");
+    if(($changeset === null) || is_string($changeset))
+      $changeset = new Changeset($changeset);
 
     foreach(get_db_table($this->type)->column_tables() as $table) {
       $query = "delete from " . $db_conn->quoteIdent($this->type . '_' . $table) . " where id=" . $db_conn->quote($this->id);
@@ -211,9 +215,7 @@ class DB_Entry {
 
     $res = $db_conn->query($query);
 
-    git_dump($message);
-
-    $db_conn->query("commit");
+    $changeset->add($this);
   }
 
   /**

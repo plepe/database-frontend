@@ -72,7 +72,7 @@ class DB_Table {
   /**
    * updates database structure to specified data
    */
-  function update_database_structure($data) {
+  function update_database_structure($data, $changeset) {
     global $db_conn;
     $columns = array();
     $constraints = array();
@@ -245,8 +245,7 @@ class DB_Table {
     $cmds = array_merge($cmds, $drop_cmds);
 
     // start
-    $db_conn->query("begin;");
-    $db_conn->disableForeignKeyChecks();
+    $changeset->disableForeignKeyChecks();
 
     global $debug;
     if(isset($debug) && $debug) {
@@ -270,9 +269,7 @@ class DB_Table {
       }
     }
 
-    // finish
-    $db_conn->enableForeignKeyChecks();
-    $db_conn->query("commit;");
+    $changeset->enableForeignKeyChecks();
   }
 
   function def() {
@@ -439,11 +436,12 @@ class DB_Table {
    * $data: a hash array with key/values to update. if a key does not exist in
    *   $data, it will not be modified in the database. if the value is null,
    *   the key will be removed.
+   * $changeset: either a message (string) or a Changeset
    * Return:
    *   true: saving successful
    *   <string>: error message
    */
-  function save($data, $message="") {
+  function save($data, $changeset=null) {
     global $db_conn;
 
     $new_data = $this->data;
@@ -479,6 +477,9 @@ class DB_Table {
       }
     }
 
+    if(($changeset === null) || is_string($changeset))
+      $changeset = new Changeset($changeset);
+
     if($db_conn->query($query) === false) {
       return db_return_error_info($db_conn);
     }
@@ -488,12 +489,12 @@ class DB_Table {
       $this->id = $data['id'];
     }
 
-    $this->update_database_structure($data);
+    $this->update_database_structure($data, $changeset);
 
     $this->data = $data;
     $this->def = $data['fields'];
 
-    git_dump($message);
+    $changeset->add($this);
 
     return true;
   }

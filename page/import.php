@@ -79,8 +79,12 @@ class Page_import {
 
       $db_conn->query("begin");
       db_table_init();
+
+      $changeset = new Changeset($param['message']);
+      $changeset->open();
+
       $table = new DB_Table(null);
-      $table->save($create_data, false);
+      $table->save($create_data, $changeset);
 
       while($r = fgetcsv($f, 0, $data['delimiter'], $data['enclosure'], $data['escape'])) {
 	$d = array();
@@ -96,11 +100,11 @@ class Page_import {
 	}
 
 	$entry = new DB_Entry($data['table'], null);
-	$entry->save($d, false);
+	$entry->save($d, $changeset);
       }
       $db_conn->query("commit");
 
-      git_dump($param['message']);
+      $changeset->commit();
 
       page_reload(page_url(array("page" => "list", "table" => $data['table'])));
     }
