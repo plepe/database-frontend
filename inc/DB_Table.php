@@ -534,6 +534,17 @@ class DB_Table {
     $cmds[] = "drop table if exists " . $db_conn->quoteIdent($this->id);
     $cmds[] = "delete from __system__ where id=" . $db_conn->quote($this->id);
 
+    global $debug;
+    if(isset($debug) && $debug) {
+      $debug_msg  = "SQL commands for removing database table:\n";
+      $debug_msg .= "<pre wrap>\n";
+      $debug_msg .= implode("\n\n", $cmds);
+      $debug_msg .= "</pre>\n";
+
+      print $debug_msg;
+      messages_debug($debug_msg);
+    }
+
     foreach($cmds as $cmd) {
       $res = $db_conn->query($cmd);
       if($res === false) {
