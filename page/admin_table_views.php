@@ -63,6 +63,16 @@ class Page_admin_table_views extends Page {
 	    'name'	  => 'Sortable',
 	    'default'     => true,
 	  ),
+	  'show_priority' => array(
+	    'name' => 'Include in list view',
+	    'type' => 'select',
+	    'placeholder' => 'always',
+	    'values' => array(
+	      ' 3' => 'high priority',
+	      ' 2' => 'medium priority',
+	      ' 1' => 'low priority',
+	    ),
+	  ),
 	),
       ),
       'format_header'   => array(

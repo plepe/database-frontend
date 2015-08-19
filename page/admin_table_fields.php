@@ -121,6 +121,16 @@ EOT
 	      // 'include_data'=>array('and', array('not_empty'), $has_values),
 	      'include_data'=>$has_values,
 	    ),
+	    'show_priority' => array(
+	      'name' => 'Include in default list view',
+	      'type' => 'select',
+	      'placeholder' => 'always',
+	      'values' => array(
+		' 3' => 'high priority',
+		' 2' => 'medium priority',
+		' 1' => 'low priority',
+	      ),
+	    ),
 	    'old_key' => array(
 	      'type' => 'hidden',
 	    ),
