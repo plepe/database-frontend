@@ -494,6 +494,11 @@ class DB_Table {
     $this->data = $data;
     $this->def = $data['fields'];
 
+    // update cache
+    global $db_table_cache;
+    unset($db_table_cache[$old_id]);
+    $db_table_cache[$this->id] = $this;
+
     $changeset->add($this);
 
     return true;
@@ -538,6 +543,10 @@ class DB_Table {
 	throw new Exception("DB_Table::remove(): Failure executing '{$cmd}', " . print_r($db_conn->errorInfo(), 1));
       }
     }
+
+    // remove table from cache
+    global $db_table_cache;
+    unset($db_table_cache[$this->id]);
 
     $changeset->add($this);
 
