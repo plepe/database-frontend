@@ -8,6 +8,14 @@ class Page_admin_table extends Page {
       return "Permission denied.";
     }
 
+    if(array_key_exists('action', $param)) {
+      $page = "content_{$param['action']}";
+      if(!method_exists($this, $page))
+	return false;
+
+      return $this->$page($param);
+    }
+
     if(isset($param['table'])) {
       $table = get_db_table($param['table']);
       if(!$table)
@@ -52,5 +60,22 @@ class Page_admin_table extends Page {
       'form' => $form,
       'data' => $table ? $table->view() : null,
     );
+  }
+
+  function content_drop($param) {
+    $ret = "";
+    $table = get_db_table($param['table']);
+
+    if(!$table) {
+      $ret .= "Table does not exist.";
+    }
+    else {
+      $table->remove();
+      $ret .= "Table dropped.";
+    }
+
+    $ret .= " <a href='?page=admin'>Back</a>";
+
+    return $ret;
   }
 }

@@ -502,6 +502,47 @@ class DB_Table {
   function view() {
     return $this->data;
   }
+
+  /**
+   * remove the table and all sub tables
+   */
+  function remove($changeset=null) {
+    global $db_conn;
+    $field_types = get_field_types();
+
+    if(($changeset === null) || is_string($changeset))
+      $changeset = new Changeset($changeset);
+
+    $table_name_quoted = $db_conn->quoteIdent($this->id);
+    $cmds = array();
+
+    foreach($this->data('fields') as $column=>$column_def) {
+      if(array_key_exists($column_def['type'], $field_types))
+	$field_type = $field_types[$column_def['type']];
+      else
+	$field_type = new FieldType();
+
+      if(($field_type->is_multiple() === true) || ($column_def['count']))
+	$cmds[] = "drop table if exists " . $db_conn->quoteIdent("{$this->id}_{$column}");
+    }
+
+    $cmds[] = "drop table if exists " . $db_conn->quoteIdent($this->id);
+    $cmds[] = "delete from __system__ where id=" . $db_conn->quote($this->id);
+
+    foreach($cmds as $cmd) {
+      $res = $db_conn->query($cmd);
+      if($res === false) {
+	print "Failure executing: {$cmd}";
+	print_r($db_conn->errorInfo());
+
+	throw new Exception("DB_Table::remove(): Failure executing '{$cmd}', " . print_r($db_conn->errorInfo(), 1));
+      }
+    }
+
+    $changeset->add($this);
+
+    return true;
+  }
 }
 
 function get_db_table($type) {
