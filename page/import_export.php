@@ -19,10 +19,15 @@ class Page_import_export extends Page {
       $data = $form->get_data();
       $data = $data['json'];
 
+      $changeset = new Changeset();
+      $changeset->open();
+
       foreach($data['__system__'] as $d) {
 	$table = new DB_Table();
-	$table->save($d);
+	$table->save($d, $changeset);
       }
+
+      $changeset->disableForeignKeyChecks();
 
       foreach($data as $k => $entries) {
 	if($k == "__system__")
@@ -30,9 +35,12 @@ class Page_import_export extends Page {
 	
 	foreach($entries as $d) {
 	  $ob = new DB_Entry($k, null);
-	  $ob->save($d);
+	  $ob->save($d, $changeset);
 	}
       }
+
+      $changeset->enableForeignKeyChecks();
+      $changeset->commit();
     }
 
     if($form->is_empty()) {
