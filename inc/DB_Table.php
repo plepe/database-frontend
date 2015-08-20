@@ -49,6 +49,7 @@ class DB_Table {
 
   /**
    * return list of fields
+   * @return Field[] all fields of the table
    */
   function fields() {
     if(!isset($this->_fields)) {
@@ -64,6 +65,20 @@ class DB_Table {
     }
 
     return $this->_fields;
+  }
+
+  /**
+   * return the specified field or null
+   * @param string field_id field id
+   * @return Field the specified field
+   */
+  function field($field_id) {
+    $this->fields();
+
+    if(array_key_exists($field_id, $this->_fields))
+      return $this->_fields[$field_id];
+
+    return null;
   }
 
   /**
