@@ -350,48 +350,10 @@ class DB_Table {
       // special formats for default view
       // * referenced tables
       // * fields with multiple values
-      foreach($def as $column_id => $column_def) {
-	if(array_key_exists($column_def['type'], $field_types))
-	  $field_type = $field_types[$column_def['type']];
-	else
-	  $field_type = new FieldType();
+      foreach($this->fields() as $column_id=>$field) {
+	$column_def = $field->def;
 
-	if($column_def['reference']) {
-	  if(($field_type->is_multiple() === true) || ($column_def['count'])) {
-	    $def[$column_id]['format'] =
-	      "<ul class='MultipleValues'>\n" .
-	      "{% for _ in {$column_id} %}\n" .
-	      "<li><a href='{{ page_url({ \"page\": \"show\", \"table\": \"{$column_def['reference']}\", \"id\": _.id }) }}'>" .
-	      $field_type->default_format("_.id") .
-	      "</a>" .
-	      "{% endfor %}\n" .
-	      "</ul>\n";
-	  }
-	  else {
-	    $def[$column_id]['format'] = "<a href='{{ page_url({ \"page\": \"show\", \"table\": \"{$column_def['reference']}\", \"id\": {$column_id}.id }) }}'>" .
-	    $field_type->default_format("{$column_id}.id") .
-	    "</a>";
-	  }
-	}
-	else {
-	  if(($field_type->is_multiple() === true) || ($column_def['count'])) {
-	    $def[$column_id]['format'] =
-	      "<ul class='MultipleValues'>\n" .
-	      "{% for _ in {$column_id} %}\n" .
-	      "<li>" . $field_type->default_format('_') . "</li>\n" .
-	      "{% endfor %}\n" .
-	      "</ul>\n";
-	  }
-	  else {
-	    $def[$column_id]['format'] = $field_type->default_format($column_id);
-	  }
-	}
-
-	if(!array_key_exists('sortable', $column_def)) {
-	  $def[$column_id]['sortable'] = array(
-	    'type' => 'nat',
-	  );
-	}
+	$def[$column_id] = $field->view_def();
       }
 
       return array(
