@@ -128,7 +128,7 @@ class DB_Table {
       // the field has multiple values -> create a separate table
       // to hold this data.
       if(($field_type->is_multiple() === true) || ($column_def['count'])) {
-	$multifield_cmds[] = "create table " . $db_conn->quoteIdent($tmp_name . '_' . $column) . "(\n" .
+	$multifield_cmds[] = "create table " . $db_conn->quoteIdent($tmp_name . '_' . $column) . " (\n" .
 		  "  " . $db_conn->quoteIdent('id') . " {$id_type} not null,\n" .
 		  "  " . $db_conn->quoteIdent('sequence') . " int not null,\n" .
 		  "  " . $db_conn->quoteIdent('key') . " varchar(255) not null,\n" .
@@ -263,13 +263,24 @@ class DB_Table {
     }
 
     // finally, execute all commands
+    $created = array();
     foreach($cmds as $cmd) {
       $res = $db_conn->query($cmd);
       if($res === false) {
 	print "Failure executing: {$cmd}";
 	print_r($db_conn->errorInfo());
 
+        // When failing, remove __tmp__ tables
+        foreach($created as $c) {
+          $db_conn->query("drop table if exists {$c}"); // $c is already quoted
+        }
+
 	throw new Exception("DB_Table::update_database_structure(): Failure executing '{$cmd}', " . print_r($db_conn->errorInfo(), 1));
+      }
+
+      // remember all table creations in case we need to rollback
+      if(preg_match("/^create table (.*) \(/", $cmd, $m)) {
+        $created[] = $m[1];
       }
     }
 
