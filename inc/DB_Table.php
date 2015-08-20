@@ -357,8 +357,6 @@ class DB_Table {
   }
 
   function view_def($k) {
-    $field_types = get_field_types();
-
     if($k == 'default') {
       $def = $this->def();
 
@@ -398,30 +396,18 @@ class DB_Table {
     foreach($this->data['views'][$k]['fields'] as $i=>$d) {
       $key = $d['key'];
 
-      $column_def = array_key_exists($key, $def) ? $def[$key] : null;
-
-      if($column_def && array_key_exists($column_def['type'], $field_types))
-	$field_type = $field_types[$column_def['type']];
-      else
-	$field_type = new FieldType();
-
-      if($key == '__custom__')
+      if($key == '__custom__') {
 	$key = "__custom{$i}__";
+	$field = new Field(null, array(), $this);
+      }
+      else {
+	$field = $this->field($d['key']);
+      }
 
-      $d['name'] = $d['title'] ? $d['title'] : $def[$d['key']]['name'];
-
-      $is_multiple = (($field_type->is_multiple() === true) || ($column_def['count']));
+      $d['name'] = $d['title'] ? $d['title'] : $field->def['name'];
 
       if(!array_key_exists('format', $d) || ($d['format'] === null)) {
-	if($is_multiple)
-	  $d['format'] =
-	    "<ul>\n" .
-	    "{% for _ in {$key} %}\n" .
-	    "  <li>" . $field_type->default_format('_') . "</li>\n" .
-	    "{% endfor %}\n" .
-	    "</ul>\n";
-	else
-	  $d['format'] = $field_type->default_format($key);
+	$field->view_def();
       }
 
       $ret['fields'][$key] = $d;
