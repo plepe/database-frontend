@@ -71,6 +71,9 @@ class DB_Table {
 
   /**
    * updates database structure to specified data
+   * first a table __tmp__ and sub-tables __tmp___XXX are created, then these
+   * are filled with data from the old table (if it is not new) and then they
+   * are renamed to table_id resp table_id_XXX.
    */
   function update_database_structure($data, $changeset) {
     global $db_conn;
@@ -81,8 +84,7 @@ class DB_Table {
 
     $old_data = $this->data;
 
-    $old_table_name_quoted = $db_conn->quoteIdent($this->old_id);
-    $table_name_quoted = $db_conn->quoteIdent($data['id']);
+    $tmp_name = "__tmp__";
 
     // is this a new table?
     if($this->id) {
@@ -101,7 +103,9 @@ class DB_Table {
       $id_type = "varchar(255)";
     }
 
+    $cmds = array();
     $multifield_cmds = array();
+    $rename_cmds = array();
 
     // iterate over all fields and see what to do with them
     foreach($data['fields'] as $column=>$column_def) {
@@ -124,7 +128,7 @@ class DB_Table {
       // the field has multiple values -> create a separate table
       // to hold this data.
       if(($field_type->is_multiple() === true) || ($column_def['count'])) {
-	$multifield_cmds[] = "create table " . $db_conn->quoteIdent($data['id'] . '_' . $column) . "(\n" .
+	$multifield_cmds[] = "create table " . $db_conn->quoteIdent($tmp_name . '_' . $column) . "(\n" .
 		  "  " . $db_conn->quoteIdent('id') . " {$id_type} not null,\n" .
 		  "  " . $db_conn->quoteIdent('sequence') . " int not null,\n" .
 		  "  " . $db_conn->quoteIdent('key') . " varchar(255) not null,\n" .
@@ -133,7 +137,7 @@ class DB_Table {
 		  // foreign key to referenced table
 		  ((array_key_exists('reference', $column_def) && ($column_def['reference'] != null)) ? "foreign key(" . $db_conn->quoteIdent('value') . ") references " . $db_conn->quoteIdent($column_def['reference']) . "(" . $db_conn->quoteIdent('id') . "), " : "") .
 		  // /foreign key
-		  "  foreign key(" . $db_conn->quoteIdent('id') . ") references " . $db_conn->quoteIdent($data['id']) . "(" . $db_conn->quoteIdent('id') . ")" .
+		  "  foreign key(" . $db_conn->quoteIdent('id') . ") references " . $db_conn->quoteIdent($tmp_name) . "(" . $db_conn->quoteIdent('id') . ")" .
 		  ");";
 
 	// if this is not a new table, copy data from ...
@@ -149,15 +153,19 @@ class DB_Table {
 	  // ... it was already a field with multiple values
 	  if(($old_field_type->is_multiple() === true) || ($old_def['count'])) {
 	    if($db_conn->tableExists($this->old_id . '_' . $column_def['old_key']))
-	      $multifield_cmds[] = "insert into " . $db_conn->quoteIdent($data['id'] . '_' . $column) .
-		    "  select * from " . $db_conn->quoteIdent('__tmp___' . $column_def['old_key']) . ";";
+	      $multifield_cmds[] = "insert into " . $db_conn->quoteIdent($tmp_name . '_' . $column) .
+		    "  select * from " . $db_conn->quoteIdent($this->old_id . '_' . $column_def['old_key']) . ";";
 	  }
 	  // ... it was a field with a single value
 	  else {
-	    $multifield_cmds[] = "insert into " . $db_conn->quoteIdent($data['id'] . '_' . $column) .
-	          "  select id, 0, '0', " . $db_conn->quoteIdent($column_def['old_key']) . " from __tmp__;";
+	    $multifield_cmds[] = "insert into " . $db_conn->quoteIdent($tmp_name . '_' . $column) .
+	          "  select id, 0, '0', " . $db_conn->quoteIdent($column_def['old_key']) . " from " . $db_conn->quoteIdent($this->old_id);
 	  }
 	}
+
+        // now finally, we can rename the new table to its final name
+        $rename_cmds[] = "alter table " . $db_conn->quoteIdent($tmp_name . '_' . $column) .
+          " rename to " . $db_conn->quoteIdent($data['id'] . '_' . $column) . ";";
       }
 
       // the field only has single value -> add to database table
@@ -186,7 +194,7 @@ class DB_Table {
 	  // ... it was a field with multiple values -> aggregate data and concatenate by ';'
 	  if(($old_field_type->is_multiple() === true) || ($old_def['count'])) {
 	    if($db_conn->tableExists($this->old_id . '_' . $column_def['old_key']))
-	      $column_copy[] = "(select group_concat(value, ';') from " . $db_conn->quoteIdent('__tmp___' . $column_def['old_key']) . " __sub__ where __sub__.id=__tmp__.id group by __sub__.id)";
+	      $column_copy[] = "(select group_concat(value, ';') from " . $db_conn->quoteIdent($this->old_id . '_' . $column_def['old_key']) . " __sub__ where __sub__.id=" . $db_conn->quoteIdent($this->old_id) . ".id group by __sub__.id)";
 	    else
 	      $column_copy[] = "null";
 	  }
@@ -202,32 +210,8 @@ class DB_Table {
       }
     }
 
-    // To update the database structure, we rename the old table(s) to
-    // __tmp__ resp. __tmp___field, then create new table(s) and copy data.
-    $cmds = array();
-    $drop_cmds = array();
-    if(!$new_table) {
-      $cmds[] = "alter table {$old_table_name_quoted} rename to __tmp__;";
-
-      foreach($old_data['fields'] as $old_column_id=>$old_def) {
-	if(array_key_exists($old_def['type'], $field_types))
-	  $old_field_type = $field_types[$old_def['type']];
-	else
-	  $old_field_type = new FieldType();
-
-	// ... it was already a field with multiple values
-	if(($old_field_type->is_multiple() === true) || ($old_def['count'])) {
-	  if($db_conn->tableExists($this->old_id . '_' . $old_column_id)) {
-	    $cmds[] = "alter table " . $db_conn->quoteIdent($this->old_id . '_' . $old_column_id) .
-	      " rename to " . $db_conn->quoteIdent('__tmp___' . $old_column_id) . ";";
-	    $drop_cmds[] = "drop table " . $db_conn->quoteIdent('__tmp___' . $old_column_id) . ";";
-	  }
-	}
-      }
-    }
-
     // the new create table statement
-    $cmds[] = "create table {$table_name_quoted} (\n  ".
+    $cmds[] = "create table " . $db_conn->quoteIdent($tmp_name) . " (\n  ".
               implode(",\n  ", $columns) .
               (sizeof($constraints) ?
 	        ", " . implode(",\n  ", $constraints) : "") .
@@ -238,11 +222,31 @@ class DB_Table {
 
     // add the commands to copy data from the old table(s)
     if(!$new_table) {
-      $cmds[] = "insert into {$table_name_quoted} select " . implode(", ", $column_copy) . " from __tmp__;";
-      $cmds[] = "drop table __tmp__;";
+      $cmds[] = "insert into " . $db_conn->quoteIdent($tmp_name) . " select " . implode(", ", $column_copy) . " from " . $db_conn->quoteIdent($this->old_id);
+      $drop_cmds[] = "drop table " . $db_conn->quoteIdent($this->old_id);
+    }
+
+    // To update the database structure, we now delete the old table(s)
+    if(!$new_table) {
+      foreach($old_data['fields'] as $old_column_id=>$old_def) {
+	if(array_key_exists($old_def['type'], $field_types))
+	  $old_field_type = $field_types[$old_def['type']];
+	else
+	  $old_field_type = new FieldType();
+
+	// ... it was already a field with multiple values
+	if(($old_field_type->is_multiple() === true) || ($old_def['count'])) {
+	  if($db_conn->tableExists($this->old_id . '_' . $old_column_id)) {
+	    $drop_cmds[] = "drop table " . $db_conn->quoteIdent($this->old_id . '_' . $old_column_id) . ";";
+	  }
+	}
+      }
+
+      $rename_cmds[] = "alter table " . $db_conn->quoteIdent($tmp_name) . " rename to " . $db_conn->quoteIdent($data['id']);
     }
 
     $cmds = array_merge($cmds, $drop_cmds);
+    $cmds = array_merge($cmds, $rename_cmds);
 
     // start
     $changeset->disableForeignKeyChecks();
@@ -518,7 +522,6 @@ class DB_Table {
     if(($changeset === null) || is_string($changeset))
       $changeset = new Changeset($changeset);
 
-    $table_name_quoted = $db_conn->quoteIdent($this->id);
     $cmds = array();
 
     foreach($this->data('fields') as $column=>$column_def) {
