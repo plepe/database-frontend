@@ -14,13 +14,11 @@ class Field {
     return 'json';
   }
 
-  /**
-   * true ... result is always an array
-   * false ... result is always a single value
-   * null ... may be part of an array
-   */
   function is_multiple() {
-    return null;
+    if(array_key_exists('count', $this->def) && $this->def['count'])
+      return true;
+
+    return false;
   }
 
   function default_format($key) {
