@@ -106,6 +106,7 @@ class DB_Table {
     $cmds = array();
     $multifield_cmds = array();
     $rename_cmds = array();
+    $drop_cmds = array();
 
     // iterate over all fields and see what to do with them
     foreach($data['fields'] as $column=>$column_def) {
@@ -241,9 +242,9 @@ class DB_Table {
 	  }
 	}
       }
-
-      $rename_cmds[] = "alter table " . $db_conn->quoteIdent($tmp_name) . " rename to " . $db_conn->quoteIdent($data['id']);
     }
+
+    $rename_cmds[] = "alter table " . $db_conn->quoteIdent($tmp_name) . " rename to " . $db_conn->quoteIdent($data['id']);
 
     $cmds = array_merge($cmds, $drop_cmds);
     $cmds = array_merge($cmds, $rename_cmds);
