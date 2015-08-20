@@ -66,22 +66,15 @@ class DB_Table {
     return $this->_fields;
   }
 
-  function column_tables($data=null) {
-    $field_types = get_field_types();
-
-    if($data === null)
-      $data = $this->data;
-
+  /**
+   * return list of field ids whose values are stored in sub tables
+   */
+  function column_tables() {
     $ret = array();
 
-    foreach($data['fields'] as $column_id=>$column_def) {
-      if(array_key_exists($column_def['type'], $field_types))
-	$field_type = $field_types[$column_def['type']];
-      else
-	$field_type = new FieldType();
-
-      if(($field_type->is_multiple() === true) || ($column_def['count'])) {
-	$ret[] = $column_id;
+    foreach($this->fields() as $field) {
+      if($field->is_multiple() === true) {
+	$ret[] = $field->id;
       }
     }
 
