@@ -22,7 +22,54 @@ class Field {
   }
 
   function default_format($key) {
-    return "{{ {$key} }}";
+    if($key === null)
+      $key = $this->id;
+
+    return "{{ $key }}";
+  }
+
+  function view_def() {
+    $ret = $this->def;
+
+    if($this->def['reference']) {
+      if($this->is_multiple() === true) {
+	$ret['format'] =
+	  "<ul class='MultipleValues'>\n" .
+	  "{% for _ in {$this->id} %}\n" .
+	  "<li><a href='{{ page_url({ \"page\": \"show\", \"table\": \"{$this->def['reference']}\", \"id\": _.id }) }}'>" .
+	  $this->default_format("_.id") .
+	  "</a>" .
+	  "{% endfor %}\n" .
+	  "</ul>\n";
+      }
+      else {
+	$ret['format'] =
+	  "<a href='{{ page_url({ \"page\": \"show\", \"table\": \"{$this->def['reference']}\", \"id\": {$this->id}.id }) }}'>" .
+	  $this->default_format("{$this->id}.id") .
+	  "</a>";
+      }
+    }
+    else {
+      if($this->is_multiple() === true) {
+	$ret['format'] =
+	  "<ul class='MultipleValues'>\n" .
+	  "{% for _ in {$this->id} %}\n" .
+	  "<li>" . $this->default_format("_") . "</li>\n" .
+	  "{% endfor %}\n" .
+	  "</ul>\n";
+      }
+      else {
+	$ret['format'] = $this->default_format();
+      }
+    }
+
+    if(!array_key_exists('sortable', $this->def)) {
+      $ret['sortable'] = array(
+	'type' => 'nat',
+      );
+    }
+
+    return $ret;
   }
 }
 
@@ -38,6 +85,9 @@ class Field_textarea extends Field {
   }
 
   function default_format($key) {
+    if($key === null)
+      $key = $this->id;
+
     return "{{ {$key}|nl2br }}";
   }
 }
