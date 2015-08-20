@@ -258,7 +258,6 @@ class DB_Table {
       $debug_msg .= implode("\n\n", $cmds);
       $debug_msg .= "</pre>\n";
 
-      print $debug_msg;
       messages_debug($debug_msg);
     }
 
@@ -267,15 +266,14 @@ class DB_Table {
     foreach($cmds as $cmd) {
       $res = $db_conn->query($cmd);
       if($res === false) {
-	print "Failure executing: {$cmd}";
-	print_r($db_conn->errorInfo());
+        $error_info = $db_conn->errorInfo();
 
         // When failing, remove __tmp__ tables
         foreach($created as $c) {
           $db_conn->query("drop table if exists {$c}"); // $c is already quoted
         }
 
-	throw new Exception("DB_Table::update_database_structure(): Failure executing '{$cmd}', " . print_r($db_conn->errorInfo(), 1));
+        return "DB_Table::update_database_structure(): Failure executing '{$cmd}', " . $error_info[2];
       }
 
       // remember all table creations in case we need to rollback
@@ -285,6 +283,7 @@ class DB_Table {
     }
 
     $changeset->enableForeignKeyChecks();
+    return true;
   }
 
   function def() {
@@ -495,16 +494,21 @@ class DB_Table {
     if(($changeset === null) || is_string($changeset))
       $changeset = new Changeset($changeset);
 
-    if($db_conn->query($query) === false) {
-      return db_return_error_info($db_conn);
-    }
-
     $this->old_id = $this->id;
     if(array_key_exists('id', $data)) {
       $this->id = $data['id'];
     }
 
-    $this->update_database_structure($data, $changeset);
+    $result = $this->update_database_structure($data, $changeset);
+
+    if($result !== true) {
+      $changeset->rollBack();
+      return $result;
+    }
+
+    if($db_conn->query($query) === false) {
+      return db_return_error_info($db_conn);
+    }
 
     $this->data = $data;
     $this->def = $data['fields'];
