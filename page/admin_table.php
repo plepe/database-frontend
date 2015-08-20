@@ -70,8 +70,15 @@ class Page_admin_table extends Page {
       $ret .= "Table does not exist.";
     }
     else {
-      $table->remove();
-      $ret .= "Table dropped.";
+      $result = $table->remove();
+
+      if($result === true) {
+        $ret .= "Table dropped.";
+        messages_add("Table dropped.");
+        page_reload(array("page" => "admin"));
+      }
+      else
+        $ret .= $result;
     }
 
     $ret .= " <a href='?page=admin'>Back</a>";

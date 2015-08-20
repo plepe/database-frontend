@@ -559,17 +559,16 @@ class DB_Table {
       $debug_msg .= implode("\n\n", $cmds);
       $debug_msg .= "</pre>\n";
 
-      print $debug_msg;
       messages_debug($debug_msg);
     }
 
     foreach($cmds as $cmd) {
       $res = $db_conn->query($cmd);
-      if($res === false) {
-	print "Failure executing: {$cmd}";
-	print_r($db_conn->errorInfo());
 
-	throw new Exception("DB_Table::remove(): Failure executing '{$cmd}', " . print_r($db_conn->errorInfo(), 1));
+      if($res === false) {
+        $error_info = $db_conn->errorInfo();
+
+	return "DB_Table::remove(): Failure executing '{$cmd}', " . $error_info[2];
       }
     }
 
