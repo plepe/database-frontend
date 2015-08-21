@@ -57,6 +57,7 @@ EOT
 	  'type'	=>"text",
 	  'req'	=>true,
 	  'check'	=>array("regexp", "^[a-zA-Z0-9_]+$", "Use only characters, digits and underscores."),
+          'weight'      =>-1
 	),
 	'def'       =>array(
 	  'type'      =>'form',
@@ -64,6 +65,7 @@ EOT
 	    'name'	=>array(
 	      'name'	=>"Name",
 	      'type'	=>"text",
+              'weight'      =>-2
 	    ),
 	    'desc'	=>array(
 	      'name'	=>"Description",
@@ -102,13 +104,51 @@ EOT
 	      'show_depend'=>$has_values,
 	      'include_data'=>$has_values,
 	    ),
+            'values_mode' => array(
+              'type'    => 'radio',
+              'name'    => 'Values mode',
+              'values'  => array(
+                'values'  => "Specify only values. Value will be saved to the database and displayed to users.",
+                'keys'     => "Specify keys and values. Key will be saved as database value, Value will be displayed to users.",
+              ),
+              'default' => 'values',
+	      'show_depend'=>array('and',
+		// show option only when, ...
+		// ... reference is null, and ...
+	        array('check', 'reference', array('not', array('has_value'))),
+		// ... field type has a selector for values
+		$has_values
+	      ),
+	      'include_data'=>array('and',
+		// show option only when, ...
+		// ... reference is null, and ...
+	        array('check', 'reference', array('not', array('has_value'))),
+		// ... field type has a selector for values
+		$has_values
+	      ),
+     ),
 	    'values'	=>array(
 	      'name'	=>"Values",
-	      'type'	=>"hash",
-	      'def'	=>array(
-		'name'	=>lang('form:hash_value_field_name'),
-		'type'	=>"text",
-	      ),
+              'type'    =>"switch",
+              'switch'  => "values_mode",
+              'def'     =>array(
+                'values' => array(
+		  'name'	=>"Values",
+                  'type'   =>"array",
+                  'def'	   =>array(
+                    'name'	=>lang('form:hash_value_field_name'),
+                    'type'	=>"text",
+                  ),
+                ),
+                'keys' => array(
+		  'name'	=>"Values",
+                  'type'   =>"hash",
+                  'def'	   =>array(
+                    'name'	=>lang('form:hash_value_field_name'),
+                    'type'	=>"text",
+                  ),
+                ),
+              ),
 	      'default'=>0,
 	      'button:add_element' => "Add value",
 	      'show_depend'=>array('and',
