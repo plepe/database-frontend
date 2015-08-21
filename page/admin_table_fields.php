@@ -57,6 +57,7 @@ EOT
 	  'type'	=>"text",
 	  'req'	=>true,
 	  'check'	=>array("regexp", "^[a-zA-Z0-9_]+$", "Use only characters, digits and underscores."),
+          'weight'      =>-1
 	),
 	'def'       =>array(
 	  'type'      =>'form',
@@ -64,6 +65,7 @@ EOT
 	    'name'	=>array(
 	      'name'	=>"Name",
 	      'type'	=>"text",
+              'weight'      =>-2
 	    ),
 	    'desc'	=>array(
 	      'name'	=>"Description",
