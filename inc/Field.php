@@ -92,19 +92,33 @@ class Field_textarea extends Field {
   }
 }
 
-class Field_radio extends Field {
+class FieldWithValues extends Field {
+  function default_format($key) {
+    if($key === null)
+      $key = $this->id;
+
+    if($this->def['reference'])
+      return "{{ {$key} }}";
+    if($this->def['values_mode'] == 'keys')
+      return "{{ " . json_encode($this->def['values']) . "[{$key}]|default({$key}) }}";
+
+    return "{{ {$key} }}";
+  }
+}
+
+class Field_radio extends FieldWithValues {
   function is_multiple() {
     return false;
   }
 }
 
-class Field_checkbox extends Field {
+class Field_checkbox extends FieldWithValues {
   function is_multiple() {
     return true;
   }
 }
 
-class Field_select extends Field {
+class Field_select extends FieldWithValues {
   function db_type() {
     return 'text';
   }
