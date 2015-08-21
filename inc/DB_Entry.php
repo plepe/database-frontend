@@ -4,6 +4,7 @@ $db_entry_cache = array();
 class DB_Entry {
   function __construct($type, $data) {
     $this->type = $type;
+    $this->table = get_db_table($type);
 
     if($data === null) { // new object
       $this->id = null;
@@ -199,7 +200,7 @@ class DB_Entry {
     if(($changeset === null) || is_string($changeset))
       $changeset = new Changeset($changeset);
 
-    foreach(get_db_table($this->type)->column_tables() as $table) {
+    foreach($this->table->column_tables() as $table) {
       $query = "delete from " . $db_conn->quoteIdent($this->type . '_' . $table) . " where id=" . $db_conn->quote($this->id);
 
       if(isset($debug) && $debug)
@@ -227,10 +228,9 @@ class DB_Entry {
     if(isset($this->view_cache))
       return $this->view_cache;
 
-    $type = get_db_table($this->type);
     $this->view_cache = $this->data;
 
-    foreach($type->def as $k=>$column_def) {
+    foreach($this->table->def as $k=>$column_def) {
       if(array_key_exists('reference', $column_def) && ($column_def['reference'] != null)) {
 	if(array_key_exists($column_def['type'], $field_types))
 	  $field_type = $field_types[$column_def['type']];
