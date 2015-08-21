@@ -119,8 +119,13 @@ EOT
 		// ... field type has a selector for values
 		$has_values
 	      ),
-	      // 'include_data'=>array('and', array('not_empty'), $has_values),
-	      'include_data'=>$has_values,
+	      'include_data'=>array('and',
+		// show option only when, ...
+		// ... reference is null, and ...
+	        array('check', 'reference', array('not', array('has_value'))),
+		// ... field type has a selector for values
+		$has_values
+	      ),
      ),
 	    'values'	=>array(
 	      'name'	=>"Values",
@@ -128,6 +133,7 @@ EOT
               'switch'  => "values_mode",
               'def'     =>array(
                 'values' => array(
+		  'name'	=>"Values",
                   'type'   =>"array",
                   'def'	   =>array(
                     'name'	=>lang('form:hash_value_field_name'),
@@ -135,6 +141,7 @@ EOT
                   ),
                 ),
                 'keys' => array(
+		  'name'	=>"Values",
                   'type'   =>"hash",
                   'def'	   =>array(
                     'name'	=>lang('form:hash_value_field_name'),
