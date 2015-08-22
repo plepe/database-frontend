@@ -573,7 +573,10 @@ class DB_Table {
           continue;
         }
 
-        $ret[] = $r;
+        $ret[] = array(
+          'table' => $field->sql_table_quoted(),
+          'query' => $r,
+        );
       }
     }
 
