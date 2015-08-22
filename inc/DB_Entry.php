@@ -286,12 +286,16 @@ function get_db_entries($type, $filter=array()) {
   foreach($compiled_filter as $f) {
     if(array_key_exists('table', $f))
       $tables[$f['table']] = true;
+
     $query[] = $f['query'];
   }
+  $main_table_quoted = $db_conn->quoteIdent($table->id);
+  unset($tables[$main_table_quoted]);
+
 
   $joined_tables = "";
-  foreach($tables as $t=>$dummy) {
-    $joined_tables .= " left join " . $db_conn->quoteIdent($type . '_' . $t) . " on " . $db_conn->quoteIdent($type) . ".id = " . $db_conn->quoteIdent($type . '_' . $t) . ".id";
+  foreach($tables as $t=>$dummy) { // $t is always quoted
+    $joined_tables .= " left join {$t} on {$main_table_quoted}.id = {$t}.id";
   }
 
   if(sizeof($query))

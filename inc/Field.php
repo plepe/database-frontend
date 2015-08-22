@@ -102,26 +102,14 @@ class Field {
   function compile_filter($def) {
     global $db_conn;
 
-    if($this->is_multiple()) {
-      $ret = array(
-        'table' => $this->id,
-      );
-      $key = $db_conn->quoteIdent($this->table->id . '_' . $this->id) . "." . $db_conn->quoteIdent('value');
-    }
-    else {
-      $ret = array();
-      $key = $db_conn->quoteIdent($this->id);
-    }
+    $column = $this->sql_table_quoted() . '.' . $this->sql_column_quoted();
 
     switch($def['op']) {
       case 'contains':
-        $ret['query'] = $key . ' like ' . $db_conn->quote('%' . $def['value'] . '%');
-        break;
+        return "{$column} like " . $db_conn->quote('%' . $def['value'] . '%');
       default:
         return null;
     }
-
-    return $ret;
   }
 }
 
