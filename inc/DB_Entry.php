@@ -94,7 +94,7 @@ class DB_Entry {
       }
 
       // the field has multiple values -> use extra table
-      if(($field->is_multiple() === true) {
+      if($field->is_multiple() === true) {
 	if($this->id !== null)
 	  $cmds[] = "delete from " . $db_conn->quoteIdent($this->type . '_' . $column_id) .
 	    " where " . $db_conn->quoteIdent('id') . "=" . $db_conn->quote($this->id);
