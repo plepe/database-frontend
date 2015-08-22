@@ -578,7 +578,7 @@ class DB_Table {
     }
 
     if(sizeof($ret))
-      return implode(" and ", $ret);
+      return $ret;
 
     return null;
   }
