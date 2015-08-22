@@ -556,6 +556,32 @@ class DB_Table {
 
     return true;
   }
+
+  function compile_filter($filter) {
+    global $db_conn;
+    $ret = array();
+
+    foreach($filter as $f) {
+      if($f['field'] && $f['op'] && $f['value']) {
+        $field = $this->field($f['field']);
+        if($field == null)
+          continue;
+
+        $r = $field->compile_filter($f);
+        if($r === null) {
+          messages_add("Can't compile filter " . printf($f, 1));
+          continue;
+        }
+
+        $ret[] = $r;
+      }
+    }
+
+    if(sizeof($ret))
+      return implode(" and ", $ret);
+
+    return null;
+  }
 }
 
 function get_db_table($type) {

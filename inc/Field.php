@@ -71,6 +71,17 @@ class Field {
 
     return $ret;
   }
+
+  function compile_filter($def) {
+    global $db_conn;
+
+    switch($def['op']) {
+      case 'contains':
+        return $db_conn->quoteIdent($this->id) . ' like ' . $db_conn->quote('%' . $def['value'] . '%');
+      default:
+        return null;
+    }
+  }
 }
 
 class Field_text extends Field {
