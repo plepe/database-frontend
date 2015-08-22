@@ -21,6 +21,33 @@ class Field {
     return false;
   }
 
+  /**
+   * returns the quoted name of the table which holds this field's value
+   * @return string quoted table name
+   */
+  function sql_table_quoted() {
+    global $db_conn;
+
+    if($this->is_multiple())
+      return $db_conn->quoteIdent($this->table->id . '_' . $this->id);
+
+    return $db_conn->quoteIdent($this->table->id);
+  }
+
+  /**
+   * returns the quoted name of the column which holds this field's value
+   * in the table (see sql_table_quoted())
+   * @return string quoted column name
+   */
+  function sql_column_quoted() {
+    global $db_conn;
+
+    if($this->is_multiple())
+      return $db_conn->quoteIdent('value');
+    else
+      return $db_conn->quoteIdent($this->id);
+  }
+
   function default_format($key) {
     if($key === null)
       $key = $this->id;
