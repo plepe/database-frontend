@@ -281,10 +281,26 @@ function get_db_entries($type, $filter=array()) {
   $table = get_db_table($type);
   $compiled_filter = $table->compile_filter($filter);
 
-  if($compiled_filter != null)
-    $res = $db_conn->query("select * from " . $db_conn->quoteIdent($type) . " where " . $compiled_filter);
+  $tables = array();
+  $query = array();
+  foreach($compiled_filter as $f) {
+    if(array_key_exists('table', $f))
+      $tables[$f['table']] = true;
+    $query[] = $f['query'];
+  }
+
+  $joined_tables = "";
+  foreach($tables as $t=>$dummy) {
+    $joined_tables .= " left join " . $db_conn->quoteIdent($type . '_' . $t) . " on " . $db_conn->quoteIdent($type) . ".id = " . $db_conn->quoteIdent($type . '_' . $t) . ".id";
+  }
+
+  if(sizeof($query))
+    $query = " where " . implode(" and ", $query);
   else
-    $res = $db_conn->query("select * from " . $db_conn->quoteIdent($type));
+    $query = "";
+  //messages_debug("select * from " . $db_conn->quoteIdent($type) . $joined_tables . $query);
+
+  $res = $db_conn->query("select * from " . $db_conn->quoteIdent($type) . $joined_tables . $query);
 
   if($res === false) {
     messages_debug("get_db_entries('{$type}'): query failed");

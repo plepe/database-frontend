@@ -75,12 +75,26 @@ class Field {
   function compile_filter($def) {
     global $db_conn;
 
+    if($this->is_multiple()) {
+      $ret = array(
+        'table' => $this->id,
+      );
+      $key = $db_conn->quoteIdent($this->table->id . '_' . $this->id) . "." . $db_conn->quoteIdent('value');
+    }
+    else {
+      $ret = array();
+      $key = $db_conn->quoteIdent($this->id);
+    }
+
     switch($def['op']) {
       case 'contains':
-        return $db_conn->quoteIdent($this->id) . ' like ' . $db_conn->quote('%' . $def['value'] . '%');
+        $ret['query'] = $key . ' like ' . $db_conn->quote('%' . $def['value'] . '%');
+        break;
       default:
         return null;
     }
+
+    return $ret;
   }
 }
 
