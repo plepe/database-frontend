@@ -107,9 +107,24 @@ class Field {
     switch($def['op']) {
       case 'contains':
         return "{$column} like " . $db_conn->quote('%' . $def['value'] . '%');
+      case 'is':
+        return "{$column}=" . $db_conn->quote($def['value']);
       default:
         return null;
     }
+  }
+
+  function filters() {
+    return array(
+      'contains' => array(
+        'name' => 'contains',
+        'value_type' => 'text'
+      ),
+      'is' => array(
+        'name' => 'is',
+        'value_type' => 'text'
+      ),
+    );
   }
 }
 

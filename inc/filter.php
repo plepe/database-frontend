@@ -12,6 +12,20 @@ function get_filter_form($param) {
   if(!array_key_exists('filter', $_SESSION))
     $_SESSION['filter'] = array();
 
+  $operators = array();
+  foreach($table->fields() as $field) {
+    foreach($field->filters() as $filter_id=>$filter_def) {
+      if(!array_key_exists($filter_id, $operators)) {
+        $operators[$filter_id] = array(
+          'name' => $filter_def['name'],
+          'show_depend' => array('check', 'field', array('or')),
+        );
+      }
+
+      $operators[$filter_id]['show_depend'][2][] = array('is', $field->id);
+    }
+  }
+
   $filter_form_def = array(
     'filter' => array(
       'name' => 'Filter',
@@ -32,9 +46,7 @@ function get_filter_form($param) {
         'op' => array(
           'type' => 'select',
           'name' => 'Operator',
-          'values' => array(
-            'contains' => "contains",
-          ),
+          'values' => $operators,
         ),
         'value' => array(
           'type' => 'text',
