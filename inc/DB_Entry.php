@@ -271,14 +271,20 @@ function get_db_entry($type, $id) {
   return $db_entry_cache[$type][$id];
 }
 
-function get_db_entries($type) {
+function get_db_entries($type, $filter=array()) {
   global $db_conn;
   global $db_entry_cache;
 
   if(!array_key_exists($type, $db_entry_cache))
     $db_entry_cache[$type] = array();
 
-  $res = $db_conn->query("select * from " . $db_conn->quoteIdent($type));
+  $table = get_db_table($type);
+  $compiled_filter = $table->compile_filter($filter);
+
+  if($compiled_filter != null)
+    $res = $db_conn->query("select * from " . $db_conn->quoteIdent($type) . " where " . $compiled_filter);
+  else
+    $res = $db_conn->query("select * from " . $db_conn->quoteIdent($type));
 
   if($res === false) {
     messages_debug("get_db_entries('{$type}'): query failed");
