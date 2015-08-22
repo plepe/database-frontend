@@ -12,8 +12,9 @@ class Page_list extends Page {
     if(!$table)
       return null;
 
+    $filter = get_filter($param);
     $data = array();
-    foreach(get_db_entries($param['table']) as $o) {
+    foreach(get_db_entries($param['table'], $filter['filter']) as $o) {
       $data[$o->id] = $o->view();
     }
 
@@ -45,6 +46,7 @@ class Page_list extends Page {
     return array(
       'template' => 'list.html',
       'table' => $param['table'],
+      'filter' => get_filter_form(),
       'view' => $view,
       'param' => $param,
       'views' => $table->views('list'),

@@ -24,6 +24,7 @@ $include = array(
     'inc/FieldTypes.php',
     'inc/Changeset.php',
     'inc/Field.php',
+    'inc/filter.php',
     'page/*',
   ),
   'js' => array(
