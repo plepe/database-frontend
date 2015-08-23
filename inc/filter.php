@@ -27,7 +27,7 @@ function get_filter_form($param) {
   }
 
   $filter_form_def = array(
-    'filter' => array(
+    '__custom__' => array(
       'name' => 'Filter',
       'type' => 'form',
       'count' => array(
@@ -76,5 +76,6 @@ function get_filter_form($param) {
 function get_filter($param) {
   $filter_form = get_filter_form($param);
 
-  return $filter_form->get_data();
+  $data = $filter_form->get_data();
+  return $data['__custom__'];
 }
