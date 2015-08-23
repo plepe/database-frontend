@@ -27,13 +27,18 @@ function get_filter_form($param) {
   }
 
   $filter_form_def = array(
+//    'id|contains'        => array(
+//      'type'      => 'text',
+//      'name'      => 'Name',
+//    ),
     '__custom__' => array(
       'name' => 'Filter',
       'type' => 'form',
       'count' => array(
         'default' => 0,
         'order' => false,
-        'button:add_element' => 'Add filter'
+        'button:add_element' => 'Add custom filter',
+        'hide_label' => true,
       ),
       'def'  => array(
         'field'  => array(
@@ -77,5 +82,18 @@ function get_filter($param) {
   $filter_form = get_filter_form($param);
 
   $data = $filter_form->get_data();
-  return $data['__custom__'];
+
+  $ret = array();
+  foreach($data as $k=>$v) {
+    if($k == '__custom__') {
+      if($v)
+        $ret = array_merge($ret, $v);
+    }
+    else {
+      list($field, $op) = explode("|", $k);
+      $ret[] = array('field' => $field, 'op' => $op, 'value' => $v);
+    }
+  }
+
+  return $ret;
 }
