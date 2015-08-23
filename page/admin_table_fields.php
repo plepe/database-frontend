@@ -131,6 +131,15 @@ EOT
 		' 1' => 'low priority',
 	      ),
 	    ),
+            'default_filter' => array(
+              'name' => 'Add a filter by default',
+              'type' => 'select',
+              'placeholder' => 'no',
+              'values' => array(
+                'contains' => 'yes, using "contains" operator',
+                'is' => 'yes, using "is" operator',
+              ),
+            ),
 	    'old_key' => array(
 	      'type' => 'hidden',
 	    ),

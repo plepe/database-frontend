@@ -13,6 +13,7 @@ function get_filter_form($param) {
     $_SESSION['filter'] = array();
 
   $operators = array();
+  $filter_form_def = array();
   foreach($table->fields() as $field) {
     foreach($field->filters() as $filter_id=>$filter_def) {
       if(!array_key_exists($filter_id, $operators)) {
@@ -24,13 +25,16 @@ function get_filter_form($param) {
 
       $operators[$filter_id]['show_depend'][2][] = array('is', $field->id);
     }
+
+    if(array_key_exists('default_filter', $field->def) && $field->def['default_filter']) {
+      $filter_form_def["{$field->id}|{$field->def['default_filter']}"] = array(
+        'type'      => 'text',
+        'name'      => $field->def['name'],
+      );
+    }
   }
 
-  $filter_form_def = array(
-//    'id|contains'        => array(
-//      'type'      => 'text',
-//      'name'      => 'Name',
-//    ),
+  $filter_form_def = array_merge($filter_form_def, array(
     '__custom__' => array(
       'name' => 'Filter',
       'type' => 'form',
@@ -59,7 +63,7 @@ function get_filter_form($param) {
         ),
       ),
     ),
-  );
+  ));
 
   $filter_form = new form('filter', $filter_form_def);
 
