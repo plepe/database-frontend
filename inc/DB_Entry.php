@@ -304,18 +304,21 @@ function get_db_entries($type, $filter=array()) {
     $query = "";
   //messages_debug("select * from " . $db_conn->quoteIdent($type) . $joined_tables . $query);
 
-  $res = $db_conn->query("select * from " . $db_conn->quoteIdent($type) . $joined_tables . $query);
+  $res = $db_conn->query("select id from " . $db_conn->quoteIdent($type) . $joined_tables . $query);
 
   if($res === false) {
     messages_debug("get_db_entries('{$type}'): query failed");
     return array();
   }
 
+  $ret = array();
   while($elem = $res->fetch()) {
     if(!array_key_exists($elem['id'], $db_entry_cache[$type]))
       $db_entry_cache[$type][$elem['id']] = new DB_Entry($type, $elem);
+
+    $ret[$elem['id']] = $db_entry_cache[$type][$elem['id']];
   }
   $res->closeCursor();
 
-  return $db_entry_cache[$type];
+  return $ret;
 }
