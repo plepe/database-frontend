@@ -8,6 +8,7 @@ class Page_index extends Page {
       return "Permission denied.";
     }
 
+    $data = array('tables' => array());
     foreach(get_db_tables() as $type) {
       $data['tables'][] = $type->view();
     }
