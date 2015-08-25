@@ -304,7 +304,7 @@ function get_db_entries($type, $filter=array()) {
     $query = "";
   //messages_debug("select * from " . $db_conn->quoteIdent($type) . $joined_tables . $query);
 
-  $res = $db_conn->query("select id from " . $db_conn->quoteIdent($type) . $joined_tables . $query);
+  $res = $db_conn->query("select distinct " . $db_conn->quoteIdent($type) . ".id from " . $db_conn->quoteIdent($type) . $joined_tables . $query);
 
   if($res === false) {
     messages_debug("get_db_entries('{$type}'): query failed");
