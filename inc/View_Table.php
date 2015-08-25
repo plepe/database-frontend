@@ -9,7 +9,7 @@ class View_Table extends View {
     return $view->show('html-transposed');
   }
 
-  function show_list($entries) {
+  function show_list() {
     $this->def['fields']['__links'] = array(
       "name" => "",
       "format" => 

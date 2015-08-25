@@ -46,7 +46,7 @@ class Page_list extends Page {
     return array(
       'template' => 'list.html',
       'table' => $param['table'],
-      'filter' => get_filter_form(),
+      'filter' => get_filter_form($param),
       'view' => $view,
       'param' => $param,
       'views' => $table->views('list'),
