@@ -221,7 +221,8 @@ class DB_Entry {
     $this->view_cache = $this->data;
 
     foreach($this->table->fields() as $field) {
-      if(array_key_exists('reference', $field->def) && ($column_def['reference'] != null)) {
+      $k = $field->id;
+      if(array_key_exists('reference', $field->def) && ($field->def['reference'] != null)) {
 	if($field->is_multiple() === true) {
 	  $this->view_cache[$k] = array();
 	  foreach($this->data[$k] as $v) {
