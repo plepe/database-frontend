@@ -13,6 +13,10 @@ function git_dump($changeset) {
 
   $cwd = getcwd();
 
+  if(!file_exists($git['path'])) {
+    mkdir($git['path']);
+  }
+
   if(chdir($git['path']) === false) {
     messages_add("Git: cannot chdir to git directory", MSG_ERROR);
     return;
