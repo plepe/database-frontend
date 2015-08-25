@@ -284,7 +284,7 @@ function get_db_entries($type, $filter=array()) {
 
   $tables = array();
   $query = array();
-  foreach($compiled_filter as $f) {
+  if($compiled_filter !== null) foreach($compiled_filter as $f) {
     if(array_key_exists('table', $f))
       $tables[$f['table']] = true;
 
@@ -292,7 +292,6 @@ function get_db_entries($type, $filter=array()) {
   }
   $main_table_quoted = $db_conn->quoteIdent($table->id);
   unset($tables[$main_table_quoted]);
-
 
   $joined_tables = "";
   foreach($tables as $t=>$dummy) { // $t is always quoted
