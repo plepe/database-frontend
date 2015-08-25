@@ -48,7 +48,7 @@ class Field {
       return $db_conn->quoteIdent($this->id);
   }
 
-  function default_format($key) {
+  function default_format($key=null) {
     if($key === null)
       $key = $this->id;
 
@@ -139,7 +139,7 @@ class Field_textarea extends Field {
     return 'text';
   }
 
-  function default_format($key) {
+  function default_format($key=null) {
     if($key === null)
       $key = $this->id;
 
