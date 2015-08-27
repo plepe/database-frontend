@@ -12,11 +12,13 @@ class Page_list extends Page {
     if(!$table)
       return null;
 
-    $filter = get_filter($param);
-    $data = array();
-    foreach($table->get_entries($filter) as $o) {
-      $data[$o->id] = $o->view();
-    }
+    $table_extract = new DB_TableExtract($table);
+    $table_extract->set_filter(get_filter($param));
+
+//    $data = array();
+//    foreach($table_extract->get() as $o) {
+//      $data[$o->id] = $o->view();
+//    }
 
     // if no 'view'-parameter is set, use session or view with lowest weight
     if(!isset($param['view'])) {
@@ -41,7 +43,7 @@ class Page_list extends Page {
       $view = new View_Table($def, $param);
     }
 
-    $view->set_data($data);
+    $view->set_extract($table_extract);
 
     return array(
       'template' => 'list.html',

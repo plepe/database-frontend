@@ -1,7 +1,7 @@
 <?php
 class View_Table extends View {
   function show() {
-    $view = new table($this->def['fields'], array($this->data[0]), array("template_engine"=>"twig"));
+    $view = new table($this->def['fields'], $this->extract, array("template_engine"=>"twig"));
     return $view->show('html-transposed');
   }
 
@@ -18,7 +18,7 @@ class View_Table extends View {
 	"'>Edit</a>",
     );
 
-    $view = new table($this->def['fields'], $this->data, array("template_engine"=>"twig"));
+    $view = new table($this->def['fields'], $this->extract, array("template_engine"=>"twig"));
 
     return $view->show();
   }
