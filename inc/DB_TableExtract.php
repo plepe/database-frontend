@@ -24,9 +24,7 @@ class DB_TableExtract {
   function get($offset=0, $limit=null) {
     if($this->ids) {
       $t = $this;
-      return array_map(function($id) use ($t) {
-          return $t->table->get_entry($id);
-        }, $this->ids);
+      return $t->table->get_entries_by_id($this->ids);
     }
     else {
       return $this->table->get_entries($this->filter);

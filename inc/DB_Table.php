@@ -611,7 +611,19 @@ class DB_Table {
     return $this->entries_cache[$id];
   }
 
-  function get_entries($filter=array()) {
+  function get_entries_by_id($ids) {
+    global $db_conn;
+    global $db_entry_cache;
+
+    $ret = array();
+    foreach($ids as $id) {
+      $ret[$id] = $this->get_entry($id);
+    }
+
+    return $ret;
+  }
+
+  function get_entry_ids($filter=array()) {
     global $db_conn;
     global $db_entry_cache;
 
@@ -648,14 +660,16 @@ class DB_Table {
 
     $ret = array();
     while($elem = $res->fetch()) {
-      if(!array_key_exists($elem['id'], $this->entries_cache))
-        $this->entries_cache[$elem['id']] = new DB_Entry($this->id, $elem);
-
-      $ret[$elem['id']] = $this->entries_cache[$elem['id']];
+      $ret[] = $elem['id'];
     }
     $res->closeCursor();
 
     return $ret;
+  }
+
+  function get_entries($filter=array()) {
+    $ids = $this->get_entry_ids($filter);
+    return $this->get_entries_by_id($ids);
   }
 }
 
