@@ -8,6 +8,7 @@ class DB_TableExtract {
   }
 
   function count() {
+    return $this->table->get_entry_count($this->filter);
   }
 
   function set_sort($sort) {
