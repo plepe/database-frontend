@@ -1,9 +1,5 @@
 <?php
 class View_PlainHTML extends View {
-  function set_data($data) {
-    $this->data = $data;
-  }
-
   function show() {
     $ret = $this->def['format_header'];
 
