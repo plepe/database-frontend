@@ -13,6 +13,7 @@ $include = array(
     'inc/auth.php',
     'inc/DB_Entry.php',
     'inc/DB_Table.php',
+    'inc/DB_TableExtract.php',
     'inc/twig_show.php',
     'inc/str_to_id.php',
     'inc/git.php',
