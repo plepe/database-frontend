@@ -16,6 +16,9 @@
     </form>
 <a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table }) }}'>Create new entry</a>
     <a class='LinkButton' href='{{ page_url({ "page": "index"}) }}'>Home</a> 
+    <a class='LinkButton' href='{{ page_url({ "page": "list", "table": table, "offset": max(0, param.offset - param.limit) }) }}'>&lt;</a>
+    {{ param.offset }}-{{ min(result_count, param.offset + param.limit) }} / {{ result_count }}
+    <a class='LinkButton' href='{{ page_url({ "page": "list", "table": table, "offset": min(result_count - result_count % param.limit, param.offset + param.limit) }) }}'>&gt;</a>
   </div>
   
   <div class='PanelH1'>

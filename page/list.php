@@ -1,6 +1,11 @@
 <?php
 class Page_list extends Page {
   function content($param) {
+    if(!array_key_exists('limit', $param))
+      $param['limit'] = 25;
+    if(!array_key_exists('offset', $param))
+      $param['offset'] = 0;
+
     if(!base_access('view')) {
       global $auth;
       if(!$auth->is_logged_in())
@@ -48,6 +53,7 @@ class Page_list extends Page {
     return array(
       'template' => 'list.html',
       'table' => $param['table'],
+      'result_count' => $table_extract->count(),
       'filter' => get_filter_form($param),
       'view' => $view,
       'param' => $param,
