@@ -41,7 +41,9 @@ class Page_show extends Page {
       $view = new View_Table($def, $param);
     }
 
-    $view->set_data(array($object->view()));
+    $extract = new DB_TableExtract($table);
+    $extract->set_ids(array($object->id));
+    $view->set_extract($extract);
 
     return array(
       'template' => "show.html",

@@ -5,7 +5,7 @@ class View {
     $this->param = $param;
   }
 
-  function set_data($data) {
-    $this->data = $data;
+  function set_extract($extract) {
+    $this->extract = $extract;
   }
 }
