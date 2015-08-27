@@ -114,6 +114,11 @@ class Field {
     }
   }
 
+  function compile_sort($def) {
+    $column = $this->sql_table_quoted() . '.' . $this->sql_column_quoted();
+    return $column . (array_key_exists('dir', $def) && ($def['dir'] == 'desc') ? ' desc' : ' asc');
+  }
+
   function filters() {
     return array(
       'contains' => array(
