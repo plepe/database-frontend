@@ -677,6 +677,10 @@ class DB_Table {
     $ids = $this->get_entry_ids($filter, $sort, $offset, $limit);
     return $this->get_entries_by_id($ids);
   }
+
+  function get_entry_count($filter=array()) {
+    return sizeof($this->get_entry_ids($filter));
+  }
 }
 
 function get_db_table($type) {
