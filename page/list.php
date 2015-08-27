@@ -1,8 +1,15 @@
 <?php
 class Page_list extends Page {
   function content($param) {
-    if(!array_key_exists('limit', $param))
-      $param['limit'] = 25;
+    if(array_key_exists('limit', $param)) {
+      $_SESSION['limit'] = $param['limit'];
+    }
+    else {
+      if(array_key_exists('limit', $_SESSION))
+        $param['limit'] = $_SESSION['limit'];
+      else
+        $param['limit'] = 25;
+    }
     if(!array_key_exists('offset', $param))
       $param['offset'] = 0;
 
