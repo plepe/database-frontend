@@ -1,5 +1,5 @@
 <?php
-function get_filter_form($param) {
+function get_filter_form(&$param) {
   global $filter_form;
 
   if(isset($filter_form))
@@ -70,6 +70,7 @@ function get_filter_form($param) {
   if(array_key_exists('apply_filter', $param)) {
     $filter = $filter_form->get_data();
     $_SESSION['filter'][$param['table']] = $filter;
+    $param['offset'] = 0;
   }
 
   if($filter_form->is_empty()) {
@@ -82,7 +83,7 @@ function get_filter_form($param) {
   return $filter_form;
 }
 
-function get_filter($param) {
+function get_filter(&$param) {
   $filter_form = get_filter_form($param);
 
   $data = $filter_form->get_data();
