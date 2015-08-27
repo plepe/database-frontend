@@ -587,6 +587,34 @@ class DB_Table {
     return null;
   }
 
+  function compile_sort($sort) {
+    global $db_conn;
+    $ret = array();
+
+    foreach($sort as $f) {
+      if($f['key']) { //TODO: 'field' instead of 'key'
+        $field = $this->field($f['key']);
+        if($field == null)
+          continue;
+
+        $r = $field->compile_sort($f);
+        if($r === null) {
+          messages_add("Can't compile filter " . printf($f, 1), MSG_ERROR);
+          continue;
+        }
+
+        $ret[] = array(
+          'table' => $field->sql_table_quoted(),
+          'sort' => $r,
+        );
+      }
+    }
+
+    if(sizeof($ret))
+      return $ret;
+
+    return null;
+  }
   function get_entry($id) {
     global $db_conn;
     global $db_entry_cache;
@@ -628,6 +656,7 @@ class DB_Table {
     global $db_entry_cache;
 
     $compiled_filter = $this->compile_filter($filter);
+    $compiled_sort = $this->compile_sort($sort);
 
     $tables = array();
     $query = array();
@@ -637,6 +666,15 @@ class DB_Table {
 
       $query[] = $f['query'];
     }
+
+    $order = array();
+    if($compiled_sort !== null) foreach($compiled_sort as $f) {
+      if(array_key_exists('table', $f))
+        $tables[$f['table']] = true;
+
+      $order[] = $f['sort'];
+    }
+
     $main_table_quoted = $db_conn->quoteIdent($this->id);
     unset($tables[$main_table_quoted]);
 
@@ -650,10 +688,15 @@ class DB_Table {
     else
       $query = "";
 
+    if(sizeof($order))
+      $order = " order by " . implode(", ", $order);
+    else
+      $order = "";
+
     $query =
       "select distinct " . $db_conn->quoteIdent($this->id) . ".id " .
       "from " . $db_conn->quoteIdent($this->id) . $joined_tables .
-      $query .
+      $query . $order .
       ($limit ? " limit " . $db_conn->quote($limit) : "") .
       ($limit && $offset ? " offset " . $db_conn->quote($offset) : "");
     // messages_debug($query);
