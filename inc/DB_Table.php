@@ -623,7 +623,7 @@ class DB_Table {
     return $ret;
   }
 
-  function get_entry_ids($filter=array()) {
+  function get_entry_ids($filter=array(), $sort=array(), $offset=0, $limit=null) {
     global $db_conn;
     global $db_entry_cache;
 
@@ -649,9 +649,15 @@ class DB_Table {
       $query = " where " . implode(" and ", $query);
     else
       $query = "";
-    //messages_debug("select * from " . $db_conn->quoteIdent($type) . $joined_tables . $query);
 
-    $res = $db_conn->query("select distinct " . $db_conn->quoteIdent($this->id) . ".id from " . $db_conn->quoteIdent($this->id) . $joined_tables . $query);
+    $query =
+      "select distinct " . $db_conn->quoteIdent($this->id) . ".id " .
+      "from " . $db_conn->quoteIdent($this->id) . $joined_tables .
+      $query .
+      ($limit ? " limit " . $db_conn->quote($limit) : "") .
+      ($limit && $offset ? " offset " . $db_conn->quote($offset) : "");
+    // messages_debug($query);
+    $res = $db_conn->query($query);
 
     if($res === false) {
       messages_debug("Table '{$this->id}'->get_entries(): query failed");
@@ -667,8 +673,8 @@ class DB_Table {
     return $ret;
   }
 
-  function get_entries($filter=array()) {
-    $ids = $this->get_entry_ids($filter);
+  function get_entries($filter=array(), $sort=array(), $offset=0, $limit=null) {
+    $ids = $this->get_entry_ids($filter, $sort, $offset, $limit);
     return $this->get_entries_by_id($ids);
   }
 }

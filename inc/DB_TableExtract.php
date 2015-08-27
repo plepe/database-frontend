@@ -3,13 +3,15 @@ class DB_TableExtract {
   function __construct($table) {
     $this->table = $table;
     $this->filter = null;
+    $this->sort = null;
     $this->ids = null;
   }
 
   function count() {
   }
 
-  function set_sort($rules) {
+  function set_sort($sort) {
+    $this->sort = $sort;
   }
 
   function set_filter($filter) {
@@ -27,7 +29,7 @@ class DB_TableExtract {
       return $t->table->get_entries_by_id($this->ids);
     }
     else {
-      return $this->table->get_entries($this->filter);
+      return $this->table->get_entries($this->filter, $this->sort, $offset, $limit);
     }
   }
 }
