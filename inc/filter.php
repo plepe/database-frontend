@@ -67,7 +67,7 @@ function get_filter_form($param) {
 
   $filter_form = new form('filter', $filter_form_def);
 
-  if($filter_form->is_complete()) {
+  if(array_key_exists('apply_filter', $param)) {
     $filter = $filter_form->get_data();
     $_SESSION['filter'][$param['table']] = $filter;
   }
