@@ -11,12 +11,12 @@ register_hook("twig_init", function() {
   }, array("is_safe"=>array("html"))));
 
   $twig->addFunction(new Twig_SimpleFunction('get_entry', function($table, $id) {
-    return get_db_entry($table, $id)->view();
+    return get_db_table($table)->get_entry($id)->view();
   }));
 
   $twig->addFunction(new Twig_SimpleFunction('get_entries', function($table, $filter) {
     return array_map(function($ob) {
       return $ob->view();
-    }, get_db_entries($table, $filter));
+    }, get_db_table($table)->get_entries($filter));
   }));
 });

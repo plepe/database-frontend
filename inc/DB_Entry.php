@@ -1,6 +1,4 @@
 <?php
-$db_entry_cache = array();
-
 class DB_Entry {
   function __construct($type, $data) {
     $this->type = $type;
@@ -226,14 +224,14 @@ class DB_Entry {
 	if($field->is_multiple() === true) {
 	  $this->view_cache[$k] = array();
 	  foreach($this->data[$k] as $v) {
-	    $o = get_db_entry($field->def['reference'], $v);
+	    $o = get_db_table($field->def['reference'])->get_entry($v);
 	    if($o)
 	      $this->view_cache[$k][] = &$o->view();
 	  }
 	}
 	else {
 	  if($this->data[$k]) {
-	    $o = get_db_entry($field->def['reference'], $this->data[$k]);
+	    $o = get_db_table($field->def['reference'])->get_entry($this->data[$k]);
 	    if($o)
 	      $this->view_cache[$k] = &$o->view();
 	  }
@@ -243,82 +241,4 @@ class DB_Entry {
 
     return $this->view_cache;
   }
-}
-
-function get_db_entry($type, $id) {
-  global $db_conn;
-  global $db_entry_cache;
-
-  if(!array_key_exists($type, $db_entry_cache))
-    $db_entry_cache[$type] = array();
-
-  if(!array_key_exists($id, $db_entry_cache[$type])) {
-    $res = $db_conn->query("select * from " . $db_conn->quoteIdent($type) . " where id=" . $db_conn->quote($id));
-
-    if($res === false) {
-      messages_debug("get_db_entry('{$type}', '{$id}'): query failed");
-      return null;
-    }
-
-    if($elem = $res->fetch()) {
-      $db_entry_cache[$type][$id] = new DB_Entry($type, $elem);
-    }
-    $res->closeCursor();
-  }
-
-  if(!array_key_exists($id, $db_entry_cache[$type]))
-    return null;
-
-  return $db_entry_cache[$type][$id];
-}
-
-function get_db_entries($type, $filter=array()) {
-  global $db_conn;
-  global $db_entry_cache;
-
-  if(!array_key_exists($type, $db_entry_cache))
-    $db_entry_cache[$type] = array();
-
-  $table = get_db_table($type);
-  $compiled_filter = $table->compile_filter($filter);
-
-  $tables = array();
-  $query = array();
-  if($compiled_filter !== null) foreach($compiled_filter as $f) {
-    if(array_key_exists('table', $f))
-      $tables[$f['table']] = true;
-
-    $query[] = $f['query'];
-  }
-  $main_table_quoted = $db_conn->quoteIdent($table->id);
-  unset($tables[$main_table_quoted]);
-
-  $joined_tables = "";
-  foreach($tables as $t=>$dummy) { // $t is always quoted
-    $joined_tables .= " left join {$t} on {$main_table_quoted}.id = {$t}.id";
-  }
-
-  if(sizeof($query))
-    $query = " where " . implode(" and ", $query);
-  else
-    $query = "";
-  //messages_debug("select * from " . $db_conn->quoteIdent($type) . $joined_tables . $query);
-
-  $res = $db_conn->query("select distinct " . $db_conn->quoteIdent($type) . ".id from " . $db_conn->quoteIdent($type) . $joined_tables . $query);
-
-  if($res === false) {
-    messages_debug("get_db_entries('{$type}'): query failed");
-    return array();
-  }
-
-  $ret = array();
-  while($elem = $res->fetch()) {
-    if(!array_key_exists($elem['id'], $db_entry_cache[$type]))
-      $db_entry_cache[$type][$elem['id']] = new DB_Entry($type, $elem);
-
-    $ret[$elem['id']] = $db_entry_cache[$type][$elem['id']];
-  }
-  $res->closeCursor();
-
-  return $ret;
 }

@@ -34,7 +34,7 @@ function git_dump($changeset) {
     file_put_contents("__system__/{$table->id}.json", json_readable_encode($table->data()) . "\n");
 
     mkdir($table->id);
-    foreach(get_db_entries($table->id) as $entry) {
+    foreach($table->get_entries() as $entry) {
       file_put_contents("{$table->id}/{$entry->id}.json", json_readable_encode($entry->data()) . "\n");
     }
   }

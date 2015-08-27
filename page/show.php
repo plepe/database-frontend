@@ -14,7 +14,7 @@ class Page_show extends Page {
     if(!$table)
       return null;
 
-    $object = get_db_entry($param['table'], $param['id']);
+    $object = $table->get_entry($param['id']);
     if(!$object)
       return null;
 

@@ -14,7 +14,7 @@ class Page_list extends Page {
 
     $filter = get_filter($param);
     $data = array();
-    foreach(get_db_entries($param['table'], $filter) as $o) {
+    foreach($table->get_entries($filter) as $o) {
       $data[$o->id] = $o->view();
     }
 
