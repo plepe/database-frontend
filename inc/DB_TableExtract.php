@@ -3,6 +3,7 @@ class DB_TableExtract {
   function __construct($table) {
     $this->table = $table;
     $this->filter = null;
+    $this->ids = null;
   }
 
   function count() {
@@ -15,7 +16,20 @@ class DB_TableExtract {
     $this->filter = $filter;
   }
 
+  function set_ids($ids) {
+    $this->filter = null;
+    $this->ids = $ids;
+  }
+
   function get($offset=0, $limit=null) {
-    return $this->table->get_entries($this->filter);
+    if($this->ids) {
+      $t = $this;
+      return array_map(function($id) use ($t) {
+          return $t->table->get_entry($id);
+        }, $this->ids);
+    }
+    else {
+      return $this->table->get_entries($this->filter);
+    }
   }
 }
