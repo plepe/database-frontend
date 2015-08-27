@@ -20,6 +20,6 @@ class View_Table extends View {
 
     $view = new table($this->def['fields'], $this->extract, array("template_engine"=>"twig"));
 
-    return $view->show();
+    return $view->show('html', $this->param);
   }
 }
