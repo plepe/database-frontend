@@ -1,9 +1,5 @@
 <?php
 class View_Table extends View {
-  function set_data($data) {
-    $this->data = $data;
-  }
-
   function show() {
     $view = new table($this->def['fields'], array($this->data[0]), array("template_engine"=>"twig"));
     return $view->show('html-transposed');
