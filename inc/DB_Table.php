@@ -25,6 +25,7 @@ class DB_Table {
   function __construct($type, $data) {
     $this->id = $type;
     $this->data = $data;
+    $this->entries_cache = array();
 
     // set 'old_key' for each field, so that later save() will leave
     // database structure intact. $new_data still has old_key information from
@@ -320,7 +321,7 @@ class DB_Table {
     foreach($this->def as $k=>$d) {
       if(array_key_exists('reference', $d) && ($d['reference'] !== null)) {
 	$values = array();
-	foreach(get_db_entries($d['reference']) as $o) {
+	foreach(get_db_table($d['reference'])->get_entries() as $o) {
 	  $values[$o->id] = $o->view();
 	}
 
@@ -584,6 +585,77 @@ class DB_Table {
       return $ret;
 
     return null;
+  }
+
+  function get_entry($id) {
+    global $db_conn;
+    global $db_entry_cache;
+
+    if(!array_key_exists($id, $this->entries_cache)) {
+      $res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->id) . " where id=" . $db_conn->quote($id));
+
+      if($res === false) {
+        messages_debug("Table '{$this->id}'->get_entry('{$id}'): query failed");
+        return null;
+      }
+
+      if($elem = $res->fetch()) {
+        $this->entries_cache[$id] = new DB_Entry($this->id, $elem);
+      }
+      $res->closeCursor();
+    }
+
+    if(!array_key_exists($id, $this->entries_cache))
+      return null;
+
+    return $this->entries_cache[$id];
+  }
+
+  function get_entries($filter=array()) {
+    global $db_conn;
+    global $db_entry_cache;
+
+    $compiled_filter = $this->compile_filter($filter);
+
+    $tables = array();
+    $query = array();
+    if($compiled_filter !== null) foreach($compiled_filter as $f) {
+      if(array_key_exists('table', $f))
+        $tables[$f['table']] = true;
+
+      $query[] = $f['query'];
+    }
+    $main_table_quoted = $db_conn->quoteIdent($this->id);
+    unset($tables[$main_table_quoted]);
+
+    $joined_tables = "";
+    foreach($tables as $t=>$dummy) { // $t is always quoted
+      $joined_tables .= " left join {$t} on {$main_table_quoted}.id = {$t}.id";
+    }
+
+    if(sizeof($query))
+      $query = " where " . implode(" and ", $query);
+    else
+      $query = "";
+    //messages_debug("select * from " . $db_conn->quoteIdent($type) . $joined_tables . $query);
+
+    $res = $db_conn->query("select distinct " . $db_conn->quoteIdent($this->id) . ".id from " . $db_conn->quoteIdent($this->id) . $joined_tables . $query);
+
+    if($res === false) {
+      messages_debug("Table '{$this->id}'->get_entries(): query failed");
+      return array();
+    }
+
+    $ret = array();
+    while($elem = $res->fetch()) {
+      if(!array_key_exists($elem['id'], $this->entries_cache))
+        $this->entries_cache[$elem['id']] = new DB_Entry($this->id, $elem);
+
+      $ret[$elem['id']] = $this->entries_cache[$elem['id']];
+    }
+    $res->closeCursor();
+
+    return $ret;
   }
 }
 

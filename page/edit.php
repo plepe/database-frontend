@@ -13,7 +13,7 @@ class Page_edit extends Page {
       return null;
 
     if(isset($param['id'])) {
-      $ob = get_db_entry($param['table'], $param['id']);
+      $ob = $table->get_entry($param['id']);
       if(!$ob)
 	return null;
     }
