@@ -1,0 +1,5 @@
+<a class='LinkButton' href='{{ page_url({ "page": "list", "table": table, "offset": 0 }) }}'>|◀</a>
+<a class='LinkButton' href='{{ page_url({ "page": "list", "table": table, "offset": max(0, param.offset - param.limit) }) }}'>◀</a>
+{{ param.offset }}-{{ min(result_count, param.offset + param.limit) }} / {{ result_count }}
+<a class='LinkButton' href='{{ page_url({ "page": "list", "table": table, "offset": min(result_count - result_count % param.limit, param.offset + param.limit) }) }}'>▶</a>
+<a class='LinkButton' href='{{ page_url({ "page": "list", "table": table, "offset": result_count - result_count % param.limit }) }}'>▶|</a>

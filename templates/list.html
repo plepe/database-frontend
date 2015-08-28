@@ -17,11 +17,7 @@
 <a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table }) }}'>Create new entry</a>
     <a class='LinkButton' href='{{ page_url({ "page": "index"}) }}'>Home</a> 
 
-    <a class='LinkButton' href='{{ page_url({ "page": "list", "table": table, "offset": 0 }) }}'>|◀</a>
-    <a class='LinkButton' href='{{ page_url({ "page": "list", "table": table, "offset": max(0, param.offset - param.limit) }) }}'>◀</a>
-    {{ param.offset }}-{{ min(result_count, param.offset + param.limit) }} / {{ result_count }}
-    <a class='LinkButton' href='{{ page_url({ "page": "list", "table": table, "offset": min(result_count - result_count % param.limit, param.offset + param.limit) }) }}'>▶</a>
-    <a class='LinkButton' href='{{ page_url({ "page": "list", "table": table, "offset": result_count - result_count % param.limit }) }}'>▶|</a>
+    {% include 'list_pager.html' %}
   </div>
   
   <div class='PanelH1'>
@@ -56,6 +52,7 @@
     <a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table }) }}'>Create new entry</a>
     <a class='LinkButton' href='{{ page_url({ "page": "index"}) }}'>Home</a> 
     <a class='LinkButton' href='{{ page_url({ "page": "history", "table": table }) }}'>History</a>
+    {% include 'list_pager.html' %}
   </div>
 
 </div>
