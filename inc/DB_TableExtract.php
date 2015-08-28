@@ -33,4 +33,27 @@ class DB_TableExtract {
       return $this->table->get_entries($this->filter, $this->sort, $offset, $limit);
     }
   }
+
+  /**
+   * return index of the given id in the filtered and sorted list
+   * @param string id id of the object
+   * @return integer|false index in the list or false if object is not in list
+   */
+  function index($id) {
+    $offset = 0;
+    $limit = 128;
+
+    while(true) {
+      $ids = $this->table->get_entry_ids($this->filter, $this->sort, $offset, $limit);
+      if(sizeof($ids) == 0)
+        return false;
+
+      $pos = array_search($id, $ids);
+
+      if($pos !== false)
+        return $pos + $offset;
+
+      $offset += $limit;
+    }
+  }
 }
