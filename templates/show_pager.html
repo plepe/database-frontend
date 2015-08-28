@@ -1,7 +1,7 @@
 {% if pager.first %} <a class='LinkButton' href='{{ page_url({ "page": "show", "table": table, "id": pager.first }) }}'>|◀</a> {% endif %}
 {% if pager.prev %} <a class='LinkButton' href='{{ page_url({ "page": "show", "table": table, "id": pager.prev }) }}'>◀</a> {% endif %}
 
-{% if pager.index is empty %} ? {% else %} {{ pager.index }} {% endif %}
+{% if pager.index is empty %} ? {% else %} {{ pager.index + 1}} {% endif %}
 / {{ pager.result_count }}
 
 {% if pager.next %} <a class='LinkButton' href='{{ page_url({ "page": "show", "table": table, "id": pager.next }) }}'>▶</a> {% endif %}
