@@ -66,4 +66,23 @@ function git_dump($changeset) {
   chdir($cwd);
 }
 
+register_hook("panel_items", function(&$items, $param) {
+  if(!in_array($param['page'], array("show", "list")))
+    return;
+
+  $ret = array(
+    'title' => 'History',
+    'url' => array(
+      'page'  => 'history',
+      'table' => $param['table'],
+    ),
+  );
+
+  if(array_key_exists('id', $param)) {
+    $ret['url']['id'] = $param['id'];
+  }
+
+  $items[] = $ret;
+});
+
 register_hook("changeset_commit", "git_dump");
