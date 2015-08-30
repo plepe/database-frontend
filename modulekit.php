@@ -16,7 +16,6 @@ $include = array(
     'inc/DB_TableExtract.php',
     'inc/twig_show.php',
     'inc/str_to_id.php',
-    'inc/git.php',
     'inc/View.php',
     'inc/View_Table.php',
     'inc/View_JSON.php',
