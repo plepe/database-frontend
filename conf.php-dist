@@ -26,10 +26,11 @@ $data_path = "data/";
 #  'password' => 'PASSWORD',
 #);
 
-// Configuration for Git History
-$git = array(
-  'path' => "{$data_path}/git/",
-);
+// Uncomment the following block to enable & configure Git History
+#$modulekit_load[] = "history_git";
+#$git = array(
+#  'path' => "{$data_path}/git/",
+#);
 
 // Authentication configuration
 // see https://github.com/plepe/modulekit-auth for more information
