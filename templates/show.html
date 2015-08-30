@@ -30,6 +30,7 @@
     <a class='LinkButton' href='{{ page_url({ "page": "list", "table": table }) }}'>Back</a>
     <a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table }) }}'>Create new entry</a>
     <a class='LinkButton' href='{{ page_url({ "page": "history", "table": table, "id": id }) }}'>History</a>
+    {{ panel_items(param) }}
     {% include 'show_pager.html' %}
   </div>
 
