@@ -591,6 +591,9 @@ class DB_Table {
     global $db_conn;
     $ret = array();
 
+    if(!$sort)
+      return null;
+
     foreach($sort as $f) {
       if($f['key']) { //TODO: 'field' instead of 'key'
         $field = $this->field($f['key']);
@@ -615,6 +618,7 @@ class DB_Table {
 
     return null;
   }
+
   function get_entry($id) {
     global $db_conn;
     global $db_entry_cache;
