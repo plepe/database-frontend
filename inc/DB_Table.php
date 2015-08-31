@@ -697,12 +697,18 @@ class DB_Table {
     else
       $order = "";
 
+    // check validity of limit and offset
+    if($limit && (!preg_match("/^[0-9]+$/", $limit)))
+      unset($limit);
+    if($offset && (!preg_match("/^[0-9]+$/", $offset)))
+      unset($offset);
+
     $query =
       "select distinct " . $db_conn->quoteIdent($this->id) . ".id " .
       "from " . $db_conn->quoteIdent($this->id) . $joined_tables .
       $query . $order .
-      ($limit ? " limit " . $db_conn->quote($limit) : "") .
-      ($limit && $offset ? " offset " . $db_conn->quote($offset) : "");
+      ($limit ? " limit {$limit}" : "") .
+      ($limit && $offset ? " offset {$offset}" : "");
     // messages_debug($query);
     $res = $db_conn->query($query);
 
