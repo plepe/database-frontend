@@ -1,6 +1,18 @@
 <?php
 class Page_list extends Page {
   function content($param) {
+    if(array_key_exists('limit', $param)) {
+      $_SESSION['limit'] = $param['limit'];
+    }
+    else {
+      if(array_key_exists('limit', $_SESSION))
+        $param['limit'] = $_SESSION['limit'];
+      else
+        $param['limit'] = 25;
+    }
+    if(!array_key_exists('offset', $param))
+      $param['offset'] = 0;
+
     if(!base_access('view')) {
       global $auth;
       if(!$auth->is_logged_in())
@@ -12,10 +24,13 @@ class Page_list extends Page {
     if(!$table)
       return null;
 
-    $data = array();
-    foreach(get_db_entries($param['table']) as $o) {
-      $data[$o->id] = $o->view();
-    }
+    $table_extract = new DB_TableExtract($table);
+    $table_extract->set_filter(get_filter($param));
+
+//    $data = array();
+//    foreach($table_extract->get() as $o) {
+//      $data[$o->id] = $o->view();
+//    }
 
     // if no 'view'-parameter is set, use session or view with lowest weight
     if(!isset($param['view'])) {
@@ -40,11 +55,13 @@ class Page_list extends Page {
       $view = new View_Table($def, $param);
     }
 
-    $view->set_data($data);
+    $view->set_extract($table_extract);
 
     return array(
       'template' => 'list.html',
       'table' => $param['table'],
+      'result_count' => $table_extract->count(),
+      'filter' => get_filter_form($param),
       'view' => $view,
       'param' => $param,
       'views' => $table->views('list'),

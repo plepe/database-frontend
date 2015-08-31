@@ -1,9 +1,8 @@
 <?php
-$db_entry_cache = array();
-
 class DB_Entry {
   function __construct($type, $data) {
     $this->type = $type;
+    $this->table = get_db_table($type);
 
     if($data === null) { // new object
       $this->id = null;
@@ -31,7 +30,6 @@ class DB_Entry {
    */
   function load() {
     global $db_conn;
-    $field_types = get_field_types();
 
     $db_conn->beginTransaction();
 
@@ -65,7 +63,6 @@ class DB_Entry {
     $cmds = array();
     $insert_columns = array();
     $insert_values = array();
-    $field_types = get_field_types();
 
     if(array_key_exists('id', $data))
       $new_id = $data['id'];
@@ -87,15 +84,15 @@ class DB_Entry {
     }
 
     foreach($data as $column_id=>$d) {
-      $column_def = get_db_table($this->type)->data['fields'][$column_id];
+      $field = $this->table->field($column_id);
 
-      if(array_key_exists($column_def['type'], $field_types))
-	$field_type = $field_types[$column_def['type']];
-      else
-	$field_type = new FieldType();
+      if(!$field) {
+	trigger_error("DB_Entry::save(): no such field '" . $column_id . "'", E_USER_ERROR);
+	continue;
+      }
 
       // the field has multiple values -> use extra table
-      if(($field_type->is_multiple() === true) || ($column_def['count'])) {
+      if($field->is_multiple() === true) {
 	if($this->id !== null)
 	  $cmds[] = "delete from " . $db_conn->quoteIdent($this->type . '_' . $column_id) .
 	    " where " . $db_conn->quoteIdent('id') . "=" . $db_conn->quote($this->id);
@@ -145,15 +142,10 @@ class DB_Entry {
     }
 
     foreach($data as $column_id=>$d) {
-      $column_def = get_db_table($this->type)->data['fields'][$column_id];
-
-      if(array_key_exists($column_def['type'], $field_types))
-	$field_type = $field_types[$column_def['type']];
-      else
-	$field_type = new FieldType();
+      $field = $this->table->field($column_id);
 
       // the field has multiple values -> use extra table
-      if(($field_type->is_multiple() === true) || ($column_def['count'])) {
+      if($field->is_multiple() === true) {
 
 	$sequence = 0;
 	foreach($d as $k=>$v) {
@@ -194,12 +186,11 @@ class DB_Entry {
   function remove($changeset=null) {
     global $db_conn;
     global $debug;
-    $field_types = get_field_types();
 
     if(($changeset === null) || is_string($changeset))
       $changeset = new Changeset($changeset);
 
-    foreach(get_db_table($this->type)->column_tables() as $table) {
+    foreach($this->table->column_tables() as $table) {
       $query = "delete from " . $db_conn->quoteIdent($this->type . '_' . $table) . " where id=" . $db_conn->quote($this->id);
 
       if(isset($debug) && $debug)
@@ -222,32 +213,25 @@ class DB_Entry {
    * view - return data including references to other tables
    */
   function view() {
-    $field_types = get_field_types();
-
     if(isset($this->view_cache))
       return $this->view_cache;
 
-    $type = get_db_table($this->type);
     $this->view_cache = $this->data;
 
-    foreach($type->def as $k=>$column_def) {
-      if(array_key_exists('reference', $column_def) && ($column_def['reference'] != null)) {
-	if(array_key_exists($column_def['type'], $field_types))
-	  $field_type = $field_types[$column_def['type']];
-	else
-	  $field_type = new FieldType();
-
-	if(($field_type->is_multiple() === true) || ($column_def['count'])) {
+    foreach($this->table->fields() as $field) {
+      $k = $field->id;
+      if(array_key_exists('reference', $field->def) && ($field->def['reference'] != null)) {
+	if($field->is_multiple() === true) {
 	  $this->view_cache[$k] = array();
 	  foreach($this->data[$k] as $v) {
-	    $o = get_db_entry($column_def['reference'], $v);
+	    $o = get_db_table($field->def['reference'])->get_entry($v);
 	    if($o)
 	      $this->view_cache[$k][] = &$o->view();
 	  }
 	}
 	else {
 	  if($this->data[$k]) {
-	    $o = get_db_entry($column_def['reference'], $this->data[$k]);
+	    $o = get_db_table($field->def['reference'])->get_entry($this->data[$k]);
 	    if($o)
 	      $this->view_cache[$k] = &$o->view();
 	  }
@@ -257,54 +241,4 @@ class DB_Entry {
 
     return $this->view_cache;
   }
-}
-
-function get_db_entry($type, $id) {
-  global $db_conn;
-  global $db_entry_cache;
-
-  if(!array_key_exists($type, $db_entry_cache))
-    $db_entry_cache[$type] = array();
-
-  if(!array_key_exists($id, $db_entry_cache[$type])) {
-    $res = $db_conn->query("select * from " . $db_conn->quoteIdent($type) . " where id=" . $db_conn->quote($id));
-
-    if($res === false) {
-      messages_debug("get_db_entry('{$type}', '{$id}'): query failed");
-      return null;
-    }
-
-    if($elem = $res->fetch()) {
-      $db_entry_cache[$type][$id] = new DB_Entry($type, $elem);
-    }
-    $res->closeCursor();
-  }
-
-  if(!array_key_exists($id, $db_entry_cache[$type]))
-    return null;
-
-  return $db_entry_cache[$type][$id];
-}
-
-function get_db_entries($type) {
-  global $db_conn;
-  global $db_entry_cache;
-
-  if(!array_key_exists($type, $db_entry_cache))
-    $db_entry_cache[$type] = array();
-
-  $res = $db_conn->query("select * from " . $db_conn->quoteIdent($type));
-
-  if($res === false) {
-    messages_debug("get_db_entries('{$type}'): query failed");
-    return array();
-  }
-
-  while($elem = $res->fetch()) {
-    if(!array_key_exists($elem['id'], $db_entry_cache[$type]))
-      $db_entry_cache[$type][$elem['id']] = new DB_Entry($type, $elem);
-  }
-  $res->closeCursor();
-
-  return $db_entry_cache[$type];
 }

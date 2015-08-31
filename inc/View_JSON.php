@@ -1,13 +1,11 @@
 <?php
 class View_JSON extends View {
-  function set_data($data) {
-    $this->data = $data;
-  }
-
   function show() {
+    $object = $this->extract->get(0, 1);
+
     return
       "<pre class='view_json'>\n" .
-      htmlspecialchars(json_readable_encode($this->data[0])) .
+      htmlspecialchars(json_readable_encode($object[0]->view())) .
       "</pre>\n";
   }
 }

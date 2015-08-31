@@ -16,10 +16,19 @@
     </form>
 <a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table }) }}'>Create new entry</a>
     <a class='LinkButton' href='{{ page_url({ "page": "index"}) }}'>Home</a> 
+
+    {% include 'list_pager.html' %}
   </div>
   
   <div class='PanelH1'>
     Table: {{ table }}
+  </div>
+
+  <div class='Filter'>
+  <form method='post'>
+  {{ filter|show }}
+  <input type='submit' name='apply_filter' value='Apply filter'>
+  </form>
   </div>
 
   <div class='table_wrapper'>
@@ -42,7 +51,8 @@
     </form>
     <a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table }) }}'>Create new entry</a>
     <a class='LinkButton' href='{{ page_url({ "page": "index"}) }}'>Home</a> 
-    <a class='LinkButton' href='{{ page_url({ "page": "history", "table": table }) }}'>History</a>
+    {{ panel_items(param) }}
+    {% include 'list_pager.html' %}
   </div>
 
 </div>

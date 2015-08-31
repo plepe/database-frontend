@@ -31,11 +31,11 @@ function git_dump($changeset) {
   mkdir("__system__");
 
   foreach(get_db_tables() as $table) {
-    file_put_contents("__system__/{$table->id}.json", json_readable_encode($table->data) . "\n");
+    file_put_contents("__system__/{$table->id}.json", json_readable_encode($table->data()) . "\n");
 
     mkdir($table->id);
-    foreach(get_db_entries($table->id) as $entry) {
-      file_put_contents("{$table->id}/{$entry->id}.json", json_readable_encode($entry->data) . "\n");
+    foreach($table->get_entries() as $entry) {
+      file_put_contents("{$table->id}/{$entry->id}.json", json_readable_encode($entry->data()) . "\n");
     }
   }
 
@@ -65,5 +65,24 @@ function git_dump($changeset) {
 
   chdir($cwd);
 }
+
+register_hook("panel_items", function(&$items, $param) {
+  if(!in_array($param['page'], array("show", "list")))
+    return;
+
+  $ret = array(
+    'title' => 'History',
+    'url' => array(
+      'page'  => 'history',
+      'table' => $param['table'],
+    ),
+  );
+
+  if(array_key_exists('id', $param)) {
+    $ret['url']['id'] = $param['id'];
+  }
+
+  $items[] = $ret;
+});
 
 register_hook("changeset_commit", "git_dump");

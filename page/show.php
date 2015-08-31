@@ -14,9 +14,13 @@ class Page_show extends Page {
     if(!$table)
       return null;
 
-    $object = get_db_entry($param['table'], $param['id']);
+    $object = $table->get_entry($param['id']);
     if(!$object)
       return null;
+
+    $table_extract = new DB_TableExtract($table);
+    $table_extract->set_filter(get_filter($param));
+    $pager_index = $table_extract->index($object->id);
 
     // if no 'view'-parameter is set, use session or view with lowest weight
     if(!isset($param['view'])) {
@@ -41,7 +45,39 @@ class Page_show extends Page {
       $view = new View_Table($def, $param);
     }
 
-    $view->set_data(array($object->view()));
+    $extract = new DB_TableExtract($table);
+    $extract->set_ids(array($object->id));
+    $view->set_extract($extract);
+
+    // compile pager data
+    $pager = array(
+      'index' => $pager_index,
+      'result_count' => $table_extract->count(),
+    );
+    $ob = array_values($table_extract->get(0, 1));
+    if(sizeof($ob))
+      $pager['first'] = $ob[0]->id;
+
+    $ob = array_values($table_extract->get($table_extract->count() - 1, 1));
+    if(sizeof($ob))
+      $pager['last'] = $ob[0]->id;
+
+    if($pager_index === false) {
+    }
+    elseif($pager_index === 0) {
+      $ob = array_values($table_extract->get(1, 1));
+      $pager['next'] = $ob[0]->id;
+    }
+    else {
+      $ob = array_values($table_extract->get($pager_index - 1, 3));
+      if(sizeof($ob) > 2) {
+        $pager['prev'] = $ob[0]->id;
+        $pager['next'] = $ob[2]->id;
+      }
+      elseif(sizeof($ob) > 1) {
+        $pager['prev'] = $ob[0]->id;
+      }
+    }
 
     return array(
       'template' => "show.html",
@@ -51,6 +87,7 @@ class Page_show extends Page {
       'param' => $param,
       'views' => $table->views('show'),
       'data' => $object->view(),
+      'pager' => $pager,
     );
   }
 }

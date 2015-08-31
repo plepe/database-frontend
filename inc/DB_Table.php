@@ -25,6 +25,7 @@ class DB_Table {
   function __construct($type, $data) {
     $this->id = $type;
     $this->data = $data;
+    $this->entries_cache = array();
 
     // set 'old_key' for each field, so that later save() will leave
     // database structure intact. $new_data still has old_key information from
@@ -47,22 +48,49 @@ class DB_Table {
     return $this->data;
   }
 
-  function column_tables($data=null) {
-    $field_types = get_field_types();
+  /**
+   * return list of fields
+   * @return Field[] all fields of the table
+   */
+  function fields() {
+    if(!isset($this->_fields)) {
+      $this->_fields = array();
 
-    if($data === null)
-      $data = $this->data;
+      foreach($this->def as $column_id=>$column_def) {
+        $type = "Field";
+        if(isset($column_def['type']) && class_exists("Field_{$column_def['type']}"))
+          $type = "Field_{$column_def['type']}";
 
+        $this->_fields[$column_id] = new $type($column_id, $column_def, $this);
+      }
+    }
+
+    return $this->_fields;
+  }
+
+  /**
+   * return the specified field or null
+   * @param string field_id field id
+   * @return Field the specified field
+   */
+  function field($field_id) {
+    $this->fields();
+
+    if(array_key_exists($field_id, $this->_fields))
+      return $this->_fields[$field_id];
+
+    return null;
+  }
+
+  /**
+   * return list of field ids whose values are stored in sub tables
+   */
+  function column_tables() {
     $ret = array();
 
-    foreach($data['fields'] as $column_id=>$column_def) {
-      if(array_key_exists($column_def['type'], $field_types))
-	$field_type = $field_types[$column_def['type']];
-      else
-	$field_type = new FieldType();
-
-      if(($field_type->is_multiple() === true) || ($column_def['count'])) {
-	$ret[] = $column_id;
+    foreach($this->fields() as $field) {
+      if($field->is_multiple() === true) {
+	$ret[] = $field->id;
       }
     }
 
@@ -293,7 +321,7 @@ class DB_Table {
     foreach($this->def as $k=>$d) {
       if(array_key_exists('reference', $d) && ($d['reference'] !== null)) {
 	$values = array();
-	foreach(get_db_entries($d['reference']) as $o) {
+	foreach(get_db_table($d['reference'])->get_entries() as $o) {
 	  $values[$o->id] = $o->view();
 	}
 
@@ -330,56 +358,16 @@ class DB_Table {
   }
 
   function view_def($k) {
-    $field_types = get_field_types();
-
     if($k == 'default') {
       $def = $this->def();
 
       // special formats for default view
       // * referenced tables
       // * fields with multiple values
-      foreach($def as $column_id => $column_def) {
-	if(array_key_exists($column_def['type'], $field_types))
-	  $field_type = $field_types[$column_def['type']];
-	else
-	  $field_type = new FieldType();
+      foreach($this->fields() as $column_id=>$field) {
+	$column_def = $field->def;
 
-	if($column_def['reference']) {
-	  if(($field_type->is_multiple() === true) || ($column_def['count'])) {
-	    $def[$column_id]['format'] =
-	      "<ul class='MultipleValues'>\n" .
-	      "{% for _ in {$column_id} %}\n" .
-	      "<li><a href='{{ page_url({ \"page\": \"show\", \"table\": \"{$column_def['reference']}\", \"id\": _.id }) }}'>" .
-	      $field_type->default_format("_.id") .
-	      "</a>" .
-	      "{% endfor %}\n" .
-	      "</ul>\n";
-	  }
-	  else {
-	    $def[$column_id]['format'] = "<a href='{{ page_url({ \"page\": \"show\", \"table\": \"{$column_def['reference']}\", \"id\": {$column_id}.id }) }}'>" .
-	    $field_type->default_format("{$column_id}.id") .
-	    "</a>";
-	  }
-	}
-	else {
-	  if(($field_type->is_multiple() === true) || ($column_def['count'])) {
-	    $def[$column_id]['format'] =
-	      "<ul class='MultipleValues'>\n" .
-	      "{% for _ in {$column_id} %}\n" .
-	      "<li>" . $field_type->default_format('_') . "</li>\n" .
-	      "{% endfor %}\n" .
-	      "</ul>\n";
-	  }
-	  else {
-	    $def[$column_id]['format'] = $field_type->default_format($column_id);
-	  }
-	}
-
-	if(!array_key_exists('sortable', $column_def)) {
-	  $def[$column_id]['sortable'] = array(
-	    'type' => 'nat',
-	  );
-	}
+	$def[$column_id] = $field->view_def();
       }
 
       return array(
@@ -409,30 +397,18 @@ class DB_Table {
     foreach($this->data['views'][$k]['fields'] as $i=>$d) {
       $key = $d['key'];
 
-      $column_def = array_key_exists($key, $def) ? $def[$key] : null;
-
-      if($column_def && array_key_exists($column_def['type'], $field_types))
-	$field_type = $field_types[$column_def['type']];
-      else
-	$field_type = new FieldType();
-
-      if($key == '__custom__')
+      if($key == '__custom__') {
 	$key = "__custom{$i}__";
+	$field = new Field(null, array(), $this);
+      }
+      else {
+	$field = $this->field($d['key']);
+      }
 
-      $d['name'] = $d['title'] ? $d['title'] : $def[$d['key']]['name'];
-
-      $is_multiple = (($field_type->is_multiple() === true) || ($column_def['count']));
+      $d['name'] = $d['title'] ? $d['title'] : $field->def['name'];
 
       if(!array_key_exists('format', $d) || ($d['format'] === null)) {
-	if($is_multiple)
-	  $d['format'] =
-	    "<ul>\n" .
-	    "{% for _ in {$key} %}\n" .
-	    "  <li>" . $field_type->default_format('_') . "</li>\n" .
-	    "{% endfor %}\n" .
-	    "</ul>\n";
-	else
-	  $d['format'] = $field_type->default_format($key);
+	$field->view_def();
       }
 
       $ret['fields'][$key] = $d;
@@ -580,6 +556,183 @@ class DB_Table {
     $changeset->add($this);
 
     return true;
+  }
+
+  function compile_filter($filter) {
+    global $db_conn;
+    $ret = array();
+
+    foreach($filter as $f) {
+      if($f['field'] && $f['op'] && $f['value']) {
+        $field = $this->field($f['field']);
+        if($field == null)
+          continue;
+
+        $r = $field->compile_filter($f);
+        if($r === null) {
+          messages_add("Can't compile filter " . printf($f, 1), MSG_ERROR);
+          continue;
+        }
+
+        $ret[] = array(
+          'table' => $field->sql_table_quoted(),
+          'query' => $r,
+        );
+      }
+    }
+
+    if(sizeof($ret))
+      return $ret;
+
+    return null;
+  }
+
+  function compile_sort($sort) {
+    global $db_conn;
+    $ret = array();
+
+    if(!$sort)
+      return null;
+
+    foreach($sort as $f) {
+      if($f['key']) { //TODO: 'field' instead of 'key'
+        $field = $this->field($f['key']);
+        if($field == null)
+          continue;
+
+        $r = $field->compile_sort($f);
+        if($r === null) {
+          messages_add("Can't compile filter " . printf($f, 1), MSG_ERROR);
+          continue;
+        }
+
+        $ret[] = array(
+          'table' => $field->sql_table_quoted(),
+          'sort' => $r,
+        );
+      }
+    }
+
+    if(sizeof($ret))
+      return $ret;
+
+    return null;
+  }
+
+  function get_entry($id) {
+    global $db_conn;
+    global $db_entry_cache;
+
+    if(!array_key_exists($id, $this->entries_cache)) {
+      $res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->id) . " where id=" . $db_conn->quote($id));
+
+      if($res === false) {
+        messages_debug("Table '{$this->id}'->get_entry('{$id}'): query failed");
+        return null;
+      }
+
+      if($elem = $res->fetch()) {
+        $this->entries_cache[$id] = new DB_Entry($this->id, $elem);
+      }
+      $res->closeCursor();
+    }
+
+    if(!array_key_exists($id, $this->entries_cache))
+      return null;
+
+    return $this->entries_cache[$id];
+  }
+
+  function get_entries_by_id($ids) {
+    global $db_conn;
+    global $db_entry_cache;
+
+    $ret = array();
+    foreach($ids as $id) {
+      $ret[$id] = $this->get_entry($id);
+    }
+
+    return $ret;
+  }
+
+  function get_entry_ids($filter=array(), $sort=array(), $offset=0, $limit=null) {
+    global $db_conn;
+    global $db_entry_cache;
+
+    $compiled_filter = $this->compile_filter($filter);
+    $compiled_sort = $this->compile_sort($sort);
+
+    $tables = array();
+    $query = array();
+    if($compiled_filter !== null) foreach($compiled_filter as $f) {
+      if(array_key_exists('table', $f))
+        $tables[$f['table']] = true;
+
+      $query[] = $f['query'];
+    }
+
+    $order = array();
+    if($compiled_sort !== null) foreach($compiled_sort as $f) {
+      if(array_key_exists('table', $f))
+        $tables[$f['table']] = true;
+
+      $order[] = $f['sort'];
+    }
+
+    $main_table_quoted = $db_conn->quoteIdent($this->id);
+    unset($tables[$main_table_quoted]);
+
+    $joined_tables = "";
+    foreach($tables as $t=>$dummy) { // $t is always quoted
+      $joined_tables .= " left join {$t} on {$main_table_quoted}.id = {$t}.id";
+    }
+
+    if(sizeof($query))
+      $query = " where " . implode(" and ", $query);
+    else
+      $query = "";
+
+    if(sizeof($order))
+      $order = " order by " . implode(", ", $order);
+    else
+      $order = "";
+
+    // check validity of limit and offset
+    if($limit && (!preg_match("/^[0-9]+$/", $limit)))
+      unset($limit);
+    if($offset && (!preg_match("/^[0-9]+$/", $offset)))
+      unset($offset);
+
+    $query =
+      "select distinct " . $db_conn->quoteIdent($this->id) . ".id " .
+      "from " . $db_conn->quoteIdent($this->id) . $joined_tables .
+      $query . $order .
+      ($limit ? " limit {$limit}" : "") .
+      ($limit && $offset ? " offset {$offset}" : "");
+    // messages_debug($query);
+    $res = $db_conn->query($query);
+
+    if($res === false) {
+      messages_debug("Table '{$this->id}'->get_entries(): query failed");
+      return array();
+    }
+
+    $ret = array();
+    while($elem = $res->fetch()) {
+      $ret[] = $elem['id'];
+    }
+    $res->closeCursor();
+
+    return $ret;
+  }
+
+  function get_entries($filter=array(), $sort=array(), $offset=0, $limit=null) {
+    $ids = $this->get_entry_ids($filter, $sort, $offset, $limit);
+    return $this->get_entries_by_id($ids);
+  }
+
+  function get_entry_count($filter=array()) {
+    return sizeof($this->get_entry_ids($filter));
   }
 }
 

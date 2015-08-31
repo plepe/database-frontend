@@ -4,4 +4,8 @@ class View {
     $this->def = $def;
     $this->param = $param;
   }
+
+  function set_extract($extract) {
+    $this->extract = $extract;
+  }
 }

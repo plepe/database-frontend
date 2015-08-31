@@ -51,7 +51,7 @@ class Page_import_export extends Page {
 
 	$data[$table->id] = array();
 
-	foreach(get_db_entries($table->id) as $entry) {
+	foreach($table->get_entries() as $entry) {
 	  $data[$table->id][] = $entry->data();
 	}
       }

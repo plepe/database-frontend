@@ -1,15 +1,11 @@
 <?php
 class View_Table extends View {
-  function set_data($data) {
-    $this->data = $data;
-  }
-
   function show() {
-    $view = new table($this->def['fields'], array($this->data[0]), array("template_engine"=>"twig"));
+    $view = new table($this->def['fields'], $this->extract, array("template_engine"=>"twig"));
     return $view->show('html-transposed');
   }
 
-  function show_list($entries) {
+  function show_list() {
     $this->def['fields']['__links'] = array(
       "name" => "",
       "format" => 
@@ -22,8 +18,8 @@ class View_Table extends View {
 	"'>Edit</a>",
     );
 
-    $view = new table($this->def['fields'], $this->data, array("template_engine"=>"twig"));
+    $view = new table($this->def['fields'], $this->extract, array("template_engine"=>"twig"));
 
-    return $view->show();
+    return $view->show('html', $this->param);
   }
 }
