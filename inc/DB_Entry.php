@@ -25,6 +25,10 @@ class DB_Entry {
     return $this->data;
   }
 
+  function name() {
+    return $this->id;
+  }
+
   /**
    * load - (re-)load data from database
    */
