@@ -816,3 +816,15 @@ function ajax_db_table_get_entries_by_id($param) {
 
   return $ret;
 }
+
+function ajax_db_table_get_entry_ids($param) {
+  $table = get_db_table($param['table']);
+
+  return $table->get_entry_ids($param['filter'], $param['sort'], $param['offset'], $param['limit']);
+}
+
+function ajax_db_table_get_entry_count($param) {
+  $table = get_db_table($param['table']);
+
+  return $table->get_entry_count($param['filter']);
+}

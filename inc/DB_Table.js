@@ -1,6 +1,6 @@
 function DB_Table(type, callback) {
   this.id = type;
-  this.data = null;
+  this._data = null;
   this.entries_cache = {};
   this.load(callback);
 }
@@ -150,12 +150,70 @@ DB_Table.prototype._request_additional_ids = function() {
 }
 
 DB_Table.prototype.get_entry_ids = function(filter, sort, offset, limit, callback) {
+  if(typeof filter == 'function') {
+    callback = filter;
+    filter = null;
+  }
+  if(typeof sort == 'function') {
+    callback = sort;
+    sort = null;
+  }
+  if(typeof offset == 'function') {
+    callback = offset;
+    offset = null;
+  }
+  if(typeof limit == 'function') {
+    callback = limit;
+    limit = null;
+  }
+
+  ajax("db_table_get_entry_ids", {
+    'table': this.id,
+    'filter': filter,
+    'sort': sort,
+    'offset': offset,
+    'limit': limit
+  }, function(callback, result) {
+    callback(result);
+  }.bind(this, callback));
 }
 
 DB_Table.prototype.get_entries = function(filter, sort, offset, limit, callback) {
+  if(typeof filter == 'function') {
+    callback = filter;
+    filter = null;
+  }
+  if(typeof sort == 'function') {
+    callback = sort;
+    sort = null;
+  }
+  if(typeof offset == 'function') {
+    callback = offset;
+    offset = null;
+  }
+  if(typeof limit == 'function') {
+    callback = limit;
+    limit = null;
+  }
+
+  this.get_entry_ids(filter, sort, offset, limit,
+    function(callback, result) {
+      this.get_entries_by_id(result, callback);
+    }.bind(this, callback));
 }
 
 DB_Table.prototype.get_entry_count = function(filter, callback) {
+  if(typeof filter == 'function') {
+    callback = filter;
+    filter = null;
+  }
+
+  ajax("db_table_get_entry_count", {
+    'table': this.id,
+    'filter': filter,
+  }, function(callback, result) {
+    callback(result);
+  }.bind(this, callback));
 }
 
 function get_db_table(type, callback) {
