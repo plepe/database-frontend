@@ -796,3 +796,23 @@ function get_db_tables() {
 
   return $db_table_cache;
 }
+
+function ajax_db_table_load($param) {
+  $table = get_db_table($param['table']);
+  if(!$table)
+    return null;
+
+  return $table->view();
+}
+
+function ajax_db_table_get_entries_by_id($param) {
+  $table = get_db_table($param['table']);
+
+  $ret = array();
+
+  foreach($table->get_entries_by_id($param['ids']) as $entry) {
+    $ret[] = $entry->view();
+  }
+
+  return $ret;
+}
