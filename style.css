@@ -136,3 +136,16 @@ pre.view_json {
   color: #5E5E5E;
   padding: 2px;
 }
+
+/* Pager */
+span.pager {
+  position: relative;
+}
+form.pager_options {
+  position: absolute;
+  white-space: nowrap;
+  left: 0px;
+  background: white;
+  background: #E8EEF3;
+  border: solid 1px #C7C6E1;
+}

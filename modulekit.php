@@ -31,6 +31,7 @@ $include = array(
   'js' => array(
     'inc/str_to_id.js',
     'inc/index.js',
+    'inc/pager.js',
   ),
 
   'css' => array(

@@ -60,6 +60,8 @@ class Page_list extends Page {
 
     $view->set_extract($table_extract);
 
+    html_export_var(array("limit" => $param['limit']));
+
     return array(
       'template' => 'list.html',
       'table' => $param['table'],
