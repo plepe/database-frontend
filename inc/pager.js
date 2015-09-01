@@ -26,9 +26,9 @@ register_hook('init', function() {
       for(var i in limits) {
         var option = document.createElement('option');
         option.value = limits[i];
-        if(limits[i] == limit)
+        if(limits[i] == param.limit)
           option.selected = true;
-        if((limits[i] == 0) && (limit == null))
+        if((limits[i] == 0) && (param.limit == null))
           option.selected = true;
 
         option.appendChild(document.createTextNode(limits[i] == 0 ? "∞" : limits[i]));
