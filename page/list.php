@@ -2,6 +2,9 @@
 class Page_list extends Page {
   function content($param) {
     if(array_key_exists('limit', $param)) {
+      if($param['limit'] == 0)
+        $param['limit'] = null;
+
       $_SESSION['limit'] = $param['limit'];
     }
     else {
