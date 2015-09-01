@@ -99,21 +99,54 @@ DB_Table.prototype.get_entries_by_id = function(ids, callback) {
     return;
   }
 
+  if(!this.request_additional_ids)
+    this.request_additional_ids = [];
+  this.request_additional_ids.push([ ids_todo, ret, callback ]);
+
+  if(!this.request_additional_ids_timeout)
+    this.request_additional_ids_timeout = window.setTimeout(this._request_additional_ids.bind(this), 1);
+}
+
+DB_Table.prototype._request_additional_ids = function() {
+  var ids_todo = [];
+  for(var i = 0; i < this.request_additional_ids.length; i++) {
+    for(var j = 0; j < this.request_additional_ids[i][0].length; j++) {
+      var id = this.request_additional_ids[i][0][j];
+
+      if(ids_todo.indexOf(id) == -1)
+        ids_todo.push(id);
+    }
+  }
+
   // request additional entries
   ajax("db_table_get_entries_by_id", {
     'table': this.id,
     'ids': ids_todo,
-  }, function(callback, ret, result) {
-    // ret is already populated with known ids
+  }, function(request, result) {
+    // load all information from database
     for(var i = 0; i < result.length; i++) {
       var entry = result[i];
 
       this.entries_cache[entry.id] = new DB_Entry(this, entry.id, entry);
-      ret.push(this.entries_cache[entry.id]);
+    }
+
+    // now process all requests and complete information if possible
+    for(var i = 0; i < request.length; i++) {
+      var ids_todo = request[i][0];
+      var ret = request[i][1];
+      var callback = request[i][2];
+
+      for(var j = 0; j < ids_todo.length; j++) {
+        if(ids_todo[j] in this.entries_cache)
+          ret.push(this.entries_cache[ids_todo[j]]);
+      }
 
       callback(ret);
     }
-  }.bind(this, callback, ret));
+  }.bind(this, this.request_additional_ids));
+
+  this.request_additional_ids = null;
+  this.request_additional_ids_timeout = null;
 }
 
 DB_Table.prototype.get_entry_ids = function(filter, sort, offset, limit, callback) {
