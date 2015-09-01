@@ -10,10 +10,29 @@ register_hook('init', function() {
 
       //// Open window
       var pager_options = document.createElement('form');
-      pager_options.method = 'post';
+      pager_options.method = 'get';
       pager_options.className = 'pager_options';
 
       pager_options.appendChild(document.createTextNode('Results per page: '));
+
+      // Parameters
+      var p = document.createElement('input');
+      p.type = 'hidden';
+      p.name = 'page';
+      p.value = param.page;
+      pager_options.appendChild(p);
+
+      var p = document.createElement('input');
+      p.type = 'hidden';
+      p.name = 'table';
+      p.value = param.table;
+      pager_options.appendChild(p);
+
+      var p = document.createElement('input');
+      p.type = 'hidden';
+      p.name = 'offset';
+      p.value = 0;
+      pager_options.appendChild(p);
 
       //// Limit select
       var select = document.createElement('select');
