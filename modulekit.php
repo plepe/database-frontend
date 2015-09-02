@@ -34,6 +34,7 @@ $include = array(
     'inc/pager.js',
     'inc/DB_Table.js',
     'inc/DB_Entry.js',
+    'inc/DB_TableExtract.js',
     'inc/twig_show.js',
     'inc/panel.js',
   ),
