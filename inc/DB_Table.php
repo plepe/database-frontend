@@ -408,7 +408,7 @@ class DB_Table {
       $d['name'] = $d['title'] ? $d['title'] : $field->def['name'];
 
       if(!array_key_exists('format', $d) || ($d['format'] === null)) {
-	$field->view_def();
+	$d['format'] = $field->view_def()['format'];
       }
 
       $ret['fields'][$key] = $d;
