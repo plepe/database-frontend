@@ -34,7 +34,22 @@ DB_Table.prototype.view = function() {
  * @return Field[] all fields of the table
  */
 DB_Table.prototype.fields = function() {
-  return [];
+  if(!this._fields) {
+    this._fields = {};
+
+    for(var column_id in this._data.fields) {
+      var column_def = this._data.fields[column_id];
+
+      var type = 'Field';
+      if(column_def.type && window['Field_' + column_def.type])
+        type = 'Field_' + column_def.type;
+
+      this._fields[column_id] = new window[type]();
+      this._fields[column_id].init(column_id, column_def, this);
+    }
+  }
+
+  return this._fields;
 }
 
 /**
@@ -43,6 +58,12 @@ DB_Table.prototype.fields = function() {
  * @return Field the specified field
  */
 DB_Table.prototype.field = function(field_id) {
+  this.fields();
+
+  if(this._fields[field_id])
+    return this._fields[field_id];
+
+  return null;
 }
 
 DB_Table.prototype.def = function() {
