@@ -67,7 +67,27 @@ DB_Table.prototype.field = function(field_id) {
 }
 
 DB_Table.prototype.def = function() {
-  var ret = this._data.fields;
+  var ret = JSON.parse(JSON.stringify(this._data.fields));
+
+  for(var k in this.def) {
+    var d = this.def[k];
+
+    if(d.reference) {
+      ret[k].values = [];
+
+      get_db_table(d.reference, function(values, t) {
+        t.get_entries(function(values, os) {
+          for(var i in os) {
+            var o = os[i];
+            values[o.id] = o.view();
+          }
+        }.bind(this, values));
+      }.bind(this, ret[k].values));
+
+      if(!ret[k].format)
+        ret[k].format = "{{ " + k + ".name }}";
+    }
+  }
 
 //  for(var k in this._data.fields) {
 //    var d = this._data.fields[k];
@@ -79,13 +99,104 @@ DB_Table.prototype.def = function() {
   return ret;
 }
 
-DB_Table.prototype.views = function() {
+/**
+ * @param string type 'list' or 'show'
+ */
+DB_Table.prototype.views = function(type) {
+  var views = {};
+
+  if(this._data.views)
+    views = this._data.views;
+
+  views.default = {
+    'title': 'Default',
+    'weight_list': -1,
+    'weight_show': -1
+  };
+
+  if(type == 'show') {
+    views.json = {
+      'title': 'JSON',
+      'weight_show': 100,
+      'class': 'JSON'
+    };
+  }
+
+  views = weight_sort(views, 'weight_' + type);
+
+  return views;
 }
 
-DB_Table.prototype.view_def = function() {
+/**
+ * @param string k id of a view
+ */
+DB_Table.prototype.view_def = function(k) {
+  if(k == 'default') {
+    var def = this.def();
+    var fields = this.fields();
+
+    for(var column_id in fields) {
+      var field = fields[column_id];
+
+      def[column_id] = field.view_def();
+    }
+
+    return {
+      'title': 'Default',
+      'weight_show': -1,
+      'weight_list': -1,
+      'fields': def
+    };
+  }
+
+  if(k == 'json') {
+    return {
+      'title': 'JSON',
+      'class': 'JSON',
+      'weight_show': 100,
+      'fields': this.def()
+    };
+  }
+
+  if(!this._data.views[k]) {
+    // messages_add("View does not exist!", MSG_ERROR);
+    return {};
+  }
+
+  var def = this.def();
+  ret = JSON.parse(JSON.stringify(this._data.views[k]));
+  ret.fields = {};
+
+  for(var i in this._data.views[k].fields) {
+    var d = JSON.parse(JSON.stringify(this._data.views[k].fields[i]));
+    var key = d.key;
+    var field;
+
+    if(key == '__custom__') {
+      key = '__custom' + i + '__';
+      field = new Field();
+      field.init(null, {}, this);
+    }
+    else {
+      field = this.field(key);
+    }
+
+    d.name = d.title ? d.title : field.def.name;
+
+    if(!d.format) {
+      d.format = field.view_def().format;
+    }
+
+    ret.fields[key] = d;
+  }
+
+  return ret;
 }
 
 DB_Table.prototype.default_view = function(type) {
+  var view = this.views(type);
+  for(var k in view)
+    return k;
 }
 
 DB_Table.prototype.save = function(data, changeset, callback) {

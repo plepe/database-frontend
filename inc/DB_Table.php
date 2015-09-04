@@ -334,6 +334,9 @@ class DB_Table {
     return $ret;
   }
 
+  /**
+   * @param string $type 'list' or 'show'
+   */
   function views($type) { // type: 'list' or 'show'
     $views = array();
 
