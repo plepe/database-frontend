@@ -8,10 +8,10 @@ window.onload = function() {
 
     if(window[page]) {
       var page = new window[page]();
-      var content = page.content(param);
-
-      twig_render_into(document.body, content.template, content, function(page, param) {
-        page.connect(param);
+      page.content(param, function(page, param, content) {
+        twig_render_into(document.body, content.template, content, function(page, param) {
+          page.connect(param);
+        }.bind(this, page, param));
       }.bind(this, page, param));
     }
   }

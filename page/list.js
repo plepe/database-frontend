@@ -1,7 +1,7 @@
 function Page_list() {
 }
 
-Page_list.prototype.content = function(param) {
+Page_list.prototype.content = function(param, callback) {
   this.param = param;
 
   if(!this.param.limit)
@@ -9,16 +9,7 @@ Page_list.prototype.content = function(param) {
   if(!this.param.offset)
     this.param.offset = 0;
 
-  return {
-    'template': 'list.html',
-    'table': this.param.table
-  };
-}
-
-Page_list.prototype.connect = function(param) {
-  this.param = param;
-
-  get_db_table(this.param.table, function(ob) {
+  get_db_table(this.param.table, function(callback, ob) {
     this.db_table = ob;
     this.data = new DB_TableExtract(this.db_table);
 
@@ -38,7 +29,15 @@ Page_list.prototype.connect = function(param) {
       x[0].innerHTML = r;
     });
 
-    var obs = document.getElementsByClassName('Pager');
-    new Pager(this, obs);
-  }.bind(this));
+    callback({
+      'param': this.param,
+      'template': 'list.html',
+      'table': this.param.table,
+    });
+  }.bind(this, callback));
+}
+
+Page_list.prototype.connect = function(param, callback) {
+  var obs = document.getElementsByClassName('Pager');
+  new Pager(this, obs);
 }
