@@ -33,6 +33,7 @@ Page_list.prototype.content = function(param, callback) {
       'param': this.param,
       'template': 'list.html',
       'table': this.param.table,
+      'views': this.db_table.views('list')
     });
   }.bind(this, callback));
 }
