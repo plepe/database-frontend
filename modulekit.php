@@ -26,7 +26,7 @@ $include = array(
     'inc/Changeset.php',
     'inc/Field.php',
     'inc/filter.php',
-    'page/*',
+    'page/*.php',
   ),
   'js' => array(
     'inc/str_to_id.js',
@@ -38,6 +38,7 @@ $include = array(
     'inc/Field.js',
     'inc/twig_show.js',
     'inc/panel.js',
+    'page/*.js',
   ),
 
   'css' => array(
