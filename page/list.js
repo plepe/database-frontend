@@ -8,19 +8,23 @@ Page_list.prototype.content = function(param) {
 }
 
 Page_list.prototype.connect = function(param) {
-  get_db_table('computer', function(ob) {
+  get_db_table(param.table, function(param, ob) {
     this.db_table = ob;
     this.data = new DB_TableExtract(this.db_table);
 
-    var def = this.db_table.view_def('Overview');
-    console.log(def);
+    var view = this.db_table.default_view('list');
+    var def = this.db_table.view_def(view);
     var t = new table(def.fields, this.data, { 'template_engine': 'twig' });
-    console.log(this.db_table.default_view('show'));
 
-    t.show(function(r) {
+    t.show('html',
+    {
+      'limit': param.limit || 25,
+      'offset': param.offset || 0
+    },
+    function(r) {
       var x = document.getElementsByClassName('table_wrapper');
       x[0].innerHTML = r;
-    }, { 'limit': 1, 'offset': 0 });
+    });
 
-  }.bind(this));
+  }.bind(this, param));
 }
