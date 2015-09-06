@@ -38,5 +38,7 @@ Page_list.prototype.connect = function(param) {
       x[0].innerHTML = r;
     });
 
+    var obs = document.getElementsByClassName('Pager');
+    new Pager(this, obs);
   }.bind(this));
 }

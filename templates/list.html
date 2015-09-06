@@ -17,7 +17,9 @@
 <a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table }) }}'>Create new entry</a>
     <a class='LinkButton' href='{{ page_url({ "page": "index"}) }}'>Home</a> 
 
+    <span class='Pager'>
     {% include 'list_pager.html' %}
+    </span>
   </div>
   
   <div class='PanelH1'>
@@ -52,7 +54,9 @@
     <a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table }) }}'>Create new entry</a>
     <a class='LinkButton' href='{{ page_url({ "page": "index"}) }}'>Home</a> 
     {{ panel_items(param) }}
+    <span class='Pager'>
     {% include 'list_pager.html' %}
+    </span>
   </div>
 
 </div>
