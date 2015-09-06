@@ -5,8 +5,8 @@ function DB_TableExtract(table) {
   this.ids = null;
 }
 
-DB_TableExtract.prototype.count = function() {
-  return this.table.get_entry_count(this.filter);
+DB_TableExtract.prototype.count = function(callback) {
+  this.table.get_entry_count(this.filter, callback);
 }
 
 DB_TableExtract.prototype.set_sort = function(sort) {
