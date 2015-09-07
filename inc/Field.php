@@ -153,7 +153,7 @@ class Field_textarea extends Field {
 }
 
 class FieldWithValues extends Field {
-  function default_format($key) {
+  function default_format($key=null) {
     if($key === null)
       $key = $this->id;
 
