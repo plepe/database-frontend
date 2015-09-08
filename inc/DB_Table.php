@@ -656,34 +656,38 @@ class DB_Table {
     global $db_entry_cache;
     $data = array();
 
-    $where_quoted = implode(" or ", array_map(function($x) {
-      global $db_conn;
-      return "id=" . $db_conn->quote($x);
-    }, $ids));
+    $to_load_ids = array_diff($ids, array_keys($this->entries_cache));
 
-    // bulk loading data of ids
-    $db_conn->beginTransaction();
+    if(sizeof($to_load_ids)) {
+      $where_quoted = implode(" or ", array_map(function($x) {
+	global $db_conn;
+	return "id=" . $db_conn->quote($x);
+      }, $to_load_ids));
 
-    $res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->id) . " where " . $where_quoted);
-    while($elem = $res->fetch()) {
-      $data[$elem['id']] = $elem;
-    }
-    $res->closeCursor();
+      // bulk loading data of ids
+      $db_conn->beginTransaction();
 
-    foreach($this->column_tables() as $table) {
-      $res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->id . '_' . $table) . " where " . $where_quoted);
-      $this->data[$table] = array();
-      while($elem = $res->fetch())
-	$data[$elem['id']][$table][$elem['key']] = $elem['value'];
+      $res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->id) . " where " . $where_quoted);
+      while($elem = $res->fetch()) {
+	$data[$elem['id']] = $elem;
+      }
       $res->closeCursor();
-    }
 
-    $db_conn->commit();
+      foreach($this->column_tables() as $table) {
+	$res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->id . '_' . $table) . " where " . $where_quoted);
+	$this->data[$table] = array();
+	while($elem = $res->fetch())
+	  $data[$elem['id']][$table][$elem['key']] = $elem['value'];
+	$res->closeCursor();
+      }
+
+      $db_conn->commit();
+    }
 
     // create all entries
     $ret = array();
     foreach($ids as $id) {
-      $ret[$id] = $this->get_entry($id, $data[$id]);
+      $ret[$id] = $this->get_entry($id, array_key_exists($id, $data) ? $data[$id] : null);
     }
 
     return $ret;
