@@ -627,7 +627,7 @@ class DB_Table {
     global $db_entry_cache;
 
     if(!array_key_exists($id, $this->entries_cache)) {
-      $res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->id) . " where id=" . $db_conn->quote($id));
+      $res = $db_conn->query("select id from " . $db_conn->quoteIdent($this->id) . " where id=" . $db_conn->quote($id));
 
       if($res === false) {
         messages_debug("Table '{$this->id}'->get_entry('{$id}'): query failed");
