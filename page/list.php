@@ -16,6 +16,17 @@ class Page_list extends Page {
     if(!array_key_exists('offset', $param))
       $param['offset'] = 0;
 
+    if(array_key_exists('sort', $param)) {
+      $_SESSION['sort'] = $param['sort'];
+      $_SESSION['sort_dir'] = !array_key_exists('sort_dir', $param) ? $param['sort_dir'] : 'asc';
+    }
+    else {
+      if(array_key_exists('sort', $_SESSION)) {
+	$param['sort'] = $_SESSION['sort'];
+	$param['sort_dir'] = $_SESSION['sort_dir'];
+      }
+    }
+
     if(!base_access('view')) {
       global $auth;
       if(!$auth->is_logged_in())
