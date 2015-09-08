@@ -9,15 +9,19 @@ if(!isset($data_path) || !is_dir($data_path) || !is_writeable($data_path)) {
   exit;
 }
 ?>
+<?php print '0' . microtime(true). "\n"; ?>
 <?php include "modulekit/loader.php"; /* loads all php-includes */ ?>
 <?php session_start(); ?>
+<?php print 'A' . microtime(true). "\n"; ?>
 <?php call_hooks("init"); ?>
+<?php print 'B' . microtime(true). "\n"; ?>
 <?php Header('Content-Type: text/html; charset=utf-8'); ?>
 <?php
 if(!array_key_exists('page', $_REQUEST))
   $_REQUEST['page'] = 'index';
 
 $ret = null;
+print 'C' . microtime(true). "\n";
 $page = get_page($_REQUEST);
 if($page) {
   $ret = $page->content($_REQUEST);
@@ -33,7 +37,8 @@ if($ret === null) {
   $ret = file_get_contents("templates/404.html");
 }
 
-print twig_render("page.html", array(
+print 'D' . microtime(true). "\n";
+$x = twig_render("page.html", array(
   'content' => $ret,
   'messages' => messages_print(),
   'add_headers' =>
@@ -44,3 +49,5 @@ print twig_render("page.html", array(
   'app' => $app,
   'user_info' => auth_user_info() ,
 ));
+print 'E' . microtime(true). "\n";
+print $x;
