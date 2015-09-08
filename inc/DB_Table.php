@@ -19,6 +19,8 @@ create table __system__ (
 EOT
     );
   }
+
+  $db_table_is_init = true;
 }
 
 class DB_Table {
