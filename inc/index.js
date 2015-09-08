@@ -1,18 +1,27 @@
-window.onload = function() {
-  call_hooks("init");
+var current_page = null;
 
-  var param = page_resolve_url_params();
-
+function open_page(param) {
   if(param.page) {
     var page = "Page_" + param.page;
 
     if(window[page]) {
-      var page = new window[page]();
-      page.content(param, function(page, param, content) {
+      current_page = new window[page]();
+      current_page.content(param, function(page, param, content) {
         twig_render_into(document.body, content.template, content, function(page, param) {
           page.connect(param);
         }.bind(this, page, param));
-      }.bind(this, page, param));
+      }.bind(this, current_page, param));
+
+      return true;
     }
   }
+
+  return false;
+}
+
+window.onload = function() {
+  call_hooks("init");
+
+  var param = page_resolve_url_params();
+  open_page(param);
 }
