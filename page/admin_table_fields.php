@@ -186,6 +186,33 @@ EOT
 	  ),
 	),
       ),
+      'sort' => array(
+        'name' => 'Default sort',
+	'type' => 'select',
+	'values_mode' => 'keys',
+	'values_func' => array(
+	  'php' => function($value, $form_element, $form) {
+	    $values = $form->get_data();
+	    return $values['fields'];
+	  },
+	  'js' => <<<EOT
+	  function(value, form_element, form) {
+	    var values = form.get_data();
+	    return values.fields;
+	  }
+EOT
+	),
+      ),
+      'sort_dir' => array(
+        'name' => 'Default sort direction',
+	'type' => 'radio',
+	'req' => true,
+	'values' => array(
+	  'asc' => 'ascending',
+	  'desc' => 'descending',
+	),
+	'default' => 'asc',
+      ),
     );
 
     $form = new form("data", $def);
@@ -223,23 +250,23 @@ EOT
     
     if($form->is_empty()) {
       if(isset($table)) {
-	$data = $table->def;
+	$data = $table->data;
 
 	// update multiple value information
-	foreach($data as $i=>$d) {
+	foreach($data['fields'] as $i=>$d) {
 	  if($d['count'] === null)
-	    $data[$i]['count'] = 'no';
+	    $data['fields'][$i]['count'] = 'no';
 	  elseif(array_key_exists('order', $d['count']) && ($d['count']['order'] === false))
-	    $data[$i]['count'] = 'unordered';
+	    $data['fields'][$i]['count'] = 'unordered';
 	  else
-	    $data[$i]['count'] = 'ordered';
+	    $data['fields'][$i]['count'] = 'ordered';
 	}
 
 	if(!sizeof($data)) {
 	  $data = array(array());
 	}
 
-	$form->set_data(array('fields' => $data));
+	$form->set_data($data);
       }
     }
 

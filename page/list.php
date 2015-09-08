@@ -1,6 +1,10 @@
 <?php
 class Page_list extends Page {
   function content($param) {
+    $table = get_db_table($param['table']);
+    if(!$table)
+      return null;
+
     if(array_key_exists('limit', $param)) {
       if($param['limit'] == 0)
         $param['limit'] = null;
@@ -25,6 +29,10 @@ class Page_list extends Page {
 	$param['sort'] = $_SESSION['sort'];
 	$param['sort_dir'] = $_SESSION['sort_dir'];
       }
+      else {
+	$param['sort'] = $table->data('sort');
+	$param['sort_dir'] = $table->data('sort_dir');
+      }
     }
 
     if(!base_access('view')) {
@@ -33,10 +41,6 @@ class Page_list extends Page {
 	page_reload(array("page" => "login", "return_to" => array("page" => "list", "table" => $param['table'])));
       return "Permission denied.";
     }
-
-    $table = get_db_table($param['table']);
-    if(!$table)
-      return null;
 
     $table_extract = new DB_TableExtract($table);
     $table_extract->set_filter(get_filter($param));
