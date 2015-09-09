@@ -72,7 +72,7 @@ class Page_list extends Page {
       'table' => $param['table'],
       'result_count' => $table_extract->count(),
       'filter' => get_filter_form($param),
-      'view' => $view,
+      'content' => $view->show_list(),
       'param' => $param,
       'views' => $table->views('list'),
     );
