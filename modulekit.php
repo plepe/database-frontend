@@ -38,6 +38,7 @@ $include = array(
     'inc/Field.js',
     'inc/twig_show.js',
     'inc/panel.js',
+    'inc/async.js',
     'inc/url_handling.js',
     'page/*.js',
   ),
