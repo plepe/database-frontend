@@ -19,22 +19,33 @@ Page_list.prototype.content = function(param, callback) {
     var def = this.db_table.view_def(this.param.view);
     var t = new table(def.fields, this.data, { 'template_engine': 'twig' });
 
-    t.show('html',
-    {
-      'limit': this.param.limit,
-      'offset': this.param.offset
-    },
-    function(r) {
-      var x = document.getElementsByClassName('table_wrapper');
-      x[0].innerHTML = r;
-    });
-
-    callback({
+    this.result = {
       'param': this.param,
       'template': 'list.html',
       'table': this.param.table,
       'views': this.db_table.views('list')
-    });
+    };
+
+    // Execute several functions parallel:
+    async.parallel([
+      // 1. render table into 'content'
+      function(t, callback) {
+        t.show('html',
+        {
+          'limit': this.param.limit,
+          'offset': this.param.offset
+        }, function(callback, r) {
+          this.result.content = r;
+          callback(null);
+        }.bind(this, callback))
+      }.bind(this, t)
+
+    ],
+    // finally, call the callback with the completed this.result
+    function(callback) {
+      callback(this.result);
+    }.bind(this, callback));
+
   }.bind(this, callback));
 }
 
