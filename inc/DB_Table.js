@@ -1,16 +1,24 @@
+var db_table_cache = {};
+
 function DB_Table(type, callback) {
   this.id = type;
   this._data = null;
   this.entries_cache = {};
-  this.load(callback);
+  this.load_callbacks = [ callback ];
+  this.load();
 }
 
 DB_Table.prototype.load = function(callback) {
   ajax('db_table_load', { 'table': this.id }, null, function(callback, result) {
     this._data = result;
 
-    if(callback)
-      callback(this);
+    if(this.load_callbacks) {
+      var l = this.load_callbacks;
+      this.load_callbacks = null;
+
+      for(var i = 0; i < l.length; i++)
+        l[i](this);
+    }
   }.bind(this, callback));
 }
 
@@ -349,5 +357,13 @@ DB_Table.prototype.get_entry_count = function(filter, callback) {
 }
 
 function get_db_table(type, callback) {
-  new DB_Table(type, callback);
+  if(type in db_table_cache) {
+    // not fully loaded yet
+    if(db_table_cache[type].load_callbacks)
+      db_table_cache[type].load_callbacks.push(callback);
+    else
+      callback(db_table_cache[type]);
+  }
+  else
+    db_table_cache[type] = new DB_Table(type, callback);
 }
