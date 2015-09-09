@@ -40,6 +40,14 @@ Page_list.prototype.content = function(param, callback) {
         }.bind(this, callback))
       }.bind(this, t)
 
+      , // 2. get result count
+      function(callback) {
+        this.data.count(function(callback, c) {
+          this.result.result_count = c;
+          callback(null);
+        }.bind(this, callback));
+      }.bind(this)
+
     ],
     // finally, call the callback with the completed this.result
     function(callback) {
@@ -50,6 +58,4 @@ Page_list.prototype.content = function(param, callback) {
 }
 
 Page_list.prototype.connect = function(param, callback) {
-  var obs = document.getElementsByClassName('Pager');
-  new Pager(this, obs);
 }

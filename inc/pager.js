@@ -75,19 +75,3 @@ register_hook('init', function() {
     }.bind(this, pager);
   }
 });
-
-function Pager(page, doms) {
-  this.page = page;
-  this.doms = doms;
-
-  page.data.count(this.update.bind(this));
-}
-
-Pager.prototype.update = function(c) {
-  for(var i = 0; i < this.doms.length; i++) {
-    twig_render_into(this.doms[i], 'list_pager.html', {
-      'result_count': c,
-      'param': this.page.param
-    });
-  }
-}
