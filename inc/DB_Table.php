@@ -19,6 +19,8 @@ create table __system__ (
 EOT
     );
   }
+
+  $db_table_is_init = true;
 }
 
 class DB_Table {
@@ -620,22 +622,27 @@ class DB_Table {
     return null;
   }
 
-  function get_entry($id) {
+  function get_entry($id, $data=null) {
     global $db_conn;
     global $db_entry_cache;
 
     if(!array_key_exists($id, $this->entries_cache)) {
-      $res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->id) . " where id=" . $db_conn->quote($id));
+      if($data === null) {
+	$res = $db_conn->query("select id from " . $db_conn->quoteIdent($this->id) . " where id=" . $db_conn->quote($id));
 
-      if($res === false) {
-        messages_debug("Table '{$this->id}'->get_entry('{$id}'): query failed");
-        return null;
-      }
+	if($res === false) {
+	  messages_debug("Table '{$this->id}'->get_entry('{$id}'): query failed");
+	  return null;
+	}
 
-      if($elem = $res->fetch()) {
-        $this->entries_cache[$id] = new DB_Entry($this->id, $elem);
+	if($elem = $res->fetch()) {
+	  $this->entries_cache[$id] = new DB_Entry($this->id, $id, null);
+	}
+	$res->closeCursor();
       }
-      $res->closeCursor();
+      else {
+	$this->entries_cache[$id] = new DB_Entry($this->id, $id, $data);
+      }
     }
 
     if(!array_key_exists($id, $this->entries_cache))
@@ -647,10 +654,40 @@ class DB_Table {
   function get_entries_by_id($ids) {
     global $db_conn;
     global $db_entry_cache;
+    $data = array();
 
+    $to_load_ids = array_diff($ids, array_keys($this->entries_cache));
+
+    if(sizeof($to_load_ids)) {
+      $where_quoted = implode(" or ", array_map(function($x) {
+	global $db_conn;
+	return "id=" . $db_conn->quote($x);
+      }, $to_load_ids));
+
+      // bulk loading data of ids
+      $db_conn->beginTransaction();
+
+      $res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->id) . " where " . $where_quoted);
+      while($elem = $res->fetch()) {
+	$data[$elem['id']] = $elem;
+      }
+      $res->closeCursor();
+
+      foreach($this->column_tables() as $table) {
+	$res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->id . '_' . $table) . " where " . $where_quoted);
+	$this->data[$table] = array();
+	while($elem = $res->fetch())
+	  $data[$elem['id']][$table][$elem['key']] = $elem['value'];
+	$res->closeCursor();
+      }
+
+      $db_conn->commit();
+    }
+
+    // create all entries
     $ret = array();
     foreach($ids as $id) {
-      $ret[$id] = $this->get_entry($id);
+      $ret[$id] = $this->get_entry($id, array_key_exists($id, $data) ? $data[$id] : null);
     }
 
     return $ret;

@@ -1,17 +1,16 @@
 <?php
 class DB_Entry {
-  function __construct($type, $data) {
+  function __construct($type, $id=null, $data=null) {
     $this->type = $type;
     $this->table = get_db_table($type);
 
-    if($data === null) { // new object
+    if($id === null) { // new object
       $this->id = null;
       $this->data = array();
     }
     else {
-      $this->id = $data['id'];
+      $this->id = $id;
       $this->data = $data;
-      $this->load();
     }
   }
 
@@ -216,7 +215,7 @@ class DB_Entry {
     if(isset($this->view_cache))
       return $this->view_cache;
 
-    $this->view_cache = $this->data;
+    $this->view_cache = $this->data();
 
     foreach($this->table->fields() as $field) {
       $k = $field->id;
