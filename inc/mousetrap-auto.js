@@ -3,6 +3,11 @@ function mousetrap_catch(ob, e) {
     window.location = ob.href;
     return false;
   }
+
+  if((ob.tagName == 'INPUT') && (ob.type == 'submit')) {
+    ob.click();
+    return false;
+  }
 }
 
 register_hook('init', function() {
