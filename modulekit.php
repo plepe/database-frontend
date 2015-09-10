@@ -32,6 +32,8 @@ $include = array(
     'inc/str_to_id.js',
     'inc/index.js',
     'inc/pager.js',
+    'inc/mousetrap.min.js',
+    'inc/mousetrap-auto.js',
   ),
 
   'css' => array(
