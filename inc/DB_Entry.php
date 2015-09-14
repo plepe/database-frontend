@@ -30,21 +30,8 @@ class DB_Entry {
   function load() {
     global $db_conn;
 
-    $db_conn->beginTransaction();
-
-    $res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->type) . " where id=" . $db_conn->quote($this->id));
-    $this->data = $res->fetch();
-    $res->closeCursor();
-
-    foreach(get_db_table($this->type)->column_tables() as $table) {
-      $res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->type . '_' . $table) . " where id=" . $db_conn->quote($this->id) . " order by sequence");
-      $this->data[$table] = array();
-      while($elem = $res->fetch())
-	$this->data[$table][$elem['key']] = $elem['value'];
-      $res->closeCursor();
-    }
-
-    $db_conn->commit();
+    $this->data = $this->table->load_entries_data(array($this->id));
+    $this->data = $this->data[$this->id];
   }
 
   /**
