@@ -622,6 +622,37 @@ class DB_Table {
     return null;
   }
 
+  function load_entries_data($ids) {
+    global $db_conn;
+    $data = array();
+
+    $where_quoted = implode(" or ", array_map(function($x) {
+      global $db_conn;
+      return "id=" . $db_conn->quote($x);
+    }, $ids));
+
+    // bulk loading data of ids
+    $db_conn->beginTransaction();
+
+    $res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->id) . " where " . $where_quoted);
+    while($elem = $res->fetch()) {
+      $data[$elem['id']] = $elem;
+    }
+    $res->closeCursor();
+
+    foreach($this->column_tables() as $table) {
+      $res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->id . '_' . $table) . " where " . $where_quoted);
+      $this->data[$table] = array();
+      while($elem = $res->fetch())
+	$data[$elem['id']][$table][$elem['key']] = $elem['value'];
+      $res->closeCursor();
+    }
+
+    $db_conn->commit();
+
+    return $data;
+  }
+
   function get_entry($id, $data=null) {
     global $db_conn;
     global $db_entry_cache;
@@ -652,36 +683,13 @@ class DB_Table {
   }
 
   function get_entries_by_id($ids) {
-    global $db_conn;
     global $db_entry_cache;
     $data = array();
 
     $to_load_ids = array_diff($ids, array_keys($this->entries_cache));
 
     if(sizeof($to_load_ids)) {
-      $where_quoted = implode(" or ", array_map(function($x) {
-	global $db_conn;
-	return "id=" . $db_conn->quote($x);
-      }, $to_load_ids));
-
-      // bulk loading data of ids
-      $db_conn->beginTransaction();
-
-      $res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->id) . " where " . $where_quoted);
-      while($elem = $res->fetch()) {
-	$data[$elem['id']] = $elem;
-      }
-      $res->closeCursor();
-
-      foreach($this->column_tables() as $table) {
-	$res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->id . '_' . $table) . " where " . $where_quoted);
-	$this->data[$table] = array();
-	while($elem = $res->fetch())
-	  $data[$elem['id']][$table][$elem['key']] = $elem['value'];
-	$res->closeCursor();
-      }
-
-      $db_conn->commit();
+      $data = $this->load_entries_data($to_load_ids);
     }
 
     // create all entries
