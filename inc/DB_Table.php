@@ -642,7 +642,11 @@ class DB_Table {
 
     foreach($this->column_tables() as $table) {
       $res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->id . '_' . $table) . " where " . $where_quoted);
-      $this->data[$table] = array();
+
+      // initialize property with empty array for all to-be-loaded entries
+      foreach($data as $id=>$d)
+	$data[$id][$table] = array();
+
       while($elem = $res->fetch())
 	$data[$elem['id']][$table][$elem['key']] = $elem['value'];
       $res->closeCursor();
