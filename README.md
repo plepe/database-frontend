@@ -9,7 +9,7 @@ git submodule init
 git submodule update
 cp conf.php-dist conf.php
 $EDITOR conf.php
-chmod o+w db # or change path in conf.php to a different writeable directory
+chmod o+w data # or change path in conf.php to a different writeable directory
 ```
 
 UPDATING
