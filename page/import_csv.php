@@ -9,6 +9,7 @@ class Page_import_csv {
     }
 
     global $db_conn;
+    global $data_path;
 
     $form_def = array(
       'table' => array(
@@ -19,7 +20,7 @@ class Page_import_csv {
       'file' => array(
 	'name' => "File",
 	'type' => 'file',
-	'path' => 'db/',
+	'path' => $data_path,
 	'req' => true,
       ),
       'delimiter' => array(
