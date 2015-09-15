@@ -39,3 +39,9 @@ function base_access($access) {
 
   return $auth->access($base_access[$access]);
 }
+
+function access($access) {
+  global $auth;
+
+  return $auth->access($access);
+}

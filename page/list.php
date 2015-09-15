@@ -35,7 +35,7 @@ class Page_list extends Page {
       }
     }
 
-    if(!base_access('view')) {
+    if(!base_access('view') || !access($table->data('access_view'))) {
       global $auth;
       if(!$auth->is_logged_in())
 	page_reload(array("page" => "login", "return_to" => array("page" => "list", "table" => $param['table'])));

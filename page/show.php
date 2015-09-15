@@ -1,7 +1,11 @@
 <?php
 class Page_show extends Page {
   function content($param) {
-    if(!base_access('view')) {
+    $table = get_db_table($param['table']);
+    if(!$table)
+      return null;
+
+    if(!base_access('view') || !access($table->data('access_view'))) {
       global $auth;
       if(!$auth->is_logged_in())
 	page_reload(array("page" => "login", "return_to" => array("page" => "show", "table" => $param['table'], "id" => $param['id'])));
@@ -9,10 +13,6 @@ class Page_show extends Page {
     }
 
     $ret = "";
-
-    $table = get_db_table($param['table']);
-    if(!$table)
-      return null;
 
     $object = $table->get_entry($param['id']);
     if(!$object)

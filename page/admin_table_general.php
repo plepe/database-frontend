@@ -26,6 +26,16 @@ class Page_admin_table_general extends Page {
 	  'type'	=> 'text',
 	  'name'	=> 'Name',
 	),
+	'access_view' => array(
+	  'type'	=> 'text',
+	  'name'	=> 'View access',
+	  'desc'	=> "see below",
+        ),
+	'access_edit' => array(
+	  'type'	=> 'text',
+	  'name'	=> 'Edit access',
+	  'desc'	=> "see below",
+        ),
     );
 
     $form = new form("data", $def);
