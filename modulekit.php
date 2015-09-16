@@ -5,7 +5,7 @@ $id = "pdb";
 
 $version = "0.1-dev";
 
-$depend = array("modulekit-form", "modulekit-table", "page", "twig", "messages", "json_readable_encode", "shell_escape", "adv_exec", "PDOext", "modulekit-auth");
+$depend = array("modulekit-form", "modulekit-table", "page", "twig", "messages", "json_readable_encode", "shell_escape", "adv_exec", "PDOext", "modulekit-auth", "str_to_id");
 
 $include = array(
   'php' => array(
@@ -15,7 +15,6 @@ $include = array(
     'inc/DB_Table.php',
     'inc/DB_TableExtract.php',
     'inc/twig_show.php',
-    'inc/str_to_id.php',
     'inc/panel.php',
     'inc/View.php',
     'inc/View_Table.php',
@@ -29,7 +28,6 @@ $include = array(
     'page/*',
   ),
   'js' => array(
-    'inc/str_to_id.js',
     'inc/index.js',
     'inc/pager.js',
     'inc/mousetrap.min.js',
