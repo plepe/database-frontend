@@ -42,6 +42,18 @@ class FieldType_textarea extends FieldType {
   }
 }
 
+class FieldType_date extends FieldType {
+  function db_type() {
+    return 'date';
+  }
+}
+
+class FieldType_datetime extends FieldType {
+  function db_type() {
+    return 'datetime';
+  }
+}
+
 class FieldType_radio extends FieldType {
   function is_multiple() {
     return false;

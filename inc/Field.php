@@ -156,6 +156,36 @@ class Field_textarea extends Field {
   }
 }
 
+class Field_date extends Field {
+  function db_type() {
+    return 'date';
+  }
+
+  function default_format($key=null) {
+    if($key === null)
+      $key = $this->id;
+
+    return "{{ {$key}|date('j.n.Y') }}";
+  }
+}
+
+class Field_datetime extends Field {
+  function db_type() {
+    return 'datetime';
+  }
+
+  function form_type() {
+    return 'datetime-local';
+  }
+
+  function default_format($key=null) {
+    if($key === null)
+      $key = $this->id;
+
+    return "{{ {$key}|date('j.n.Y G:i:s') }}";
+  }
+}
+
 class FieldWithValues extends Field {
   function default_format($key=null) {
     if($key === null)
