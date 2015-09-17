@@ -49,7 +49,7 @@ class Page_edit extends Page {
 
     if($form->is_empty()) {
       if(isset($ob)) {
-	$form->set_data($ob->data);
+	$form->set_data($ob->data());
       }
     }
 
