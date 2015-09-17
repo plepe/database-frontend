@@ -7,7 +7,7 @@ class Field {
   }
 
   function type() {
-    return substr(get_called_class(), 10);
+    return substr(get_called_class(), 6);
   }
 
   function db_type() {
