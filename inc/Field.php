@@ -10,6 +10,10 @@ class Field {
     return substr(get_called_class(), 6);
   }
 
+  function form_type() {
+    return substr(get_called_class(), 6);
+  }
+
   function db_type() {
     return 'json';
   }

@@ -321,6 +321,8 @@ class DB_Table {
     $ret = $this->def;
 
     foreach($this->def as $k=>$d) {
+      $field = $this->field($k);
+
       if(array_key_exists('reference', $d) && ($d['reference'] !== null)) {
 	$values = array();
 	foreach(get_db_table($d['reference'])->get_entries() as $o) {
@@ -331,6 +333,8 @@ class DB_Table {
 	if(!array_key_exists('format', $ret[$k]))
 	  $ret[$k]['format'] = "{{ {$k}.name }}";
       }
+
+      $ret[$k]['type'] = $field->form_type();
     }
 
     return $ret;
