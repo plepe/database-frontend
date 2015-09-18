@@ -570,6 +570,12 @@ class DB_Table {
     $ret = array();
 
     foreach($filter as $f) {
+      if(!array_key_exists('field', $f) && array_key_exists(0, $f) && (sizeof($f) == 3)) {
+	$f['field'] = $f[0];
+	$f['op'] = $f[1];
+	$f['value'] = $f[2];
+      }
+
       if($f['field'] && $f['op'] && $f['value']) {
         $field = $this->field($f['field']);
         if($field == null)
