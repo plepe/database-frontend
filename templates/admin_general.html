@@ -1,0 +1,24 @@
+<div class='MainBox'>
+
+  <div class='Panel'>
+    <a class='LinkButton' href='{{ page_url({ "page": "admin"}) }}'>Admin Page</a>
+    <a class='LinkButton' href='{{ page_url({ "page": "admin_table", "table": table }) }}'>Table</a>
+  </div>
+
+  <div class='Margin'>
+
+  <h1> General settings of table: {{table}}</h1>
+
+  <form method='post'>
+    <div class='Margin'>	  
+      {{ form|show }}
+      <input type='submit' value='Save'>
+	<input type='text' name='message' placeholder='commit message'>
+    </div>
+  </form>
+
+  <div class='Panel'>
+    <a class='LinkButton' href='{{ page_url({ "page": "admin"}) }}'>Admin Page</a>
+  </div>
+
+</div>
