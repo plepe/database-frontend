@@ -15,8 +15,14 @@ if(!isset($data_path) || !is_dir($data_path) || !is_writeable($data_path)) {
 <?php Header('Content-Type: text/html; charset=utf-8'); ?>
 <?php
 $system = new DB_System($db);
-if(!array_key_exists('page', $_REQUEST))
-  $_REQUEST['page'] = 'index';
+if(!array_key_exists('page', $_REQUEST)) {
+  if($system->data('default_table')) {
+    $_REQUEST['page'] = 'list';
+    $_REQUEST['table'] = $system->data('default_table');
+  }
+  else
+    $_REQUEST['page'] = 'index';
+}
 
 $ret = null;
 $page = get_page($_REQUEST);

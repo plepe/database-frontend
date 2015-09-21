@@ -15,6 +15,12 @@ class Page_admin_general extends Page {
 
 
     $def = array(
+      'default_table' => array(
+	'type'	=> 'select',
+	'name'	=> 'Default table',
+	'values' => $table_names,
+	'placeholder' => 'Index page',
+      ),
     );
 
     $form = new form("data", $def);
