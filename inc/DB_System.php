@@ -46,6 +46,8 @@ class DB_System {
 
     $this->db->query($query);
 
+    $this->load();
+
     $changeset->add($this);
 
     return true;
