@@ -5,6 +5,7 @@
  */
 function git_dump($changeset) {
   global $git;
+  global $system;
 
   $message = $changeset->message;
 
@@ -29,6 +30,8 @@ function git_dump($changeset) {
   system("rm -r *");
 
   mkdir("__system__");
+
+  file_put_contents("__system__/__system__.json", json_readable_encode($system->data()) . "\n");
 
   foreach(get_db_tables() as $table) {
     file_put_contents("__system__/{$table->id}.json", json_readable_encode($table->data()) . "\n");

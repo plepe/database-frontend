@@ -40,6 +40,14 @@ class DB_System {
     $data = $new_data;
 
     $query = "replace into __system__ (id, data) values ('__system__', " . $this->db->quote(json_readable_encode($data)) . ")";
+
+    if(($changeset === null) || is_string($changeset))
+      $changeset = new Changeset($changeset);
+
     $this->db->query($query);
+
+    $changeset->add($this);
+
+    return true;
   }
 }
