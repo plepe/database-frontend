@@ -14,6 +14,7 @@ $include = array(
     'inc/DB_Entry.php',
     'inc/DB_Table.php',
     'inc/DB_TableExtract.php',
+    'inc/DB_System.php',
     'inc/twig_show.php',
     'inc/panel.php',
     'inc/View.php',

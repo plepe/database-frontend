@@ -802,6 +802,9 @@ function get_db_table($type) {
 
   db_table_init();
 
+  if($type == '__system__')
+    return null;
+
   if(!array_key_exists($type, $db_table_cache)) {
     $res = $db_conn->query("select * from __system__ where id=" . $db_conn->quote($type));
     if($elem = $res->fetch()) {
@@ -834,7 +837,7 @@ function get_db_tables() {
 
   db_table_init();
 
-  $res = $db_conn->query("select * from __system__");
+  $res = $db_conn->query("select * from __system__ where id != '__system__'");
   while($elem = $res->fetch()) {
     if(!array_key_exists($elem['id'], $db_table_cache)) {
       $data = json_decode($elem['data'], true);
