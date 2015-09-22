@@ -165,7 +165,7 @@ class Field_date extends Field {
     if($key === null)
       $key = $this->id;
 
-    return "{{ {$key}|date('j.n.Y') }}";
+    return "{% if {$key} %}{{ {$key}|date('j.n.Y') }}{% endif %}";
   }
 }
 
@@ -182,7 +182,7 @@ class Field_datetime extends Field {
     if($key === null)
       $key = $this->id;
 
-    return "{{ {$key}|date('j.n.Y G:i:s') }}";
+    return "{% if {$key} %}{{ {$key}|date('j.n.Y G:i:s') }}{% endif %}";
   }
 }
 
