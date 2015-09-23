@@ -58,11 +58,48 @@ class Page_admin_table_views extends Page {
 	    'desc' => 'Specify a different format for this field (mandatory for custom fields). This field uses the <a href="http://twig.sensiolabs.org/">Twig template engine</a>. You can use replacement patterns (see below).',
 	    'req' => array("check", "key", array("not", array("is", "__custom__"))),
 	  ),
-	  'sortable'    => array(
-	    'type'	  => 'boolean',
-	    'name'	  => 'Sortable',
-	    'default'     => true,
-	  ),
+          'sortable_custom'    => array(
+            'type'      => 'radio',
+            'name'      => 'Custom sort',
+            'default'     => 'simple',
+            'values'      => array(
+              'simple'      => 'Simple sort',
+              'custom'      => 'Use custom sort options',
+            ),
+          ),
+          'sortable'    => array(
+            'type'        => 'switch',
+            'switch'      => 'sortable_custom',
+            'def'         => array(
+              'simple'      => array(
+                'type'        => 'boolean',
+                'name'        => 'Sortable',
+                'default'     => true,
+              ),
+              'custom'      => array(
+                'type'        => 'form',
+                'name'        => 'Sort options',
+                'def'         => array(
+                  'type'        => array(
+                    'name'        => 'Sort type',
+                    'type'        => 'radio',
+                    'values'      => array(
+                      'alpha'       => 'Alphabetic',
+                    ),
+                  ),
+                  'dir'         => array(
+                    'name'        => 'Preferred sort direction',
+                    'type'        => 'radio',
+                    'values'      => array(
+                      'asc'         => 'ascending',
+                      'desc'        => 'descending',
+                    ),
+                    'default'     => 'asc',
+                  ),
+                ),
+              ),
+            ),
+          ),
 	  'show_priority' => array(
 	    'name' => 'Include in list view',
 	    'type' => 'select',
