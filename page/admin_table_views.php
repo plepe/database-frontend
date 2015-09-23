@@ -84,8 +84,12 @@ class Page_admin_table_views extends Page {
                     'name'        => 'Sort type',
                     'type'        => 'radio',
                     'values'      => array(
-                      'alpha'       => 'Alphabetic',
+                      'alpha'       => 'Alphabetic, case sensitive',
+                      'case'        => 'Alphabetic, case insensitive',
+                      'num'         => 'Numeric',
+                      'nat'         => 'Natural sort',
                     ),
+                    'default'     => 'case',
                   ),
                   'dir'         => array(
                     'name'        => 'Preferred sort direction',
