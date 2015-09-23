@@ -676,9 +676,25 @@ class DB_Table {
     return $data;
   }
 
-  function sort_custom($ids, $sort) {
-    messages_debug($ids);
-    messages_debug($sort);
+  function sort_custom($ids, $sorts) {
+    $entries = $this->get_entries_by_id($ids);
+    $data = array();
+
+    foreach($entries as $entry) {
+      $data[$entry->id] = array(
+        '__id' => $entry->id
+      );
+
+      foreach($sorts as $sort) {
+	$data[$entry->id][$sort['key']] = $entry->data($sort['key']);
+      }
+    }
+
+    $data = opt_sort($data, $sorts);
+
+    return array_map(function($x) {
+      return $x['__id'];
+    }, $data);
   }
 
   function get_entry($id, $data=null) {
