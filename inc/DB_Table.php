@@ -815,8 +815,11 @@ class DB_Table {
     }
     $res->closeCursor();
 
-    if($sort)
+    if($sort) {
       $ret = $this->sort_custom($ret, $sort);
+
+      $ret = array_slice($ret, $offset, $limit);
+    }
 
     return $ret;
   }
