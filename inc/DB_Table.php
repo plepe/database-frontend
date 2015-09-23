@@ -600,31 +600,40 @@ class DB_Table {
     return null;
   }
 
-  function compile_sort($sort) {
+  /**
+   * compile sort descriptions to sql statements
+   * @param mixed[] list of sort options. If all sort options can be compiled, will
+   *   modify the value to null.
+   * @return string[] list of sql order statements.
+   */
+  function compile_sort(&$sort) {
     global $db_conn;
+    $sort_success = true;
     $ret = array();
 
     if(!$sort)
       return null;
 
-    foreach($sort as $f) {
+    foreach($sort as $i => $f) {
       if($f['key']) { //TODO: 'field' instead of 'key'
         $field = $this->field($f['key']);
         if($field == null)
           continue;
 
         $r = $field->compile_sort($f);
-        if($r === null) {
-          messages_add("Can't compile filter " . print_r($f, 1), MSG_ERROR);
-          continue;
-        }
-
-        $ret[] = array(
-          'table' => $field->sql_table_quoted(),
-          'sort' => $r,
-        );
+        if($r !== null) {
+	  $ret[] = array(
+	    'table' => $field->sql_table_quoted(),
+	    'sort' => $r,
+	  );
+	}
+	else
+	  $sort_success = false;
       }
     }
+
+    if($sort_success)
+      $sort = null;
 
     if(sizeof($ret))
       return $ret;
@@ -665,6 +674,11 @@ class DB_Table {
     $db_conn->commit();
 
     return $data;
+  }
+
+  function sort_custom($ids, $sort) {
+    messages_debug($ids);
+    messages_debug($sort);
   }
 
   function get_entry($id, $data=null) {
@@ -767,8 +781,10 @@ class DB_Table {
       "select distinct " . $db_conn->quoteIdent($this->id) . ".id " .
       "from " . $db_conn->quoteIdent($this->id) . $joined_tables .
       $query . $order .
-      ($limit ? " limit {$limit}" : "") .
-      ($limit && $offset ? " offset {$offset}" : "");
+      // if not all sort options could be compiled, we need to select all
+      // values and sort them later
+      (($sort === null) && $limit ? " limit {$limit}" .
+      ($offset ? " offset {$offset}" : "") : "");
     // messages_debug($query);
     $res = $db_conn->query($query);
 
@@ -782,6 +798,9 @@ class DB_Table {
       $ret[] = $elem['id'];
     }
     $res->closeCursor();
+
+    if($sort)
+      $ret = $this->sort_custom($ret, $sort);
 
     return $ret;
   }
