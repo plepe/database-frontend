@@ -583,7 +583,7 @@ class DB_Table {
 
         $r = $field->compile_filter($f);
         if($r === null) {
-          messages_add("Can't compile filter " . printf($f, 1), MSG_ERROR);
+          messages_add("Can't compile filter " . print_r($f, 1), MSG_ERROR);
           continue;
         }
 
@@ -615,7 +615,7 @@ class DB_Table {
 
         $r = $field->compile_sort($f);
         if($r === null) {
-          messages_add("Can't compile filter " . printf($f, 1), MSG_ERROR);
+          messages_add("Can't compile filter " . print_r($f, 1), MSG_ERROR);
           continue;
         }
 
