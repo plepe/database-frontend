@@ -180,6 +180,52 @@ EOT
                 'is' => 'yes, using "is" operator',
               ),
             ),
+            'sortable_custom'    => array(
+              'type'      => 'radio',
+              'name'      => 'Sort options',
+              'default'     => 'simple',
+              'values'      => array(
+                'simple'      => 'Simple sort',
+                'custom'      => 'Use custom sort options',
+              ),
+            ),
+            'sortable'    => array(
+              'type'        => 'switch',
+              'switch'      => 'sortable_custom',
+              'def'         => array(
+                'simple'      => array(
+                  'type'        => 'boolean',
+                  'name'        => 'Sortable',
+                  'default'     => true,
+                ),
+                'custom'      => array(
+                  'type'        => 'form',
+                  'name'        => 'Sortable options',
+                  'def'         => array(
+                    'type'        => array(
+                      'name'        => 'Sort type',
+                      'type'        => 'radio',
+                      'values'      => array(
+                        'alpha'       => 'Alphabetic, case sensitive',
+                        'case'        => 'Alphabetic, case insensitive',
+                        'num'         => 'Numeric',
+                        'nat'         => 'Natural sort',
+                      ),
+                      'default'     => 'case',
+                    ),
+                    'dir'         => array(
+                      'name'        => 'Preferred sort direction',
+                      'type'        => 'radio',
+                      'values'      => array(
+                        'asc'         => 'ascending',
+                        'desc'        => 'descending',
+                      ),
+                      'default'     => 'asc',
+                    ),
+                  ),
+                ),
+              ),
+            ),
 	    'old_key' => array(
 	      'type' => 'hidden',
 	    ),
@@ -202,16 +248,6 @@ EOT
 	  }
 EOT
 	),
-      ),
-      'sort_dir' => array(
-        'name' => 'Default sort direction',
-	'type' => 'radio',
-	'req' => true,
-	'values' => array(
-	  'asc' => 'ascending',
-	  'desc' => 'descending',
-	),
-	'default' => 'asc',
       ),
     );
 
