@@ -30,20 +30,7 @@ class Page_list extends Page {
 	$param['sort_dir'] = $_SESSION['sort_dir'];
       }
       else {
-        if($param['sort'] = $table->data('sort')) {
-          $field = $table->data('fields');
-          if(array_key_exists($param['sort'], $field)) {
-            $field = $field[$param['sort']];
-
-            if(array_key_exists('sortable', $field) && is_array($field['sortable'])) {
-              $param['sort_dir'] = $field['sortable']['dir'];
-            }
-            else
-              $param['sort_dir'] = 'asc';
-          }
-          else
-            $param['sort_dir'] = 'asc';
-        }
+        $param['sort'] = $table->data('sort');
       }
     }
 

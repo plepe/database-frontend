@@ -418,6 +418,9 @@ class DB_Table {
 	$d['format'] = $x['format'];
       }
 
+      if((!array_key_exists('sortable', $d)) || ($d['sortable'] === null))
+	$d['sortable'] = $this->def[$key]['sortable'];
+
       $ret['fields'][$key] = $d;
     }
 

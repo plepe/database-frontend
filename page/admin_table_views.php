@@ -60,10 +60,11 @@ class Page_admin_table_views extends Page {
 	  ),
           'sortable_custom'    => array(
             'type'      => 'radio',
-            'name'      => 'Custom sort',
-            'default'     => 'simple',
+            'name'      => 'Sort options',
+            'default'     => 'default',
             'values'      => array(
-              'simple'      => 'Simple sort',
+              'default'     => 'Use sort options from fields definition',
+              'simple'      => 'Simple sort options',
               'custom'      => 'Use custom sort options',
             ),
           ),
@@ -71,6 +72,12 @@ class Page_admin_table_views extends Page {
             'type'        => 'switch',
             'switch'      => 'sortable_custom',
             'def'         => array(
+              'default'     => array(
+                'type'        => 'fixed',
+                'name'        => 'Sortable',
+                'value'       => null,
+                'show_depend' => false,
+              ),
               'simple'      => array(
                 'type'        => 'boolean',
                 'name'        => 'Sortable',
@@ -78,7 +85,7 @@ class Page_admin_table_views extends Page {
               ),
               'custom'      => array(
                 'type'        => 'form',
-                'name'        => 'Sort options',
+                'name'        => 'Sortable options',
                 'def'         => array(
                   'type'        => array(
                     'name'        => 'Sort type',
