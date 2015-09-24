@@ -119,8 +119,19 @@ class Field {
   }
 
   function compile_sort($def) {
+    if($def['type'] == 'nat')
+      return null;
+
+    $modifier = "";
+
     $column = $this->sql_table_quoted() . '.' . $this->sql_column_quoted();
-    return $column . (array_key_exists('dir', $def) && ($def['dir'] == 'desc') ? ' desc' : ' asc');
+
+    if($def['type'] == 'alpha')
+      $modifier = "BINARY";
+    elseif(($def['type'] == 'num') || ($def['type'] == 'numeric'))
+      $modifier = "1 *";
+
+    return $modifier . ' ' . $column . (array_key_exists('dir', $def) && ($def['dir'] == 'desc') ? ' desc' : ' asc');
   }
 
   function filters() {

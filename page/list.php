@@ -30,8 +30,7 @@ class Page_list extends Page {
 	$param['sort_dir'] = $_SESSION['sort_dir'];
       }
       else {
-	$param['sort'] = $table->data('sort');
-	$param['sort_dir'] = $table->data('sort_dir');
+        $param['sort'] = $table->data('sort');
       }
     }
 
