@@ -107,6 +107,17 @@ class Page_admin_table_views extends Page {
                     ),
                     'default'     => 'asc',
                   ),
+                  'null'        => array(
+                    'name'        => 'Order NULL values',
+                    'type'        => 'radio',
+                    'values'      => array(
+                      'lower'       => 'Lower than all other values',
+                      'higher'      => 'Higher than all other values',
+                      'first'       => 'Always first (independent of sort direction)',
+                      'last'        => 'Always last (independent of sort direction)',
+                    ),
+                    'default'     => 'lower',
+                  ),
                 ),
               ),
             ),

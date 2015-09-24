@@ -119,6 +119,8 @@ class Field {
   }
 
   function compile_sort($def) {
+    $ret = "";
+
     if($def['type'] == 'nat')
       return null;
 
@@ -131,7 +133,25 @@ class Field {
     elseif(($def['type'] == 'num') || ($def['type'] == 'numeric'))
       $modifier = "1 *";
 
-    return $modifier . ' ' . $column . (array_key_exists('dir', $def) && ($def['dir'] == 'desc') ? ' desc' : ' asc');
+    if(isset($def['null'])) {
+      switch($def['null']) {
+        case 'higher':
+          $ret .= $column . ' is null ' . (array_key_exists('dir', $def) && ($def['dir'] == 'desc') ? ' desc' : ' asc') . ', ';
+          break;
+        case 'first':
+          $ret .= $column . ' is null desc, ';
+          break;
+        case 'last':
+          $ret .= $column . ' is null asc, ';
+          break;
+        case 'lower':
+        default:
+      }
+    }
+
+    $ret .= $modifier . ' ' . $column . (array_key_exists('dir', $def) && ($def['dir'] == 'desc') ? ' desc' : ' asc');
+
+    return $ret;
   }
 
   function filters() {
