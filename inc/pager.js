@@ -1,5 +1,5 @@
 register_hook('init', function() {
-  var pagers = document.getElementsByClassName('pager');
+  var pagers = document.getElementsByClassName('pager_gear');
 
   for(var i = 0; i < pagers.length; i++) {
     var pager = pagers[i];

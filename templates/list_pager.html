@@ -2,12 +2,11 @@
 <a class='LinkButton' href='{{ page_url({ "page": "list", "table": table, "offset": 0 }) }}' title='First (Ctrl+Home)' mousetrap='ctrl+home'>|◀</a>
 <a class='LinkButton' href='{{ page_url({ "page": "list", "table": table, "offset": max(0, param.offset - param.limit) }) }}' title='Previous (Ctrl+←)' mousetrap='ctrl+left'>◀</a>
 <span class='pager'>
-{{ param.offset + 1 }}-{{ min(result_count, param.offset + param.limit) }} / {{ result_count }}
-</span>
+{{ param.offset + 1 }}-{{ min(result_count, param.offset + param.limit) }} / {{ result_count }}</span> <span class='pager_gear' title='Pager options'>⚙</span>
 <a class='LinkButton' href='{{ page_url({ "page": "list", "table": table, "offset": min(result_count - result_count % param.limit, param.offset + param.limit) }) }}' title='Next (Ctrl+→)' mousetrap='ctrl+right' title='Next (Ctrl+→)' mousetrap='ctrl+right'>▶</a>
 <a class='LinkButton' href='{{ page_url({ "page": "list", "table": table, "offset": result_count - result_count % param.limit }) }}' title='Last (Ctrl+End)' mousetrap='ctrl+end'>▶|</a>
 {% else %}
 <span class='pager'>
-{{ result_count }} results
+{{ result_count }} results <span class='pager_gear' title='Pager options'>⚙</span>
 </span>
 {% endif %}

@@ -138,13 +138,16 @@ pre.view_json {
 }
 
 /* Pager */
-span.pager {
+span.pager_gear {
   position: relative;
+  color: #5E5E5E;
+  cursor: pointer;
 }
 form.pager_options {
   position: absolute;
   white-space: nowrap;
   left: 0px;
+  top: 1em;
   background: white;
   background: #E8EEF3;
   border: solid 1px #C7C6E1;
