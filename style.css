@@ -161,3 +161,7 @@ form.pager_options {
 #Filter.hidden {
   display: none;
 }
+.LinkButton.active {
+  background: #5E5E5E;
+  color: #E8EEF3;
+}
