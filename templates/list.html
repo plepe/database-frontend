@@ -25,7 +25,12 @@
     Table: {{ table }}
   </div>
 
-  <div id='Filter' class='hidden'>
+  <div id='Filter'
+    {% if param.filter %}
+    {% else %}
+      class='hidden'
+    {% endif %}
+  >
   <form method='post'>
   {{ filter|show }}
   <input type='submit' name='apply_filter' value='Apply filter'>
