@@ -91,8 +91,12 @@ function get_filter(&$param) {
   $ret = array();
   foreach($data as $k=>$v) {
     if($k == '__custom__') {
-      if($v)
-        $ret = array_merge($ret, $v);
+      foreach($v as $v1) {
+	if(($v1['field'] === null) || ($v1['op'] === null))
+	  continue;
+
+	$ret[] = $v1;
+      }
     }
     else {
       list($field, $op) = explode("|", $k);
