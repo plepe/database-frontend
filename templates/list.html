@@ -16,6 +16,7 @@
     </form>
 <a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table }) }}' title='Ctrl+n' mousetrap='ctrl+n'>Create new entry</a>
     <a class='LinkButton' href='{{ page_url({ "page": "index"}) }}'>Home</a> 
+    <a class='LinkButton' href='javascript:show_filter()'>Filter</a> 
 
     {% include 'list_pager.html' %}
   </div>
@@ -24,7 +25,7 @@
     Table: {{ table }}
   </div>
 
-  <div class='Filter'>
+  <div id='Filter' class='hidden'>
   <form method='post'>
   {{ filter|show }}
   <input type='submit' name='apply_filter' value='Apply filter'>
@@ -56,3 +57,12 @@
   </div>
 
 </div>
+<script type='text/javascript'>
+function show_filter() {
+  var div = document.getElementById("Filter");
+  if(div.className == "hidden")
+    div.className = "";
+  else
+    div.className = "hidden";
+}
+</script>

@@ -39,9 +39,9 @@ function get_filter_form(&$param) {
       'name' => 'Filter',
       'type' => 'form',
       'count' => array(
-        'default' => 0,
+        'default' => 1,
         'order' => false,
-        'button:add_element' => 'Add custom filter',
+        'button:add_element' => 'Add additional filter',
         'hide_label' => true,
       ),
       'def'  => array(
