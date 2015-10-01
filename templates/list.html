@@ -33,7 +33,8 @@
   >
   <form method='post'>
   {{ filter|show }}
-  <input type='submit' name='apply_filter' value='Apply filter'>
+  <input type='hidden' name='apply_filter' value='true' />
+  <input type='submit' value='Apply filter'>
   </form>
   </div>
 
