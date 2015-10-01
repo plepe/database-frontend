@@ -87,6 +87,7 @@ function get_filter(&$param) {
   $filter_form = get_filter_form($param);
 
   $data = $filter_form->get_data();
+  $filter_form->set_orig_data($data);
 
   $ret = array();
   foreach($data as $k=>$v) {
