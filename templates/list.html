@@ -24,6 +24,7 @@
       {% endif %}
       href='javascript:show_filter()'>Filter</a> 
 
+    {{ panel_items(param) }}
     {% include 'list_pager.html' %}
   </div>
   
@@ -64,6 +65,13 @@
     </form>
     <a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table }) }}'>Create new entry</a>
     <a class='LinkButton' href='{{ page_url({ "page": "index"}) }}'>Home</a> 
+    <a
+      {% if filter_values|length > 0 %}
+	class='LinkButton active'
+      {% else %}
+	class='LinkButton'
+      {% endif %}
+      href='javascript:show_filter()'>Filter</a> 
     {{ panel_items(param) }}
     {% include 'list_pager.html' %}
   </div>
