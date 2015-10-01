@@ -39,9 +39,9 @@ function get_filter_form(&$param) {
       'name' => 'Filter',
       'type' => 'form',
       'count' => array(
-        'default' => 0,
+        'default' => 1,
         'order' => false,
-        'button:add_element' => 'Add custom filter',
+        'button:add_element' => 'Add additional filter',
         'hide_label' => true,
       ),
       'def'  => array(
@@ -87,12 +87,17 @@ function get_filter(&$param) {
   $filter_form = get_filter_form($param);
 
   $data = $filter_form->get_data();
+  $filter_form->set_orig_data($data);
 
   $ret = array();
   foreach($data as $k=>$v) {
     if($k == '__custom__') {
-      if($v)
-        $ret = array_merge($ret, $v);
+      foreach($v as $v1) {
+	if(($v1['field'] === null) || ($v1['op'] === null))
+	  continue;
+
+	$ret[] = $v1;
+      }
     }
     else {
       list($field, $op) = explode("|", $k);

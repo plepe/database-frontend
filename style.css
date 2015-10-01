@@ -152,3 +152,16 @@ form.pager_options {
   background: #E8EEF3;
   border: solid 1px #C7C6E1;
 }
+
+/*=========== FILTER ===========*/
+#Filter {
+  margin-left: 15px;
+  margin-right: 15px;
+}
+#Filter.hidden {
+  display: none;
+}
+.LinkButton.active {
+  background: #5E5E5E;
+  color: #E8EEF3;
+}

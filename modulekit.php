@@ -33,6 +33,7 @@ $include = array(
     'inc/pager.js',
     'inc/mousetrap.min.js',
     'inc/mousetrap-auto.js',
+    'inc/filter.js',
   ),
 
   'css' => array(

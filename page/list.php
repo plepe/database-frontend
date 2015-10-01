@@ -42,7 +42,8 @@ class Page_list extends Page {
     }
 
     $table_extract = new DB_TableExtract($table);
-    $table_extract->set_filter(get_filter($param));
+    $filter_values = get_filter($param);
+    $table_extract->set_filter($filter_values);
 
 //    $data = array();
 //    foreach($table_extract->get() as $o) {
@@ -86,6 +87,7 @@ class Page_list extends Page {
       'table' => $param['table'],
       'result_count' => $table_extract->count(),
       'filter' => get_filter_form($param),
+      'filter_values' => $filter_values,
       'view' => $view,
       'param' => $param,
       'views' => $table->views('list'),
