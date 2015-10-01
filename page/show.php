@@ -19,7 +19,8 @@ class Page_show extends Page {
       return null;
 
     $table_extract = new DB_TableExtract($table);
-    $table_extract->set_filter(get_filter($param));
+    $filter_values = get_filter($param);
+    $table_extract->set_filter($filter_values);
     $pager_index = $table_extract->index($object->id);
 
     // if no 'view'-parameter is set, use session or view with lowest weight
@@ -88,6 +89,8 @@ class Page_show extends Page {
       'views' => $table->views('show'),
       'data' => $object->view(),
       'pager' => $pager,
+      'filter' => get_filter_form($param),
+      'filter_values' => $filter_values,
     );
   }
 }

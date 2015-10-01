@@ -7,6 +7,19 @@
     </div>
   </div>
 
+  <div id='Filter'
+    {% if param.filter %}
+    {% else %}
+      class='hidden'
+    {% endif %}
+  >
+  <form method='post'>
+  {{ filter|show }}
+  <input type='hidden' name='apply_filter' value='true' />
+  <input type='submit' value='Apply filter'>
+  </form>
+  </div>
+
   <div class='table_wrapper'>
   {{ view|show() }}
   </div>
@@ -29,6 +42,13 @@
     <a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table, "id": id }) }}' title='Ctrl+e' mousetrap='ctrl+e'>Edit</a>
     <a class='LinkButton' href='{{ page_url({ "page": "list", "table": table }) }}' title='Ctrl+o' mousetrap='ctrl+o'>Back</a>
     <a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table }) }}' title='Ctrl+n' mousetrap='ctrl+n'>Create new entry</a>
+    <a
+      {% if filter_values|length > 0 %}
+	class='LinkButton active'
+      {% else %}
+	class='LinkButton'
+      {% endif %}
+      href='javascript:show_filter()'>Filter</a> 
     {{ panel_items(param) }}
     {% include 'show_pager.html' %}
   </div>
