@@ -84,6 +84,12 @@ class FieldType_select extends FieldType {
   }
 }
 
+class FieldType_boolean extends FieldType {
+  function db_type() {
+    return 'bool';
+  }
+}
+
 function get_field_types() {
   $ret = array();
 

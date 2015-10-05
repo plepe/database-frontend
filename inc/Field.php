@@ -248,6 +248,27 @@ class Field_select extends FieldWithValues {
     return 'text';
   }
 }
+
+class Field_boolean extends Field {
+  function db_type() {
+    return 'boolean';
+  }
+
+  function default_format($key=null) {
+    if($key === null)
+      $key = $this->id;
+
+    return <<<EOT
+{% if {$key} is null %}
+{% elseif {$key} == true %}
+true
+{% else %}
+false
+{% endif %}
+EOT
+;
+  }
+}
 //
 //function get_fields() {
 //  $ret = array();
