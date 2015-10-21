@@ -4,7 +4,7 @@ class Page_index extends Page {
     if(!base_access('view')) {
       global $auth;
       if(!$auth->is_logged_in())
-	page_reload(array("page" => "login", "return_to" => array("page" => "index")));
+	page_reload(array("page" => "login", "return" => array("page" => "index")));
       return "Permission denied.";
     }
 

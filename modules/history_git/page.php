@@ -4,7 +4,7 @@ class Page_history extends Page {
     if(!base_access('view')) {
       global $auth;
       if(!$auth->is_logged_in())
-	page_reload(array("page" => "login", "return_to" => array("page" => "history", "table" => $param['table'], "id" => $param['id'])));
+	page_reload(array("page" => "login", "return" => array("page" => "history", "table" => $param['table'], "id" => $param['id'])));
       return "Permission denied.";
     }
 

@@ -4,7 +4,7 @@ class Page_admin_table extends Page {
     if(!base_access('admin')) {
       global $auth;
       if(!$auth->is_logged_in())
-	page_reload(array("page" => "login", "return_to" => array("page" => "admin_table", "table" => $param['table'])));
+	page_reload(array("page" => "login", "return" => array("page" => "admin_table", "table" => $param['table'])));
       return "Permission denied.";
     }
 

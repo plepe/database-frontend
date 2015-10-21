@@ -4,7 +4,7 @@ class Page_import_csv {
     if(!base_access('admin')) {
       global $auth;
       if(!$auth->is_logged_in())
-	page_reload(array("page" => "login", "return_to" => array("page" => "import_csv")));
+	page_reload(array("page" => "login", "return" => array("page" => "import_csv")));
       return "Permission denied.";
     }
 
