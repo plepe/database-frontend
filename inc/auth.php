@@ -10,23 +10,6 @@ register_hook("init", function() {
   }
 });
 
-function auth_user_info() {
-  global $auth;
-  $ret = "";
-
-  if($auth->is_logged_in()) {
-    $ret .= "Logged in as " . $auth->current_user()->name() . ".";
-    if(!isset($_SERVER['REMOTE_USER']))
-      $ret .= " <a href='" . page_url(array("page" => "logout")) . "'>Logout</a>";
-  }
-  else {
-    if(!isset($_SERVER['REMOTE_USER']))
-      $ret .= "<a href='" . page_url(array("page" => "login")) . "'>Login</a>";
-  }
-
-  return $ret;
-}
-
 function base_access($access) {
   global $auth;
   global $base_access;
