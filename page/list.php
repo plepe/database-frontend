@@ -1,19 +1,19 @@
 <?php
 class Page_list extends Page {
   function content($param) {
+    global $auth;
+    $user_settings = $auth->current_user()->settings();
+
     $table = get_db_table($param['table']);
     if(!$table)
       return null;
 
     if(array_key_exists('limit', $param)) {
-      if($param['limit'] == 0)
-        $param['limit'] = null;
-
-      $_SESSION['limit'] = $param['limit'];
+      $user_settings->save(array("limit" => $param['limit']));
     }
     else {
-      if(array_key_exists('limit', $_SESSION))
-        $param['limit'] = $_SESSION['limit'];
+      if($user_settings->data('limit') !== null)
+        $param['limit'] = $user_settings->data('limit');
       else
         $param['limit'] = 25;
     }
@@ -94,3 +94,18 @@ class Page_list extends Page {
     );
   }
 }
+
+register_hook("auth_user_settings_form", function(&$form_def) {
+  $form_def['limit'] = array(
+    'type' => 'select',
+    'name' => 'Results per page',
+    'values_mode' => 'keys',
+    'values' => array(
+      '10' => '10',
+      '25' => '25',
+      '50' => '50',
+      '100' => '100',
+      '0' => '∞',
+    ),
+  );
+});
