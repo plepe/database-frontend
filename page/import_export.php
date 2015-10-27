@@ -4,7 +4,7 @@ class Page_import_export extends Page {
     if(!base_access('admin')) {
       global $auth;
       if(!$auth->is_logged_in())
-	page_reload(array("page" => "login", "return_to" => array("page" => "import_export")));
+	page_reload(array("page" => "login", "return" => array("page" => "import_export")));
       return "Permission denied.";
     }
 

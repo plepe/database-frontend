@@ -6,7 +6,7 @@ class Page_admin_general extends Page {
     if(!base_access('admin')) {
       global $auth;
       if(!$auth->is_logged_in())
-	page_reload(array("page" => "login", "return_to" => array("page" => "admin_general")));
+	page_reload(array("page" => "login", "return" => array("page" => "admin_general")));
       return "Permission denied.";
     }
 
