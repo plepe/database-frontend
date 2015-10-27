@@ -2,8 +2,6 @@
 register_hook("init", function() {
   global $auth;
 
-  $auth = new Auth();
-
   if(isset($_SERVER['REMOTE_USER'])) {
     $user = $auth->get_user($_SERVER['REMOTE_USER']);
     $auth->set_current_user($user);
