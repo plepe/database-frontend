@@ -752,6 +752,25 @@ class DB_Table {
     global $db_conn;
     global $db_entry_cache;
 
+    if($default_sort = $this->data('sort')) {
+      $fields = $this->data('fields');
+      $default_sort = array(array(
+        'key' => $default_sort,
+        'type' => $fields[$default_sort]['sortable']['type'],
+        'dir' => $fields[$default_sort]['sortable']['dir'],
+        'null' => $fields[$default_sort]['sortable']['null'],
+      ));
+    }
+    else
+      $default_sort = array();
+
+    if($sort === null)
+      $sort = $default_sort;
+    else
+      $sort = array_merge($default_sort, $sort);
+
+    $sort = weight_sort($sort);
+
     $compiled_filter = $this->compile_filter($filter);
     $compiled_sort = $this->compile_sort($sort);
 
