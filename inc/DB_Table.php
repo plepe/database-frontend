@@ -821,7 +821,8 @@ class DB_Table {
     if($sort) {
       $ret = $this->sort_custom($ret, $sort);
 
-      $ret = array_slice($ret, $offset, $limit);
+      if($limit)
+        $ret = array_slice($ret, $offset, $limit);
     }
 
     return $ret;
