@@ -11,7 +11,10 @@ register_hook("twig_init", function() {
   }, array("is_safe"=>array("html"))));
 
   $twig->addFunction(new Twig_SimpleFunction('get_entry', function($table, $id) {
-    return get_db_table($table)->get_entry($id)->view();
+    $entry = get_db_table($table)->get_entry($id);
+
+    if($entry)
+      return $entry->view();
   }));
 
   $twig->addFunction(new Twig_SimpleFunction('get_entries', function($table, $filter) {
