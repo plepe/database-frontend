@@ -113,6 +113,11 @@ class Field {
         return "{$column} like " . $db_conn->quote('%' . $def['value'] . '%');
       case 'is':
         return "{$column}=" . $db_conn->quote($def['value']);
+      case '>':
+      case '>=':
+      case '<':
+      case '<=':
+        return "{$column}{$def['op']}" . $db_conn->quote($def['value']);
       default:
         return null;
     }
