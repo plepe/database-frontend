@@ -130,6 +130,7 @@ class Page_admin_table_views extends Page {
 	      ' 3' => 'high priority',
 	      ' 2' => 'medium priority',
 	      ' 1' => 'low priority',
+              ' 0' => 'never',
 	    ),
 	  ),
 	),

@@ -169,6 +169,7 @@ EOT
 		' 3' => 'high priority',
 		' 2' => 'medium priority',
 		' 1' => 'low priority',
+		' 0' => 'never',
 	      ),
 	    ),
             'default_filter' => array(

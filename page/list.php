@@ -65,6 +65,11 @@ class Page_list extends Page {
 
     $def = $table->view_def($view);
 
+    foreach($def['fields'] as $field_id => $field_def) {
+      if($field_def['show_priority'] == ' 0')
+        unset($def['fields'][$field_id]);
+    }
+
     if(array_key_exists('class', $def)) {
       $view_class = "View_{$def['class']}";
       $view = new $view_class($def, $param);
