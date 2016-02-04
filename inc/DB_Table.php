@@ -653,9 +653,6 @@ class DB_Table {
       return "id=" . $db_conn->quote($x);
     }, $ids));
 
-    // bulk loading data of ids
-    $db_conn->beginTransaction();
-
     $res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->id) . " where " . $where_quoted);
     while($elem = $res->fetch()) {
       $data[$elem['id']] = $elem;
@@ -673,8 +670,6 @@ class DB_Table {
 	$data[$elem['id']][$table][$elem['key']] = $elem['value'];
       $res->closeCursor();
     }
-
-    $db_conn->commit();
 
     return $data;
   }
