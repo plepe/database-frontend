@@ -164,3 +164,11 @@ form.pager_options {
   background: #5E5E5E;
   color: #E8EEF3;
 }
+
+/* PRINT LAYOUT */
+@media print {
+  .__links,
+  .Panel {
+    display: none;
+  }
+}
