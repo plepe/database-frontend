@@ -1,4 +1,27 @@
 <?php
+$db_system_is_init = false;
+
+function db_system_init() {
+  global $db_system_is_init;
+  global $db_conn;
+
+  if($db_system_is_init)
+    return;
+
+  if(!$db_conn->tableExists('__system__')) {
+    $db_conn->query(<<<EOT
+create table __system__ (
+  id		varchar(255) not null,
+  data		text	null,
+  primary key(id)
+);
+EOT
+    );
+  }
+
+  $db_system_is_init = true;
+}
+
 class DB_System {
   function __construct($db_settings) {
     global $db_conn;
@@ -10,6 +33,8 @@ class DB_System {
   }
 
   function load() {
+    db_system_init();
+
     $res = $this->db->query("select * from __system__ where id='__system__'");
     if($elem = $res->fetch())
       $this->data = json_decode($elem['data'], true);

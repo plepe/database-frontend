@@ -1,27 +1,5 @@
 <?php
 $db_table_cache = array();
-$db_table_is_init = false;
-
-function db_table_init() {
-  global $db_table_is_init;
-  global $db_conn;
-
-  if($db_table_is_init)
-    return;
-
-  if(!$db_conn->tableExists('__system__')) {
-    $db_conn->query(<<<EOT
-create table __system__ (
-  id		varchar(255) not null,
-  data		text	null,
-  primary key(id)
-);
-EOT
-    );
-  }
-
-  $db_table_is_init = true;
-}
 
 class DB_Table {
   function __construct($type, $data) {
@@ -856,7 +834,7 @@ function get_db_table($type) {
   global $db_conn;
   global $db_table_cache;
 
-  db_table_init();
+  db_system_init();
 
   if($type == '__system__')
     return null;
@@ -891,7 +869,7 @@ function get_db_tables() {
   global $db_conn;
   global $db_table_cache;
 
-  db_table_init();
+  db_system_init();
 
   $res = $db_conn->query("select * from __system__ where id != '__system__'");
   while($elem = $res->fetch()) {
