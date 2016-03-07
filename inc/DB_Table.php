@@ -89,6 +89,17 @@ class DB_Table {
     $constraints = array();
     $column_copy = array();
     $field_types = get_field_types();
+    $table_append = "";
+
+    switch($db_conn->getAttribute(PDO::ATTR_DRIVER_NAME)) {
+      case 'sqlite':
+        $id_collate = "binary";
+        break;
+      case 'mysql':
+        $id_collate = "utf8_bin";
+        $table_append .= "DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
+        break;
+    }
 
     $old_data = $this->data;
 
@@ -108,7 +119,7 @@ class DB_Table {
       $id_type = "integer";
     }
     else {
-      $id_type = "varchar(255)";
+      $id_type = "varchar(255) collate {$id_collate}";
     }
 
     $cmds = array();
@@ -120,11 +131,11 @@ class DB_Table {
     foreach($data['fields'] as $column=>$column_def) {
       $column_type = "text";
       if($column == "id") {
-	$column_type = "varchar(255)";
+	$column_type = "varchar(255) collate {$id_collate}";
       }
 
       if(array_key_exists('reference', $column_def) && ($column_def['reference'] != null)) {
-	$column_type = "varchar(255)";
+	$column_type = "varchar(255) collate {$id_collate}";
       }
 
       $r = $db_conn->quoteIdent($column) . " " . $column_type;
@@ -147,7 +158,7 @@ class DB_Table {
 		  ((array_key_exists('reference', $column_def) && ($column_def['reference'] != null)) ? "foreign key(" . $db_conn->quoteIdent('value') . ") references " . $db_conn->quoteIdent($column_def['reference']) . "(" . $db_conn->quoteIdent('id') . "), " : "") .
 		  // /foreign key
 		  "  foreign key(" . $db_conn->quoteIdent('id') . ") references " . $db_conn->quoteIdent($tmp_name) . "(" . $db_conn->quoteIdent('id') . ")" .
-		  ");";
+		  ") {$table_append};";
 
 	// if this is not a new table, copy data from ...
 	if((!$new_table) && array_key_exists('old_key', $column_def) && ($column_def['old_key'])) {
@@ -224,7 +235,7 @@ class DB_Table {
               implode(",\n  ", $columns) .
               (sizeof($constraints) ?
 	        ", " . implode(",\n  ", $constraints) : "") .
-              "\n);";
+              "\n) {$table_append};";
 
     // now add the cmds for the fields with multiple values
     $cmds = array_merge($cmds, $multifield_cmds);
