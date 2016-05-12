@@ -51,3 +51,10 @@ print twig_render("page.html", array(
   'app' => $app,
   'user_info' => auth_user_menu() ,
 ));
+
+if(($_REQUEST['page'] == "list") || ($_REQUEST['page'] == "show")) {
+  print "<script type='text/javascript'>\n";
+  print "var db_table = new DB_Table(" . json_encode($_REQUEST['table']) . ", " .
+    json_encode(get_db_table($_REQUEST['table'])->view()) . ");\n";
+  print "</script>\n";
+}
