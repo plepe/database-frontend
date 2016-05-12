@@ -18,7 +18,7 @@ class DB_Table {
   }
   
   function name() {
-    return $this->id;
+    return $this->data('name') || $this->id;
   }
 
   function data($key=null) {
