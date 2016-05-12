@@ -78,7 +78,7 @@ class Page_import_csv {
 	$fields[] = str_to_id($col);
       }
 
-      db_table_init();
+      db_system_init();
 
       $changeset = new Changeset($param['message']);
       $changeset->open();
