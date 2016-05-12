@@ -5,7 +5,7 @@ $id = "pdb";
 
 $version = "0.1-dev";
 
-$depend = array("modulekit-form", "modulekit-table", "page", "twig", "messages", "json_readable_encode", "shell_escape", "adv_exec", "PDOext", "modulekit-auth", "str_to_id", "opt_sort", "modulekit-auth-pages", "modulekit-auth-user-menu", "modulekit-auth-js", "modulekit-auth-user-settings-js", "modulekit-auth-user-settings-page");
+$depend = array("modulekit-form", "modulekit-table", "page", "twig", "messages", "json_readable_encode", "shell_escape", "adv_exec", "PDOext", "modulekit-auth", "str_to_id", "opt_sort", "modulekit-auth-pages", "modulekit-auth-user-menu", "modulekit-auth-js", "modulekit-auth-user-settings-js", "modulekit-auth-user-settings-page", "modulekit-ajax");
 
 $include = array(
   'php' => array(
@@ -34,6 +34,7 @@ $include = array(
     'inc/mousetrap.min.js',
     'inc/mousetrap-auto.js',
     'inc/filter.js',
+    'inc/DB_Table.js',
   ),
 
   'css' => array(
