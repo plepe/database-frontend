@@ -2,6 +2,7 @@
 class Page_list extends Page {
   function content($param) {
     global $auth;
+    global $default_settings;
     $user_settings = $auth->current_user()->settings();
 
     $table = get_db_table($param['table']);
@@ -14,6 +15,8 @@ class Page_list extends Page {
     else {
       if($user_settings->data('limit') !== null)
         $param['limit'] = $user_settings->data('limit');
+      elseif(array_key_exists('limit', $default_settings))
+        $param['limit'] = $default_settings['limit'];
       else
         $param['limit'] = 25;
     }

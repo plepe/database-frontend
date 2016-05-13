@@ -97,7 +97,7 @@ table.table th{
   background: #DEE7F7; 
   padding: 2px;
 }
-a.table_link {
+table.table th a.table_link {
   color: #5E5E5E;
 }
 

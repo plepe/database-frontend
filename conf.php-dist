@@ -80,5 +80,11 @@ $base_access = array(
   'admin' => '*', // access to admin page
 );
 
+// default settings
+$default_settings = array(
+  'limit' => 0,
+);
+
+
 // Debugging
 $debug = false;

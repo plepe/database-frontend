@@ -58,7 +58,7 @@ class Page_import_csv {
       );
 
       // analyze file
-      $f = fopen($data_path . $data['file']['name'], "r");
+      $f = fopen($data_path . '/' . $data['file']['name'], "r");
       $header = fgetcsv($f, 0, $data['delimiter'], $data['enclosure'], $data['escape']);
       $fields = array();
 

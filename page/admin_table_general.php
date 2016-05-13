@@ -38,6 +38,8 @@ class Page_admin_table_general extends Page {
         ),
     );
 
+    call_hooks("admin_table_general", $def);
+
     $form = new form("data", $def);
 
     if($form->is_complete()) {

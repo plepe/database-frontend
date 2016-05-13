@@ -36,6 +36,9 @@ function git_dump($changeset) {
   foreach(get_db_tables() as $table) {
     file_put_contents("__system__/{$table->id}.json", json_readable_encode($table->data()) . "\n");
 
+    if($table->data('history_git_enabled') === false)
+      continue;
+
     mkdir($table->id);
     foreach($table->get_entries() as $entry) {
       file_put_contents("{$table->id}/{$entry->id}.json", json_readable_encode($entry->data()) . "\n");
@@ -73,6 +76,10 @@ register_hook("panel_items", function(&$items, $param) {
   if(!in_array($param['page'], array("show", "list")))
     return;
 
+  $table = get_db_table($param['table']);
+  if($table->data('history_git_enabled') === false)
+    return;
+
   $ret = array(
     'title' => 'History',
     'url' => array(
@@ -89,3 +96,11 @@ register_hook("panel_items", function(&$items, $param) {
 });
 
 register_hook("changeset_commit", "git_dump");
+
+register_hook("admin_table_general", function(&$def) {
+  $def['history_git_enabled'] = array(
+    'type' => 'boolean',
+    'name' => 'Enable History for data of this table',
+    'default' => true,
+  );
+});

@@ -106,16 +106,18 @@ class DB_Entry {
         implode(", ", $insert_columns) . ") values (" .
 	implode(", ", $insert_values) . ")";
     }
-    else {
+    elseif(sizeof($set)) { // only update when at least one column changes
       $query = "update " . $db_conn->quoteIdent($this->type) . " set " .
 	implode(", ", $set) . " where " . $db_conn->quoteIdent('id') . "=" .
 	$db_conn->quote($this->id);
     }
+    else
+      $query = null;
 
     if(isset($debug) && $debug)
       messages_debug($query);
 
-    if($db_conn->query($query) === false) {
+    if($query && $db_conn->query($query) === false) {
       return db_return_error_info($db_conn);
     }
 
