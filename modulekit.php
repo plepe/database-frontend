@@ -26,7 +26,7 @@ $include = array(
     'inc/Changeset.php',
     'inc/Field.php',
     'inc/filter.php',
-    'page/*',
+    'page/*.php',
   ),
   'js' => array(
     'inc/index.js',
@@ -35,6 +35,7 @@ $include = array(
     'inc/mousetrap-auto.js',
     'inc/filter.js',
     'inc/DB_Table.js',
+    'page/*.js',
   ),
 
   'css' => array(
