@@ -35,15 +35,16 @@ DB_Table.prototype.views = function(type) { // 'list' or 'show'
     views = this.data.views;
 
   views.default = {
-    "title": "Default",
-    "weight_" + type: -1
+    "title": "Default"
   };
+  views.default["weight_" + type] = -1;
 
   if(type == 'show') {
     views.json = {
       "title": 'JSON',
-      "weight_" + type: 100,
       "class": 'JSON'
+    }
+    views.json["weight_" + type] = 100;
   }
 
   views = weight_sort(views, "weight_" + type);
@@ -74,7 +75,7 @@ DB_Table.prototype.remove = function() {
 DB_Table.prototype.load_entries_data = function(ids, callback) {
 }
 
-DB_Table.prototype.get_entry(id, callback) {
+DB_Table.prototype.get_entry = function(id, callback) {
 }
 
 DB_Table.prototype.get_entries_by_id = function(ids, callback) {
