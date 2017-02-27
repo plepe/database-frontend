@@ -34,9 +34,11 @@ class Page_admin_table_fields extends Page {
 	'type'	=>"hash",
 	'default'   =>1,
 	'hide_label'=>true,
+        'button:add_element'=>'Add field',
 
 	'key_def'	=>array(
 	  'name'  =>lang('form:hash_key_field_name'),
+          'desc'  =>'Use "id" for the identifying field',
 	  'default_func' => array(
 	    'js' => <<<EOT
 function(value, form_element, form) {
