@@ -52,5 +52,6 @@ print twig_render("page.html", array(
     modulekit_include_css() . /* prints all css-includes */
     get_add_html_headers() , /* additional html headers */
   'app' => $app,
-  'user_info' => auth_user_menu() ,
+  'user_info' => auth_user_menu(),
+  'page' => $page->param,
 ));
