@@ -172,3 +172,13 @@ form.pager_options {
     display: none;
   }
 }
+
+#page_login {
+  margin-top: 5em;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  border: solid 2px #C7C6E1;
+  border-radius: 4px;
+  padding: 7px 14px 14px;
+}
