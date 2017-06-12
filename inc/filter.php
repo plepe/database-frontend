@@ -18,10 +18,18 @@ function get_filter_form(&$param) {
 
   $custom_filters = array();
   foreach($table->fields() as $field) {
-    $custom_filters[$field->id] = array(
+    $f = array(
       'name' => $field->def['name'],
       'type' => 'text',
     );
+
+    if (isset($field->def['values']) && sizeof($field->def['values'])) {
+      $f['type'] = 'select';
+      $f['values'] = $field->def['values'];
+      $f['values_mode'] = 'values';
+    }
+
+    $custom_filters[$field->id] = $f;
 
     if(array_key_exists('default_filter', $field->def) && $field->def['default_filter']) {
       $filter_form_def["{$field->id}|{$field->def['default_filter']}"] = array(
