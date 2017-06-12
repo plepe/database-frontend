@@ -13,18 +13,15 @@ function get_filter_form(&$param) {
     $_SESSION['filter'] = array();
 
   $operators = array();
-  $filter_form_def = array();
-  foreach($table->fields() as $field) {
-    foreach($field->filters() as $filter_id=>$filter_def) {
-      if(!array_key_exists($filter_id, $operators)) {
-        $operators[$filter_id] = array(
-          'name' => $filter_def['name'],
-          'show_depend' => array('check', 'field', array('or')),
-        );
-      }
+  $filter_form_def = array(
+  );
 
-      $operators[$filter_id]['show_depend'][2][] = array('is', $field->id);
-    }
+  $custom_filters = array();
+  foreach($table->fields() as $field) {
+    $custom_filters[$field->id] = array(
+      'name' => $field->def['name'],
+      'type' => 'text',
+    );
 
     if(array_key_exists('default_filter', $field->def) && $field->def['default_filter']) {
       $filter_form_def["{$field->id}|{$field->def['default_filter']}"] = array(
@@ -36,32 +33,12 @@ function get_filter_form(&$param) {
 
   $filter_form_def = array_merge($filter_form_def, array(
     '__custom__' => array(
-      'name' => 'Filter',
-      'type' => 'form',
-      'count' => array(
-        'default' => 1,
-        'order' => false,
-        'button:add_element' => 'Add additional filter',
-        'hide_label' => true,
-      ),
-      'def'  => array(
-        'field'  => array(
-          'type' => 'select',
-          'name' => 'Field',
-          'values' => array_map(function($x) {
-            return $x->def['name'];
-          }, $table->fields()),
-        ),
-        'op' => array(
-          'type' => 'select',
-          'name' => 'Operator',
-          'values' => $operators,
-        ),
-        'value' => array(
-          'type' => 'text',
-          'name' => 'Value',
-        ),
-      ),
+      'name' => 'Additional filters',
+      'type' => 'filters',
+      'def'  => $custom_filters,
+      'hide_label' => true,
+      'order' => false,
+      'button:add_element' => 'Add filter',
     ),
   ));
 
@@ -92,11 +69,11 @@ function get_filter(&$param) {
   $ret = array();
   foreach($data as $k=>$v) {
     if($k == '__custom__') {
-      foreach($v as $v1) {
-	if(($v1['field'] === null) || ($v1['op'] === null))
+      foreach($v as $vk => $vv) {
+	if($vv === null)
 	  continue;
 
-	$ret[] = $v1;
+	$ret[] = array('field' => $vk, 'op' => 'contains', 'value' => $vv);
       }
     }
     else {
