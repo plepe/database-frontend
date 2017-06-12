@@ -29,6 +29,15 @@ function get_filter_form(&$param) {
       $f['values_mode'] = 'values';
     }
 
+    if (isset($field->def['reference']) && $field->def['reference']) {
+      $f['type'] = 'select';
+      $f['values'] = array();
+      foreach(get_db_table($field->def['reference'])->get_entries() as $o) {
+        $f['values'][$o->id] = $o->view();
+      }
+      $f['values_mode'] = 'keys';
+    }
+
     $custom_filters[$field->id] = $f;
 
     if(array_key_exists('default_filter', $field->def) && $field->def['default_filter']) {
