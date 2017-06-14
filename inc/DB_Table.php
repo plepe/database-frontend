@@ -444,6 +444,8 @@ class DB_Table {
 
     $data = $new_data;
 
+    call_hooks('table_pre_save', $data, $this);
+
     if($this->id === null) {
       if(!array_key_exists("id", $data)) {
 	return "require id for new types\n";
