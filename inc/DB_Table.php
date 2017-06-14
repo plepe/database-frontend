@@ -355,12 +355,12 @@ class DB_Table {
     if($type == 'show') {
       $views['json'] = array(
         'title' => 'JSON',
-        "weight_{$type}" => 100,
+        "weight" => 100,
         'class' => 'JSON',
       );
     }
 
-    $views = weight_sort($views, "weight_{$type}");
+    $views = weight_sort($views, "weight");
 
     return $views;
   }
@@ -380,8 +380,7 @@ class DB_Table {
 
     return array(
       'title' => 'Default',
-      'weight_show' => -1,
-      'weight_list' => -1,
+      'weight' => -1,
       'fields' => $def,
     );
   }
@@ -391,7 +390,7 @@ class DB_Table {
       return array(
         'title' => 'JSON',
         'class' => 'JSON',
-        'weight_show' => 100,
+        'weight' => 100,
         'fields' => $this->def(),
       );
 

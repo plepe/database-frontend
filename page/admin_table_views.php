@@ -157,17 +157,11 @@ class Page_admin_table_views extends Page {
           array('not', array('is', 'Table')),
         ),
       ),
-      'weight_show' => array(
+      'weight' => array(
         'type'   => 'integer',
-	'name'   => 'Weight (Show)',
+	'name'   => 'Weight',
 	'default' => 0,
-	'desc'   => 'Specify order of Views, when a single entry is shown',
-      ),
-      'weight_list' => array(
-        'type'   => 'integer',
-	'name'   => 'Weight (List)',
-	'default' => 0,
-	'desc'   => 'Specify order of Views, when a list is shown',
+	'desc'   => 'Specify order of Views',
       ),
     );
 
