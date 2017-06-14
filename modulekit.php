@@ -26,6 +26,7 @@ $include = array(
     'inc/Changeset.php',
     'inc/Field.php',
     'inc/filter.php',
+    'inc/array_insert_before.php',
     'page/*',
   ),
   'js' => array(
