@@ -28,7 +28,7 @@ class Page_show extends Page {
       if(array_key_exists("{$table->id}_view_show", $_SESSION))
         $view = $_SESSION["{$table->id}_view_show"];
       else
-        $view = $table->default_view('show');
+        $view = 'show';
     }
     else {
       $view = $param['view'];

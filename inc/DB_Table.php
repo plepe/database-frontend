@@ -15,6 +15,23 @@ class DB_Table {
     }
 
     $this->def = &$this->data['fields'];
+
+    // make sure there is a 'list' and a 'show' view -> create if necessary
+    if (!array_key_exists('views', $this->data)) {
+      $this->data['views'] = array();
+    }
+    if (!array_key_exists('list', $this->data['views'])) {
+      $r = $this->view_default();
+      $r['title'] = "Default 'list' view'";
+      $r['auto_add_new_fields_to_views'] = true;
+      $this->data['views']['list'] = $r;
+    }
+    if (!array_key_exists('show', $this->data['views'])) {
+      $r = $this->view_default();
+      $r['title'] = "Default 'show' view'";
+      $r['auto_add_new_fields_to_views'] = true;
+      $this->data['views']['show'] = $r;
+    }
   }
   
   function name() {
@@ -335,10 +352,6 @@ class DB_Table {
     if(array_key_exists('views', $this->data))
       $views = $this->data['views'];
 
-    $views['default'] = array(
-      'title' => 'Default',
-      "weight_{$type}" => -1,
-    );
     if($type == 'show') {
       $views['json'] = array(
         'title' => 'JSON',
@@ -374,10 +387,6 @@ class DB_Table {
   }
 
   function view_def($k) {
-    if($k == 'default') {
-      $def = $this->view_default();
-    }
-
     if($k == 'json')
       return array(
         'title' => 'JSON',
