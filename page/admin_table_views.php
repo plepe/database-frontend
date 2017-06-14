@@ -171,6 +171,8 @@ class Page_admin_table_views extends Page {
       ),
     );
 
+    call_hooks('admin_table_views_form', $form_def);
+
     $form = new form('data', $form_def);
 
     if($form->is_complete()) {

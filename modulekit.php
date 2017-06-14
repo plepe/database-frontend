@@ -26,6 +26,7 @@ $include = array(
     'inc/Changeset.php',
     'inc/Field.php',
     'inc/filter.php',
+    'inc/auto_add_new_fields_to_views.php',
     'inc/array_insert_before.php',
     'page/*',
   ),
