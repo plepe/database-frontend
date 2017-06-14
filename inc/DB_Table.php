@@ -352,25 +352,30 @@ class DB_Table {
     return $views;
   }
 
+  function view_default() {
+    $def = $this->def();
+
+    // special formats for default view
+    // * referenced tables
+    // * fields with multiple values
+    foreach($this->fields() as $column_id=>$field) {
+      $column_def = $field->def;
+
+      $def[$column_id] = $field->view_def();
+      $def[$column_id]['key'] = $column_id;
+    }
+
+    return array(
+      'title' => 'Default',
+      'weight_show' => -1,
+      'weight_list' => -1,
+      'fields' => $def,
+    );
+  }
+
   function view_def($k) {
     if($k == 'default') {
-      $def = $this->def();
-
-      // special formats for default view
-      // * referenced tables
-      // * fields with multiple values
-      foreach($this->fields() as $column_id=>$field) {
-	$column_def = $field->def;
-
-	$def[$column_id] = $field->view_def();
-      }
-
-      return array(
-        'title' => 'Default',
-        'weight_show' => -1,
-        'weight_list' => -1,
-        'fields' => $def,
-      );
+      $def = $this->view_default();
     }
 
     if($k == 'json')
