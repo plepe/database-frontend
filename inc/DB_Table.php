@@ -332,7 +332,8 @@ class DB_Table {
       if(array_key_exists('reference', $d) && ($d['reference'] !== null)) {
 	$values = array();
 	foreach(get_db_table($d['reference'])->get_entries() as $o) {
-	  $values[$o->id] = $o->view();
+          // Todo: title() may remove HTML
+	  $values[$o->id] = $o->title();
 	}
 
 	$ret[$k]['values'] = $values;
@@ -431,6 +432,14 @@ class DB_Table {
   function default_view($type) { // type: 'list' or 'show'
     $view = array_keys($this->views($type));
     return $view[0];
+  }
+
+  function title_format($prefix) {
+    if ($template = $this->data('title')) {
+      return $template;
+    }
+
+    return '{{ id }}';
   }
 
   /**

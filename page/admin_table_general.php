@@ -36,6 +36,12 @@ class Page_admin_table_general extends Page {
 	  'name'	=> 'Edit access',
 	  'desc'	=> "see below",
         ),
+        'title'       => array(
+          'type'        => 'textarea',
+          'name'        => 'Title format',
+          'desc'        => 'Template to format an item (e.g. for headers or references)',
+          'default'        => '{{ id }}',
+        ),
     );
 
     call_hooks("admin_table_general", $def);

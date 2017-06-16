@@ -10,6 +10,14 @@ register_hook("twig_init", function() {
     return call_user_func_array(array($data, "show_list"), array_slice(func_get_args(), 1));
   }, array("is_safe"=>array("html"))));
 
+  $twig->addFunction(new Twig_SimpleFunction('entry_title', function($table, $id) {
+    if ($entry = get_db_table($table)->get_entry($id)) {
+      return $entry->title();
+    }
+
+    return null;
+  }, array("is_safe"=>array("html"))));
+
   $twig->addFunction(new Twig_SimpleFunction('get_entry', function($table, $id) {
     $entry = get_db_table($table)->get_entry($id);
 

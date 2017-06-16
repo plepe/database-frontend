@@ -84,6 +84,7 @@ class Page_show extends Page {
       'template' => "show.html",
       'table' => $param['table'],
       'id' => $param['id'],
+      'title' => $object->title(),
       'view' => $view,
       'param' => $param,
       'views' => $table->views('show'),
