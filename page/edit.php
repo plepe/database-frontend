@@ -30,12 +30,65 @@ class Page_edit extends Page {
       return array();
     }
 
-    $form = new form("data", $table->def());
+    $def = $table->def();
+
+    $reference_fields = array();
+    foreach ($def as $defk => $defv) {
+      if (isset($defv['reference']) && $defv['reference']) {
+        $reference_fields[$defk] = $defv['count'];
+        $subdefv = $defv;
+
+        $def[$defk] = array(
+          'type' => 'form',
+          'name' => $defv['name'],
+          'count' => $defv['count'],
+          'def'  => array(
+            'value'    => $defv,
+            'new'      => array(
+              'type'     => 'form',
+              'hide_label' => true,
+              'def'      => get_db_table($defv['reference'])->def(),
+              'show_depend' => array('check', 'value', array('is', '__new')),
+            )
+          ),
+        );
+
+        unset($def[$defk]['def']['value']['count']);
+        $def[$defk]['def']['value']['hide_label'] = true;
+        $def[$defk]['def']['value']['values']['__new'] = 'create new';
+      }
+    }
+
+    $form = new form("data", $def);
 
     if($form->is_complete()) {
       $data = $form->get_data();
       if(!isset($param['id']))
 	$ob = new DB_Entry($param['table'], null);
+
+      foreach ($reference_fields as $f_id => $f_count) {
+        if ($f_count) {
+          foreach ($data[$f_id] as $e_id => $e_v) {
+            if ($e_v['value'] === '__new') {
+              $new_object = new DB_Entry($f_id, null);
+              $new_object->save($e_v['new']);
+              $data[$f_id][$e_id] = $new_object->id;
+            }
+            else {
+              $data[$f_id][$e_id] = $e_v['value'];
+            }
+          }
+        } else {
+          if ($data[$f_id]['value'] === '__new') {
+            $new_object = new DB_Entry($f_id, null);
+            $new_object->save($data[$f_id]['new']);
+            $data[$f_id] = $new_object->id;
+          }
+          else {
+            $data[$f_id] = $data[$f_id]['value'];
+          }
+        }
+      }
 
       $result = $ob->save($data, $param['message']);
 
@@ -49,7 +102,19 @@ class Page_edit extends Page {
 
     if($form->is_empty()) {
       if(isset($ob)) {
-	$form->set_data($ob->data());
+        $data = $ob->data();
+
+        foreach ($reference_fields as $f_id => $f_count) {
+          if ($f_count) {
+            foreach ($data[$f_id] as $e_id => $e_v) {
+              $data[$f_id][$e_id] = array('value' => $e_v);
+            }
+          } else {
+            $data[$f_id] = array('value' => $data[$f_id]);
+          }
+        }
+
+	$form->set_data($data);
       }
     }
 
