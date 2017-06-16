@@ -366,16 +366,15 @@ class DB_Table {
   }
 
   function view_default() {
-    $def = $this->def();
+    $def = array();
 
     // special formats for default view
     // * referenced tables
     // * fields with multiple values
     foreach($this->fields() as $column_id=>$field) {
-      $column_def = $field->def;
-
-      $def[$column_id] = $field->view_def();
-      $def[$column_id]['key'] = $column_id;
+      $def[$column_id] = array(
+        'key' => $column_id,
+      );
     }
 
     return array(
