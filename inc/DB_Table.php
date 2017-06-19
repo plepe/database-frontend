@@ -397,7 +397,7 @@ class DB_Table {
 
     if(!array_key_exists($k, $this->data['views'])) {
       messages_add("View does not exist!", MSG_ERROR);
-      return array();
+      return false;
     }
 
     $def = $this->def();

@@ -37,6 +37,9 @@ class Page_show extends Page {
     $param['view'] = $view;
 
     $def = $table->view_def($view);
+    if ($def === false) {
+      $def = $table->view_def('default');
+    }
 
     if(array_key_exists('class', $def)) {
       $view_class = "View_{$def['class']}";

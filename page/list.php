@@ -67,6 +67,9 @@ class Page_list extends Page {
     $param['view'] = $view;
 
     $def = $table->view_def($view);
+    if ($def === false) {
+      $def = $table->view_def('default');
+    }
 
     foreach($def['fields'] as $field_id => $field_def) {
       if($field_def['show_priority'] == ' 0')
