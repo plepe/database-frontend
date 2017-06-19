@@ -18,12 +18,45 @@ ul.MultipleValues {
 
 /*============ PANEL ==========*/
 
+div.Navigation {
+  min-height: 1.5em;
+}
+div.Navigation div.Pager {
+  display: inline-block;
+  float: right;
+}
+
+ul.Breadcrumbs {
+  margin: 0;
+  padding: 0;
+  line-height: normal;
+}
+ul.Breadcrumbs > li {
+  list-style: none;
+  display: inline;
+}
+ul.Breadcrumbs > li::before {
+  content: '/ ';
+}
+ul.Breadcrumbs > li:first-of-type::before {
+  content: '';
+}
+ul.Breadcrumbs > li > a {
+  color: black;
+  text-decoration: none;
+}
+ul.Breadcrumbs > li > a:hover,
+ul.Breadcrumbs > li > a:active {
+  text-decoration: underline;
+}
+
 .Panel{
   background: #E8EEF3;
   border: solid 2px #C7C6E1;
   margin: 14px;
   border-radius: 4px;
-  padding: 7px 14px 14px;
+  padding: 7px 14px;
+  line-height: 1.5em;
 }
 .SubPanel {
   margin: 0px 14px;

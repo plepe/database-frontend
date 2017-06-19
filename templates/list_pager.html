@@ -1,3 +1,4 @@
+<div class='Pager'>
 {% if param.limit %}
 <a class='LinkButton' href='{{ page_url({ "page": "list", "table": table, "offset": 0 }) }}' title='First (Ctrl+Home)' mousetrap='ctrl+home'>|◀</a>
 <a class='LinkButton' href='{{ page_url({ "page": "list", "table": table, "offset": max(0, param.offset - param.limit) }) }}' title='Previous (Ctrl+←)' mousetrap='ctrl+left'>◀</a>
@@ -10,3 +11,4 @@
 {{ result_count }} results <span class='pager_gear' title='Pager options'>⚙</span>
 </span>
 {% endif %}
+</div>

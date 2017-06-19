@@ -96,6 +96,7 @@ class Page_list extends Page {
     return array(
       'template' => 'list.html',
       'table' => $param['table'],
+      'table_name' => $table->name(),
       'result_count' => $table_extract->count(),
       'filter' => get_filter_form($param),
       'filter_values' => $filter_values,

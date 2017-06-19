@@ -1,7 +1,14 @@
 <div class='MainBox'>
 
   <div class='Panel'>
-    Table View: <form method='get'>
+    <div class='Navigation'>
+      {% include 'list_pager.html' %}
+      <ul class='Breadcrumbs'>
+        <li><a href='{{ page_url({ "page": "index"}) }}' title='Ctrl+h' mousetrap='ctrl+h'>Home</a></li>
+        <li><a href='{{ page_url({ "page": "list", "table": table }) }}'>{{ table_name }}</a></li>
+      </ul>
+    </div>
+    View: <form method='get'>
     <input type='hidden' name='page' value='list'/>
     <input type='hidden' name='table' value='{{table}}'/>
     <select name='view' onchange='this.form.submit()'>
@@ -15,7 +22,6 @@
     </select>
     </form>
 <a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table }) }}' title='Ctrl+n' mousetrap='ctrl+n'>Create new entry</a>
-    <a class='LinkButton' href='{{ page_url({ "page": "index"}) }}'>Home</a> 
     <a
       {% if filter_values|length > 0 %}
 	class='LinkButton active'
@@ -25,13 +31,8 @@
       href='javascript:show_filter()'>Filter</a> 
 
     {{ panel_items(param) }}
-    {% include 'list_pager.html' %}
   </div>
   
-  <div class='PanelH1'>
-    Table: {{ table }}
-  </div>
-
   <div id='Filter'
     {% if param.filter %}
     {% else %}
@@ -46,11 +47,19 @@
   </div>
 
   <div class='table_wrapper'>
+  <h1>{{ table_name }}</h1>
   {{ view|show_list() }}
   </div>
 
   <div class='Panel'>
-    Table View: <form method='get'>
+    <div class='Navigation'>
+      {% include 'list_pager.html' %}
+      <ul class='Breadcrumbs'>
+        <li><a href='{{ page_url({ "page": "index"}) }}' title='Ctrl+h' mousetrap='ctrl+h'>Home</a></li>
+        <li><a href='{{ page_url({ "page": "list", "table": table }) }}'>{{ table_name }}</a></li>
+      </ul>
+    </div>
+    View: <form method='get'>
     <input type='hidden' name='page' value='list'/>
     <input type='hidden' name='table' value='{{table}}'/>
     <select name='view' onchange='this.form.submit()'>
@@ -63,8 +72,7 @@
     {% endfor %}
     </select>
     </form>
-    <a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table }) }}'>Create new entry</a>
-    <a class='LinkButton' href='{{ page_url({ "page": "index"}) }}'>Home</a> 
+<a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table }) }}' title='Ctrl+n' mousetrap='ctrl+n'>Create new entry</a>
     <a
       {% if filter_values|length > 0 %}
 	class='LinkButton active'
@@ -72,8 +80,8 @@
 	class='LinkButton'
       {% endif %}
       href='javascript:show_filter()'>Filter</a> 
+
     {{ panel_items(param) }}
-    {% include 'list_pager.html' %}
   </div>
 
 </div>

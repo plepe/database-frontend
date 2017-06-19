@@ -1,3 +1,4 @@
+<div class='Pager'>
 {% if pager.first %} <a class='LinkButton' href='{{ page_url({ "page": "show", "table": table, "id": pager.first }) }}' title='First (Ctrl+Home)' mousetrap='ctrl+home'>|◀</a> {% endif %}
 {% if pager.prev %} <a class='LinkButton' href='{{ page_url({ "page": "show", "table": table, "id": pager.prev }) }}' title='Previous (Ctrl+←)' mousetrap='ctrl+left'>◀</a> {% endif %}
 
@@ -6,3 +7,4 @@
 
 {% if pager.next %} <a class='LinkButton' href='{{ page_url({ "page": "show", "table": table, "id": pager.next }) }}' title='Last (Ctrl+→)' mousetrap='ctrl+right'>▶</a> {% endif %}
 {% if pager.last %} <a class='LinkButton' href='{{ page_url({ "page": "show", "table": table, "id": pager.last }) }}' title='Last (Ctrl+End)' mousetrap='ctrl+end'>▶|</a> {% endif %}
+</div>
