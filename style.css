@@ -140,6 +140,9 @@ table.table td{
   color: #5E5E5E;
   padding: 2px;
 }
+table.table ul {
+  margin: 0;
+}
 
 tr.group,
 th.group,
