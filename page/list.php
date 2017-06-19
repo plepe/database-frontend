@@ -70,6 +70,7 @@ class Page_list extends Page {
     if ($def === false) {
       $def = $table->view_def('default');
     }
+    modify_table_fields($param, $def);
 
     foreach($def['fields'] as $field_id => $field_def) {
       if($field_def['show_priority'] == ' 0')
@@ -100,6 +101,8 @@ class Page_list extends Page {
       'result_count' => $table_extract->count(),
       'filter' => get_filter_form($param),
       'filter_values' => $filter_values,
+      'table_fields' => get_table_fields_form($param, $def),
+      'table_fields_values' => $table_fields_values,
       'view' => $view,
       'param' => $param,
       'views' => $table->views('list'),

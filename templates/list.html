@@ -29,6 +29,13 @@
 	class='LinkButton'
       {% endif %}
       href='javascript:show_filter()'>Filter</a> 
+    <a
+      {% if table_fields_values|length > 0 %}
+	class='LinkButton active'
+      {% else %}
+	class='LinkButton'
+      {% endif %}
+      href='javascript:show_table_fields()'>Fields</a>
 
     {{ panel_items(param) }}
   </div>
@@ -43,6 +50,19 @@
   {{ filter|show }}
   <input type='hidden' name='apply_filter' value='true' />
   <input type='submit' value='Apply filter'>
+  </form>
+  </div>
+
+  <div id='Table_Fields'
+    {% if param.table_fields %}
+    {% else %}
+      class='hidden'
+    {% endif %}
+  >
+  <form method='post'>
+  {{ table_fields|show }}
+  <input type='hidden' name='apply_table_fields' value='true' />
+  <input type='submit' value='Apply'>
   </form>
   </div>
 
