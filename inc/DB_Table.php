@@ -382,6 +382,7 @@ class DB_Table {
       'title' => 'Default',
       'weight' => -1,
       'fields' => $def,
+      'class' => 'Table',
     );
   }
 
