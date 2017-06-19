@@ -20,17 +20,17 @@ class DB_Table {
     if (!array_key_exists('views', $this->data)) {
       $this->data['views'] = array();
     }
-    if (!array_key_exists('list', $this->data['views'])) {
+    if (!array_key_exists('default', $this->data['views'])) {
       $r = $this->view_default();
-      $r['title'] = "Default 'list' view'";
+      $r['title'] = "default";
       $r['auto_add_new_fields_to_views'] = true;
-      $this->data['views']['list'] = $r;
+      $this->data['views']['default'] = $r;
     }
-    if (!array_key_exists('show', $this->data['views'])) {
-      $r = $this->view_default();
-      $r['title'] = "Default 'show' view'";
-      $r['auto_add_new_fields_to_views'] = true;
-      $this->data['views']['show'] = $r;
+    if (!isset($this->data['default_view_show'])) {
+      $this->data['default_view_show'] = 'default';
+    }
+    if (!isset($this->data['default_view_list'])) {
+      $this->data['default_view_list'] = 'default';
     }
   }
   

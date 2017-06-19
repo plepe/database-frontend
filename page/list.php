@@ -58,7 +58,7 @@ class Page_list extends Page {
       if(array_key_exists("{$table->id}_view_list", $_SESSION))
         $view = $_SESSION["{$table->id}_view_list"];
       else
-        $view = 'list';
+        $view = $table->data('default_view_list');
     }
     else {
       $view = $param['view'];
