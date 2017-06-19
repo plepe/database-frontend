@@ -23,7 +23,7 @@ class DB_Table {
     if (!array_key_exists('default', $this->data['views'])) {
       $r = $this->view_default();
       $r['title'] = "default";
-      $r['auto_add_new_fields_to_views'] = true;
+      $r['auto_add_new_fields'] = true;
       $this->data['views']['default'] = $r;
     }
     if (!isset($this->data['default_view_show'])) {
