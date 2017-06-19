@@ -80,6 +80,26 @@ class DB_Table {
     return null;
   }
 
+  function view_fields() {
+    $ret = $this->fields();
+
+    foreach ($this->views() as $view_id => $view) {
+      if ($view['class'] !== 'Table') {
+        continue;
+      }
+
+      foreach ($view['fields'] as $field_num => $field) {
+        if ($field['key'] === '__custom__') {
+          $field['name'] = $field['title'] . " (View: " . $this->name() . ")";
+          $field['id'] = "__custom:{$view_id}:{$field_num}__";
+          $ret[$field['id']] = new ViewField($field);
+        }
+      }
+    }
+
+    return $ret;
+  }
+
   /**
    * return list of field ids whose values are stored in sub tables
    */

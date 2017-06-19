@@ -13,7 +13,7 @@ function get_table_fields_form(&$param, $view_def) {
     $_SESSION['table_fields'] = array();
 
   $view_fields = array();
-  foreach($table->fields() as $field) {
+  foreach($table->view_fields() as $field) {
     $view_fields[$field->id] = $field->def['name'];
   }
 
@@ -57,9 +57,11 @@ function modify_table_fields(&$param, &$def) {
   $data = $table_fields_form->get_data();
   $table_fields_form->set_orig_data($data);
 
-  $fields = $table->fields();
+  $fields = $table->view_fields();
 
   foreach ($data['table_fields'] as $field_id) {
-    $def['fields'][] = $fields[$field_id]->view_def();
+    if ($field_id) {
+      $def['fields'][] = $fields[$field_id]->view_def();
+    }
   }
 }
