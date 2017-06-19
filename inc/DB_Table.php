@@ -35,7 +35,8 @@ class DB_Table {
   }
   
   function name() {
-    return $this->data('name') || $this->id;
+    $name = $this->data('name');
+    return $name ? $name : $this->id;
   }
 
   function data($key=null) {
