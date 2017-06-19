@@ -34,7 +34,7 @@ class Page_edit extends Page {
 
     $reference_fields = array();
     foreach ($def as $defk => $defv) {
-      if (isset($defv['reference']) && $defv['reference']) {
+      if (isset($defv['reference']) && $defv['reference'] && !in_array($defv['type'], array('checkbox'))) {
         $reference_fields[$defk] = $defv['count'];
         $subdefv = $defv;
 
