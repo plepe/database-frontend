@@ -23,6 +23,7 @@ $include = array(
     'inc/View_PlainText.php',
     'inc/View_PlainHTML.php',
     'inc/ViewField.php',
+    'inc/ViewBackreferenceField.php',
     'inc/FieldTypes.php',
     'inc/Changeset.php',
     'inc/Field.php',

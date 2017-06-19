@@ -83,6 +83,21 @@ class DB_Table {
   function view_fields() {
     $ret = $this->fields();
 
+    foreach (get_db_tables() as $table_id => $table) {
+      foreach ($table->data('fields') as $field_id => $field) {
+        if (isset($field['reference']) && $field['reference'] == $this->id) {
+          $ref_field = array(
+            'id' => "__reference:{$table_id}:{$field_id}__",
+            'src_table' => $this->id,
+            'dest_table' => $table_id,
+            'dest_field' => $field_id,
+            'name' => "Reference " . $table->name() . " " . $field['name'],
+          );
+          $ret[$ref_field['id']] = new ViewBackreferenceField($ref_field);
+        }
+      }
+    }
+
     foreach ($this->views() as $view_id => $view) {
       if ($view['class'] !== 'Table') {
         continue;
