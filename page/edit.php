@@ -62,6 +62,9 @@ class Page_edit extends Page {
     $form = new form("data", $def);
 
     if($form->is_complete()) {
+      $changeset = new Changeset($param['message']);
+      $changeset->open();
+
       $data = $form->get_data();
       if(!isset($param['id']))
 	$ob = new DB_Entry($param['table'], null);
@@ -71,7 +74,7 @@ class Page_edit extends Page {
           foreach ($data[$f_id] as $e_id => $e_v) {
             if ($e_v['value'] === '__new') {
               $new_object = new DB_Entry($f_id, null);
-              $new_object->save($e_v['new']);
+              $new_object->save($e_v['new'], $changeset);
               $data[$f_id][$e_id] = $new_object->id;
             }
             else {
@@ -81,7 +84,7 @@ class Page_edit extends Page {
         } else {
           if ($data[$f_id]['value'] === '__new') {
             $new_object = new DB_Entry($f_id, null);
-            $new_object->save($data[$f_id]['new']);
+            $new_object->save($data[$f_id]['new'], $changeset);
             $data[$f_id] = $new_object->id;
           }
           else {
@@ -90,7 +93,9 @@ class Page_edit extends Page {
         }
       }
 
-      $result = $ob->save($data, $param['message']);
+      $result = $ob->save($data, $changeset);
+
+      $changeset->commit();
 
       if($result === true) {
 	page_reload(page_url(array("page" => "show", "table" => $param['table'], "id" => $ob->id)));
