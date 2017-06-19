@@ -48,14 +48,14 @@ class Page_edit extends Page {
               'type'     => 'form',
               'hide_label' => true,
               'def'      => get_db_table($defv['reference'])->def(),
-              'show_depend' => array('check', 'value', array('is', '__new')),
+              'show_depend' => array('check', 'value', array('not', array('has_value'))),
             )
           ),
         );
 
         unset($def[$defk]['def']['value']['count']);
         $def[$defk]['def']['value']['hide_label'] = true;
-        $def[$defk]['def']['value']['values']['__new'] = 'create new';
+        $def[$defk]['def']['value']['placeholder'] = '-- create new --';
       }
     }
 
@@ -72,7 +72,7 @@ class Page_edit extends Page {
       foreach ($reference_fields as $f_id => $f_count) {
         if ($f_count) {
           foreach ($data[$f_id] as $e_id => $e_v) {
-            if ($e_v['value'] === '__new') {
+            if (!$e_v['value']) {
               $new_object = new DB_Entry($f_id, null);
               $new_object->save($e_v['new'], $changeset);
               $data[$f_id][$e_id] = $new_object->id;
@@ -82,7 +82,7 @@ class Page_edit extends Page {
             }
           }
         } else {
-          if ($data[$f_id]['value'] === '__new') {
+          if (!$data[$f_id]['value']) {
             $new_object = new DB_Entry($f_id, null);
             $new_object->save($data[$f_id]['new'], $changeset);
             $data[$f_id] = $new_object->id;
