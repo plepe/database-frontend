@@ -104,8 +104,11 @@ class DB_Table {
       }
 
       foreach ($view['fields'] as $field_num => $field) {
-        if ($field['key'] === '__custom__') {
-          $field['name'] = $field['title'] . " (View: " . $this->name() . ")";
+        if ($field['key'] === '__custom__' || $field['format']) {
+          $field['name'] =
+            $field['key'] === '__custom__'
+              ? $field['title'] . " (View: " . $this->name() . ")"
+              : $this->field($field['key'])->name() . " (View: " . $this->name() . ")";
           $field['id'] = "__custom:{$view_id}:{$field_num}__";
           $ret[$field['id']] = new ViewField($field);
         }
