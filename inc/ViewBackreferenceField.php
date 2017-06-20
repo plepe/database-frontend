@@ -1,8 +1,11 @@
 <?php
 class ViewBackreferenceField {
-  function __construct($def) {
+  function __construct($def, $field) {
     $this->def = $def;
     $this->id = $this->def['id'];
+    $this->src_table = get_db_table($this->def['src_table']);
+    $this->dest_table = get_db_table($this->def['dest_table']);
+    $this->def['name'] = "Reference {$field['name']} (from {$this->dest_table->name()})";
   }
 
   function id() {

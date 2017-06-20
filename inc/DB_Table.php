@@ -91,9 +91,8 @@ class DB_Table {
             'src_table' => $this->id,
             'dest_table' => $table_id,
             'dest_field' => $field_id,
-            'name' => "Reference " . $table->name() . " " . $field['name'],
           );
-          $ret[$ref_field['id']] = new ViewBackreferenceField($ref_field);
+          $ret[$ref_field['id']] = new ViewBackreferenceField($ref_field, $field);
         }
       }
     }
