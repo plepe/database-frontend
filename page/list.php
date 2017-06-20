@@ -94,6 +94,15 @@ class Page_list extends Page {
       "limit" => $param['limit'],
     )));
 
+    $table_fields = get_table_fields_form($param, $def);
+    $table_fields_values = $table_fields->get_data();
+    $table_fields_values = $table_fields_values['table_fields'];
+    foreach ($table_fields_values as $i => $v) {
+      if (!$v) {
+        unset($table_fields_values[$i]);
+      }
+    }
+
     return array(
       'template' => 'list.html',
       'table' => $param['table'],
@@ -101,7 +110,7 @@ class Page_list extends Page {
       'result_count' => $table_extract->count(),
       'filter' => get_filter_form($param),
       'filter_values' => $filter_values,
-      'table_fields' => get_table_fields_form($param, $def),
+      'table_fields' => $table_fields,
       'table_fields_values' => $table_fields_values,
       'view' => $view,
       'param' => $param,
