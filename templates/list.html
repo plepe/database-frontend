@@ -100,6 +100,13 @@
 	class='LinkButton'
       {% endif %}
       href='javascript:show_filter()'>Filter</a> 
+    <a
+      {% if table_fields_values|length > 0 %}
+	class='LinkButton active'
+      {% else %}
+	class='LinkButton'
+      {% endif %}
+      href='javascript:show_table_fields()'>Fields</a>
 
     {{ panel_items(param) }}
   </div>
