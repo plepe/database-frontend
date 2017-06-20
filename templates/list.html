@@ -46,7 +46,9 @@
       class='hidden'
     {% endif %}
   >
-  <form method='post'>
+  <form method='get'>
+  <input type='hidden' name='page' value='list'/>
+  <input type='hidden' name='table' value='{{table}}'/>
   {{ filter|show }}
   <input type='hidden' name='apply_filter' value='true' />
   <input type='submit' value='Apply filter'>
@@ -59,7 +61,9 @@
       class='hidden'
     {% endif %}
   >
-  <form method='post'>
+  <form method='get'>
+  <input type='hidden' name='page' value='list'/>
+  <input type='hidden' name='table' value='{{table}}'/>
   {{ table_fields|show }}
   <input type='hidden' name='apply_table_fields' value='true' />
   <input type='submit' value='Apply'>
