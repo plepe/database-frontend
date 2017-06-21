@@ -90,6 +90,12 @@ class FieldType_boolean extends FieldType {
   }
 }
 
+class FieldType_random extends FieldType {
+  function db_type() {
+    return 'text';
+  }
+}
+
 function get_field_types() {
   $ret = array();
 

@@ -282,6 +282,29 @@ EOT
 ;
   }
 }
+
+class Field_random extends Field {
+  function __construct($column_id, $column_def, $table) {
+    parent::__construct($column_id, $column_def, $table);
+
+    $this->def['default'] = 'foo';
+  }
+
+  function form_type() {
+    return 'text';
+  }
+
+  function additional_form_def() {
+    $ret = parent::additional_form_def();
+
+    $ret['default_func'] = array(
+      'php' => "random_ids_get",
+      'js' => "random_ids_get",
+    );
+
+    return $ret;
+  }
+}
 //
 //function get_fields() {
 //  $ret = array();

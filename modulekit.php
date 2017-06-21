@@ -31,6 +31,7 @@ $include = array(
     'inc/table_fields.php',
     'inc/auto_add_new_fields_to_views.php',
     'inc/array_insert_before.php',
+    'inc/random_ids.php',
     'page/*',
   ),
   'js' => array(
@@ -40,6 +41,7 @@ $include = array(
     'inc/mousetrap-auto.js',
     'inc/filter.js',
     'inc/table_fields.js',
+    'inc/random_ids.js',
   ),
 
   'css' => array(
