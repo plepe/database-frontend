@@ -380,6 +380,10 @@ class DB_Table {
       }
 
       $ret[$k]['type'] = $field->form_type();
+
+      foreach ($field->additional_form_def() as $dk => $dv) {
+        $ret[$k][$dk] = $dv;
+      }
     }
 
     return $ret;

@@ -43,6 +43,8 @@ if($ret === null) {
   $ret = file_get_contents("templates/404.html");
 }
 
+call_hooks("page_ready");
+
 print twig_render("page.html", array(
   'content' => $ret,
   'messages' => messages_print(),
