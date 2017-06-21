@@ -175,6 +175,10 @@ class Field {
       ),
     );
   }
+
+  function additional_form_def() {
+    return array();
+  }
 }
 
 class Field_text extends Field {
