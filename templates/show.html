@@ -2,9 +2,38 @@
 <div class='MainBox'>
 
   <div class='Panel'>
-    <div class='PanelH1'>
-	   Table:  {{ table }} / Row: {{ id }}
+    <div class='Navigation'>
+      {% include 'show_pager.html' %}
+      <ul class='Breadcrumbs'>
+         <li><a href='?' title='Ctrl+h' mousetrap='ctrl+h'>Home</a></li>
+         <li><a href='{{ page_url({ "page": "list", "table": table }) }}' title='Ctrl+o' mousetrap='ctrl+o'>{{ table_name }}</a></li>
+         <li><a href='{{ page_url({ "page": "show", "table": table, "id": id }) }}'>{{ title|raw }}</a></li>
+      </ul>
     </div>
+    View: <form method='get'>
+    <input type='hidden' name='page' value='show'/>
+    <input type='hidden' name='table' value='{{table}}'/>
+    <input type='hidden' name='id' value='{{id}}'/>
+    <select name='view' onchange='this.form.submit()'>
+    {% for k, v in views %}
+    <option value='{{ k }}'
+    {% if param.view == k %}
+     selected
+    {% endif %}
+    >{{ v.title }}</option>
+    {% endfor %}
+    </select>
+    </form>
+    <a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table, "id": id }) }}' title='Ctrl+e' mousetrap='ctrl+e'>Edit</a>
+    <a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table }) }}' title='Ctrl+n' mousetrap='ctrl+n'>New</a>
+    <a
+      {% if filter_values|length > 0 %}
+	class='LinkButton active'
+      {% else %}
+	class='LinkButton'
+      {% endif %}
+      href='javascript:show_filter()'>Filter</a> 
+    {{ panel_items(param) }}
   </div>
 
   <div id='Filter'
@@ -21,11 +50,20 @@
   </div>
 
   <div class='table_wrapper'>
+  <h1>{{ title|raw }}</h1>
   {{ view|show() }}
   </div>
 
   <div class='Panel'>
-    Table View: <form method='get'>
+    <div class='Navigation'>
+      {% include 'show_pager.html' %}
+      <ul class='Breadcrumbs'>
+         <li><a href='?' title='Ctrl+h' mousetrap='ctrl+h'>Home</a></li>
+         <li><a href='{{ page_url({ "page": "list", "table": table }) }}' title='Ctrl+o' mousetrap='ctrl+o'>{{ table_name }}</a></li>
+         <li><a href='{{ page_url({ "page": "show", "table": table, "id": id }) }}'>{{ title|raw }}</a></li>
+      </ul>
+    </div>
+    View: <form method='get'>
     <input type='hidden' name='page' value='show'/>
     <input type='hidden' name='table' value='{{table}}'/>
     <input type='hidden' name='id' value='{{id}}'/>
@@ -40,8 +78,7 @@
     </select>
     </form>
     <a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table, "id": id }) }}' title='Ctrl+e' mousetrap='ctrl+e'>Edit</a>
-    <a class='LinkButton' href='{{ page_url({ "page": "list", "table": table }) }}' title='Ctrl+o' mousetrap='ctrl+o'>Back</a>
-    <a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table }) }}' title='Ctrl+n' mousetrap='ctrl+n'>Create new entry</a>
+    <a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table }) }}' title='Ctrl+n' mousetrap='ctrl+n'>New</a>
     <a
       {% if filter_values|length > 0 %}
 	class='LinkButton active'
@@ -50,7 +87,6 @@
       {% endif %}
       href='javascript:show_filter()'>Filter</a> 
     {{ panel_items(param) }}
-    {% include 'show_pager.html' %}
   </div>
 
 </div>

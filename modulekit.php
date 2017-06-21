@@ -22,10 +22,13 @@ $include = array(
     'inc/View_JSON.php',
     'inc/View_PlainText.php',
     'inc/View_PlainHTML.php',
+    'inc/ViewField.php',
+    'inc/ViewBackreferenceField.php',
     'inc/FieldTypes.php',
     'inc/Changeset.php',
     'inc/Field.php',
     'inc/filter.php',
+    'inc/table_fields.php',
     'inc/auto_add_new_fields_to_views.php',
     'inc/array_insert_before.php',
     'page/*',
@@ -36,6 +39,7 @@ $include = array(
     'inc/mousetrap.min.js',
     'inc/mousetrap-auto.js',
     'inc/filter.js',
+    'inc/table_fields.js',
   ),
 
   'css' => array(

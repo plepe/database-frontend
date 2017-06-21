@@ -8,8 +8,10 @@ class Page_admin_table_general extends Page {
       return "Permission denied.";
     }
 
+    $views = array('default');
     if(isset($param['table'])) {
       $table = get_db_table($param['table']);
+      $views = $table->views();
     }
 
     foreach(get_db_tables() as $t)
@@ -35,6 +37,24 @@ class Page_admin_table_general extends Page {
 	  'type'	=> 'text',
 	  'name'	=> 'Edit access',
 	  'desc'	=> "see below",
+        ),
+        'title'       => array(
+          'type'        => 'textarea',
+          'name'        => 'Title format',
+          'desc'        => 'Template to format an item (e.g. for headers or references)',
+          'default'        => '{{ id }}',
+        ),
+        'default_view_show'=> array(
+          'type'         => 'select',
+          'name'         => 'Default view for showing a single object',
+          'values'       => $views,
+          'default'      => 'default',
+        ),
+        'default_view_list'=> array(
+          'type'         => 'select',
+          'name'         => 'Default view for showing a list',
+          'values'       => $views,
+          'default'      => 'default',
         ),
     );
 

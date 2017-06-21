@@ -24,6 +24,10 @@ class DB_Entry {
     return $this->data;
   }
 
+  function title() {
+    return twig_render_custom($this->table->title_format(), $this->view());
+  }
+
   /**
    * load - (re-)load data from database
    */

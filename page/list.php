@@ -58,7 +58,7 @@ class Page_list extends Page {
       if(array_key_exists("{$table->id}_view_list", $_SESSION))
         $view = $_SESSION["{$table->id}_view_list"];
       else
-        $view = 'list';
+        $view = $table->data('default_view_list');
     }
     else {
       $view = $param['view'];
@@ -67,6 +67,10 @@ class Page_list extends Page {
     $param['view'] = $view;
 
     $def = $table->view_def($view);
+    if ($def === false) {
+      $def = $table->view_def('default');
+    }
+    modify_table_fields($param, $def);
 
     foreach($def['fields'] as $field_id => $field_def) {
       if($field_def['show_priority'] == ' 0')
@@ -90,12 +94,24 @@ class Page_list extends Page {
       "limit" => $param['limit'],
     )));
 
+    $table_fields = get_table_fields_form($param, $def);
+    $table_fields_values = $table_fields->get_data();
+    $table_fields_values = $table_fields_values['table_fields'];
+    foreach ($table_fields_values as $i => $v) {
+      if (!$v) {
+        unset($table_fields_values[$i]);
+      }
+    }
+
     return array(
       'template' => 'list.html',
       'table' => $param['table'],
+      'table_name' => $table->name(),
       'result_count' => $table_extract->count(),
       'filter' => get_filter_form($param),
       'filter_values' => $filter_values,
+      'table_fields' => $table_fields,
+      'table_fields_values' => $table_fields_values,
       'view' => $view,
       'param' => $param,
       'views' => $table->views('list'),

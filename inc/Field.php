@@ -10,6 +10,10 @@ class Field {
     return substr(get_called_class(), 6);
   }
 
+  function name() {
+    return $this->def['name'];
+  }
+
   function form_type() {
     return substr(get_called_class(), 6);
   }
@@ -68,7 +72,7 @@ class Field {
 	  "<ul class='MultipleValues'>\n" .
 	  "{% for _ in {$this->id} %}\n" .
 	  "<li><a href='{{ page_url({ \"page\": \"show\", \"table\": \"{$this->def['reference']}\", \"id\": _.id }) }}'>" .
-	  $this->default_format("_.id") .
+          "{{ entry_title(\"{$this->def['reference']}\", _.id) }}" .
 	  "</a>" .
 	  "{% endfor %}\n" .
 	  "</ul>\n";
@@ -76,7 +80,7 @@ class Field {
       else {
 	$ret['format'] =
 	  "<a href='{{ page_url({ \"page\": \"show\", \"table\": \"{$this->def['reference']}\", \"id\": {$this->id}.id }) }}'>" .
-	  $this->default_format("{$this->id}.id") .
+          "{{ entry_title(\"{$this->def['reference']}\", {$this->id}.id) }}" .
 	  "</a>";
       }
     }

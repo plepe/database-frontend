@@ -20,22 +20,23 @@ class DB_Table {
     if (!array_key_exists('views', $this->data)) {
       $this->data['views'] = array();
     }
-    if (!array_key_exists('list', $this->data['views'])) {
+    if (!array_key_exists('default', $this->data['views'])) {
       $r = $this->view_default();
-      $r['title'] = "Default 'list' view'";
-      $r['auto_add_new_fields_to_views'] = true;
-      $this->data['views']['list'] = $r;
+      $r['title'] = "default";
+      $r['auto_add_new_fields'] = true;
+      $this->data['views']['default'] = $r;
     }
-    if (!array_key_exists('show', $this->data['views'])) {
-      $r = $this->view_default();
-      $r['title'] = "Default 'show' view'";
-      $r['auto_add_new_fields_to_views'] = true;
-      $this->data['views']['show'] = $r;
+    if (!isset($this->data['default_view_show'])) {
+      $this->data['default_view_show'] = 'default';
+    }
+    if (!isset($this->data['default_view_list'])) {
+      $this->data['default_view_list'] = 'default';
     }
   }
   
   function name() {
-    return $this->data('name') || $this->id;
+    $name = $this->data('name');
+    return $name ? $name : $this->id;
   }
 
   function data($key=null) {
@@ -77,6 +78,43 @@ class DB_Table {
       return $this->_fields[$field_id];
 
     return null;
+  }
+
+  function view_fields() {
+    $ret = $this->fields();
+
+    foreach (get_db_tables() as $table_id => $table) {
+      foreach ($table->data('fields') as $field_id => $field) {
+        if (isset($field['reference']) && $field['reference'] == $this->id) {
+          $ref_field = array(
+            'id' => "__reference:{$table_id}:{$field_id}__",
+            'src_table' => $this->id,
+            'dest_table' => $table_id,
+            'dest_field' => $field_id,
+          );
+          $ret[$ref_field['id']] = new ViewBackreferenceField($ref_field, $field);
+        }
+      }
+    }
+
+    foreach ($this->views() as $view_id => $view) {
+      if ($view['class'] !== 'Table') {
+        continue;
+      }
+
+      foreach ($view['fields'] as $field_num => $field) {
+        if ($field['key'] === '__custom__' || $field['format']) {
+          $field['name'] =
+            $field['key'] === '__custom__'
+              ? $field['title'] . " (View: {$view['title']})"
+              : $this->field($field['key'])->name() . " (View: {$view['title']})";
+          $field['id'] = "__custom:{$view_id}:{$field_num}__";
+          $ret[$field['id']] = new ViewField($field);
+        }
+      }
+    }
+
+    return $ret;
   }
 
   /**
@@ -332,7 +370,8 @@ class DB_Table {
       if(array_key_exists('reference', $d) && ($d['reference'] !== null)) {
 	$values = array();
 	foreach(get_db_table($d['reference'])->get_entries() as $o) {
-	  $values[$o->id] = $o->view();
+          // Todo: title() may remove HTML
+	  $values[$o->id] = $o->title();
 	}
 
 	$ret[$k]['values'] = $values;
@@ -366,22 +405,22 @@ class DB_Table {
   }
 
   function view_default() {
-    $def = $this->def();
+    $def = array();
 
     // special formats for default view
     // * referenced tables
     // * fields with multiple values
     foreach($this->fields() as $column_id=>$field) {
-      $column_def = $field->def;
-
-      $def[$column_id] = $field->view_def();
-      $def[$column_id]['key'] = $column_id;
+      $def[$column_id] = array(
+        'key' => $column_id,
+      );
     }
 
     return array(
       'title' => 'Default',
       'weight' => -1,
       'fields' => $def,
+      'class' => 'Table',
     );
   }
 
@@ -396,7 +435,7 @@ class DB_Table {
 
     if(!array_key_exists($k, $this->data['views'])) {
       messages_add("View does not exist!", MSG_ERROR);
-      return array();
+      return false;
     }
 
     $def = $this->def();
@@ -432,6 +471,14 @@ class DB_Table {
   function default_view($type) { // type: 'list' or 'show'
     $view = array_keys($this->views($type));
     return $view[0];
+  }
+
+  function title_format($prefix) {
+    if ($template = $this->data('title')) {
+      return $template;
+    }
+
+    return '{{ id }}';
   }
 
   /**

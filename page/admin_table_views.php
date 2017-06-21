@@ -169,6 +169,18 @@ class Page_admin_table_views extends Page {
 
     $form = new form('data', $form_def);
 
+    if (isset($param['remove'])) {
+      $views = $table->data['views'];
+
+      if (isset($param['view'])) {
+        unset($views[$param['view']]);
+        $table->save(array('views' => $views));
+        messages_add("View removed.");
+        page_reload(page_url(array("page" => "admin_table", "table" => $table->id)));
+        return true;
+      }
+    }
+
     if($form->is_complete()) {
       $view_data = $form->save_data();
 

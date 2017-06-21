@@ -28,7 +28,7 @@ class Page_show extends Page {
       if(array_key_exists("{$table->id}_view_show", $_SESSION))
         $view = $_SESSION["{$table->id}_view_show"];
       else
-        $view = 'show';
+        $view = $table->data('default_view_show');
     }
     else {
       $view = $param['view'];
@@ -37,6 +37,9 @@ class Page_show extends Page {
     $param['view'] = $view;
 
     $def = $table->view_def($view);
+    if ($def === false) {
+      $def = $table->view_def('default');
+    }
 
     if(array_key_exists('class', $def)) {
       $view_class = "View_{$def['class']}";
@@ -83,7 +86,9 @@ class Page_show extends Page {
     return array(
       'template' => "show.html",
       'table' => $param['table'],
+      'table_name' => $table->name(),
       'id' => $param['id'],
+      'title' => $object->title(),
       'view' => $view,
       'param' => $param,
       'views' => $table->views('show'),

@@ -106,6 +106,19 @@ EOT
 	      'show_depend'=>$has_values,
 	      'include_data'=>$has_values,
 	    ),
+            'reference_create_new' => array(
+              'type'    => 'boolean',
+              'name'    => 'Allow create new',
+              'desc'    => 'Allow creation of new referenced objects',
+              'default' => false,
+	      'show_depend'=>array('and',
+		// show option only when, ...
+		// ... reference is null, and ...
+	        array('check', 'reference', array('has_value')),
+		// ... field type has a selector for values
+		array('check', 'type', array('not', array('is', 'checkbox'))),
+	      ),
+            ),
             'values_mode' => array(
               'type'    => 'radio',
               'name'    => 'Values mode',
