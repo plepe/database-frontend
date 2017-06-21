@@ -32,9 +32,11 @@ function random_ids_init() {
   $used = array();
 
   foreach (get_db_tables() as $table) {
-    if ($table->field('id')->def['type'] === 'random') {
-      foreach ($table->get_entries() as $entry) {
-          $used[] = $entry->id;
+    foreach ($table->fields() as $field_id => $field) {
+      if ($field->def['type'] === 'random') {
+        foreach ($table->get_entries() as $entry) {
+            $used[] = $entry->$field_id;
+        }
       }
     }
   }
