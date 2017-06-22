@@ -29,6 +29,8 @@ function page_list_reload() {
 
   var url = '?' + ajax_build_request(page_param)
 
+  history.pushState(page_param, null, '?' + ajax_build_request(page_param))
+
   req.open('GET', url)
   req.send()
 
