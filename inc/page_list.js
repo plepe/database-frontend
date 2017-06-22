@@ -16,17 +16,17 @@ function page_list_reload() {
 
   var r = form_filter.get_request_data()
   for (var k in r) {
-    page_param[k] = r[k]
+    param[k] = r[k]
   }
 
   var r = form__.get_request_data()
   for (var k in r) {
-    page_param[k] = r[k]
+    param[k] = r[k]
   }
 
-  var url = '?' + ajax_build_request(page_param)
+  var url = '?' + ajax_build_request(param)
 
-  history.pushState(page_param, null, '?' + ajax_build_request(page_param))
+  history.pushState(param, null, '?' + ajax_build_request(param))
 
   req.open('GET', url)
   req.responseType = 'document'
@@ -36,9 +36,9 @@ function page_list_reload() {
 }
 
 register_hook('init', function () {
-  if (page_param.page === 'list') {
+  if (param && param.page === 'list') {
     form_filter.onchange = function () {
-      page_param.offset = 0
+      param.offset = 0
       page_list_reload()
     }
     form__.onchange = page_list_reload
