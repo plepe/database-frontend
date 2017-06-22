@@ -45,6 +45,8 @@ if($ret === null) {
 
 call_hooks("page_ready");
 
+html_export_var(array('page_param' => $page->param));
+
 print twig_render("page.html", array(
   'content' => $ret,
   'messages' => messages_print(),
