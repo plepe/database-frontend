@@ -17,7 +17,12 @@ function page_list_reload() {
     console.log(req)
   })
 
-  req.open('GET', '?page=list&table=' + page_param.table)
+  var url = '?page=list&table=' + page_param.table
+
+  url += '&' + ajax_build_request(form_filter.get_request_data())
+  url += '&' + ajax_build_request(form__.get_request_data())
+
+  req.open('GET', url)
   req.send()
 
   return false;
@@ -25,6 +30,7 @@ function page_list_reload() {
 
 register_hook('init', function () {
   if (page_param.page === 'list') {
-
+    form_filter.onchange = page_list_reload
+    form__.onchange = page_list_reload
   }
 })
