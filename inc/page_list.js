@@ -2,14 +2,11 @@ function page_list_reload() {
   var req = new XMLHttpRequest()
   
   req.addEventListener('load', function () {
-    var text = req.responseText
-    var pos_start = text.search('<!--start-->')
-    var pos_end = text.search('<!--end-->')
+    var text = req.responseXML
 
-    text = text.substr(pos_start + 12, pos_end - pos_start - 12)
-
-    var table = document.getElementById('table')
-    table.innerHTML = text
+    var table_new = text.getElementById('table')
+    var table_old = document.getElementById('table')
+    table_old.innerHTML = table_new.innerHTML
   })
 
   req.addEventListener('error', function () {
@@ -32,6 +29,7 @@ function page_list_reload() {
   history.pushState(page_param, null, '?' + ajax_build_request(page_param))
 
   req.open('GET', url)
+  req.responseType = 'document'
   req.send()
 
   return false;
