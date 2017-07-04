@@ -24,6 +24,8 @@ class Changeset {
   }
 
   function add($object) {
+    $object->data = null;
+
     if($this->status === false) {
       $this->open();
       $this->commit();
