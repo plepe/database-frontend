@@ -123,8 +123,18 @@ class DB_Table {
   function column_tables() {
     $ret = array();
 
-    foreach($this->fields() as $field) {
-      if($field->is_multiple() === true) {
+    foreach($this->fields() as $fid => $field) {
+      if (isset($field->def['backreference'])) {
+        list($ref_table, $ref_field) = explode(':', $field->def['backreference']);
+        $ret[] = array(
+          'type' => 'backreference',
+          'table' => $ref_table . '_' . $ref_field,
+          'field_id' => $fid,
+          'id' => 'value',
+          'value' => 'id',
+        );
+      }
+      elseif($field->is_multiple() === true) {
 	$ret[] = $field->id;
       }
     }
@@ -191,6 +201,11 @@ class DB_Table {
 
       if(array_key_exists('reference', $column_def) && ($column_def['reference'] != null)) {
 	$column_type = "varchar(255) collate {$id_collate}";
+      }
+
+      if(array_key_exists('backreference', $column_def) && ($column_def['backreference'] != null)) {
+        // Backreference -> don't need to create a field/table!
+        continue;
       }
 
       $r = $db_conn->quoteIdent($column) . " " . $column_type;
@@ -369,11 +384,21 @@ class DB_Table {
 
       if(array_key_exists('reference', $d) && ($d['reference'] !== null)) {
 	$values = array();
-	foreach(get_db_table($d['reference'])->get_entries() as $o) {
+        foreach(get_db_table($d['reference'])->get_entries() as $o) {
           // Todo: title() may remove HTML
-	  $values[$o->id] = $o->title();
-	}
+          $values[$o->id] = $o->title();
+        }
+	$ret[$k]['values'] = $values;
+	if(!array_key_exists('format', $ret[$k]))
+	  $ret[$k]['format'] = "{{ {$k}.name }}";
+      }
 
+      if(array_key_exists('backreference', $d) && ($d['backreference'] !== null)) {
+        list($ref_table, $ref_field) = explode(':', $d['backreference']);
+        foreach(get_db_table($ref_table)->get_entries() as $o) {
+          // Todo: title() may remove HTML
+          $values[$o->id] = $o->title();
+        }
 	$ret[$k]['values'] = $values;
 	if(!array_key_exists('format', $ret[$k]))
 	  $ret[$k]['format'] = "{{ {$k}.name }}";
@@ -708,6 +733,11 @@ class DB_Table {
       return "id=" . $db_conn->quote($x);
     }, $ids));
 
+    $where_quoted_backreference = implode(" or ", array_map(function($x) {
+      global $db_conn;
+      return "value=" . $db_conn->quote($x);
+    }, $ids));
+
     $res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->id) . " where " . $where_quoted);
     while($elem = $res->fetch()) {
       $data[$elem['id']] = $elem;
@@ -715,15 +745,30 @@ class DB_Table {
     $res->closeCursor();
 
     foreach($this->column_tables() as $table) {
-      $res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->id . '_' . $table) . " where " . $where_quoted);
+      if (is_array($table)) {
+        if ($table['type'] === 'backreference') {
+          $res = $db_conn->query("select * from " . $db_conn->quoteIdent($table['table']) . " where " . $where_quoted_backreference);
 
-      // initialize property with empty array for all to-be-loaded entries
-      foreach($data as $id=>$d)
-	$data[$id][$table] = array();
+          // initialize property with empty array for all to-be-loaded entries
+          foreach($data as $id=>$d)
+            $data[$id][$table['field_id']] = array();
 
-      while($elem = $res->fetch())
-	$data[$elem['id']][$table][$elem['key']] = $elem['value'];
-      $res->closeCursor();
+          while($elem = $res->fetch())
+            $data[$elem[$table['id']]][$table['field_id']][] = $elem[$table['value']];
+          $res->closeCursor();
+        }
+      }
+      else {
+        $res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->id . '_' . $table) . " where " . $where_quoted);
+
+        // initialize property with empty array for all to-be-loaded entries
+        foreach($data as $id=>$d)
+          $data[$id][$table] = array();
+
+        while($elem = $res->fetch())
+          $data[$elem['id']][$table][$elem['key']] = $elem['value'];
+        $res->closeCursor();
+      }
     }
 
     return $data;

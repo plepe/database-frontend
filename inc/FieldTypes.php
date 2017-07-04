@@ -96,6 +96,16 @@ class FieldType_random extends FieldType {
   }
 }
 
+class FieldType_backreference extends FieldType {
+  function db_type() {
+    return null;
+  }
+
+  function is_multiple() {
+    return true;
+  }
+}
+
 function get_field_types() {
   $ret = array();
 

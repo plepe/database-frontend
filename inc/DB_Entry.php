@@ -81,11 +81,15 @@ class DB_Entry {
 	continue;
       }
 
+      if ($field->db_type() === null) {
+        continue;
+      }
+
       // the field has multiple values -> use extra table
       if($field->is_multiple() === true) {
-	if($this->id !== null)
-	  $cmds[] = "delete from " . $db_conn->quoteIdent($this->type . '_' . $column_id) .
-	    " where " . $db_conn->quoteIdent('id') . "=" . $db_conn->quote($this->id);
+        if($this->id !== null)
+          $cmds[] = "delete from " . $db_conn->quoteIdent($this->type . '_' . $column_id) .
+            " where " . $db_conn->quoteIdent('id') . "=" . $db_conn->quote($this->id);
       }
       else {
 	$set[] = $db_conn->quoteIdent($column_id) . "=" . $db_conn->quote($d);
@@ -145,11 +149,15 @@ class DB_Entry {
 	  if($v === null)
 	    continue;
 
-	  $cmds[] = "insert into " . $db_conn->quoteIdent($this->type . '_' . $column_id) .
-	    " values (" . $db_conn->quote($this->id) . ", " . $db_conn->quote($sequence) . ", " .
-	    $db_conn->quote($k) . ", " . $db_conn->quote($v) . ")";
+          if ($field->db_type() === null) {
+            continue;
+          }
 
-	  $sequence++;
+          $cmds[] = "insert into " . $db_conn->quoteIdent($this->type . '_' . $column_id) .
+            " values (" . $db_conn->quote($this->id) . ", " . $db_conn->quote($sequence) . ", " .
+            $db_conn->quote($k) . ", " . $db_conn->quote($v) . ")";
+
+          $sequence++;
 	}
       }
     }
@@ -216,17 +224,28 @@ class DB_Entry {
 	if($field->is_multiple() === true) {
 	  $this->view_cache[$k] = array();
 	  foreach($this->data[$k] as $v) {
-	    $o = get_db_table($field->def['reference'])->get_entry($v);
-	    if($o)
-	      $this->view_cache[$k][] = &$o->view();
-	  }
-	}
+              $o = get_db_table($field->def['reference'])->get_entry($v);
+              if($o)
+                $this->view_cache[$k][] = &$o->view();
+          }
+        }
 	else {
 	  if($this->data[$k]) {
 	    $o = get_db_table($field->def['reference'])->get_entry($this->data[$k]);
 	    if($o)
 	      $this->view_cache[$k] = &$o->view();
 	  }
+	}
+      }
+
+      if(array_key_exists('backreference', $field->def) && ($field->def['backreference'] != null)) {
+        // backreferences are always multiple
+	$this->view_cache[$k] = array();
+        list($ref_table, $ref_field) = explode(':', $field->def['backreference']);
+	foreach($this->data[$k] as $v) {
+          $o = get_db_table($ref_table)->get_entry($v);
+          if($o)
+            $this->view_cache[$k][] = &$o->view();
 	}
       }
     }

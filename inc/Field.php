@@ -66,21 +66,30 @@ class Field {
   function view_def() {
     $ret = $this->def;
 
-    if($this->def['reference']) {
+    if($this->def['reference'] || $this->def['backreference']) {
+      $ref_table = null;
+      if ($this->def['reference']) {
+        $ref_table = $this->def['reference'];
+      }
+      else {
+        list($ref_table, $ref_field) = explode(':', $this->def['backreference']);
+      }
+      $ref_table = json_encode($ref_table);
+
       if($this->is_multiple() === true) {
 	$ret['format'] =
 	  "<ul class='MultipleValues'>\n" .
 	  "{% for _ in {$this->id} %}\n" .
-	  "<li><a href='{{ page_url({ \"page\": \"show\", \"table\": \"{$this->def['reference']}\", \"id\": _.id }) }}'>" .
-          "{{ entry_title(\"{$this->def['reference']}\", _.id) }}" .
+	  "<li><a href='{{ page_url({ \"page\": \"show\", \"table\": {$ref_table}, \"id\": _.id }) }}'>" .
+          "{{ entry_title({$ref_table}, _.id) }}" .
 	  "</a>" .
 	  "{% endfor %}\n" .
 	  "</ul>\n";
       }
       else {
 	$ret['format'] =
-	  "<a href='{{ page_url({ \"page\": \"show\", \"table\": \"{$this->def['reference']}\", \"id\": {$this->id}.id }) }}'>" .
-          "{{ entry_title(\"{$this->def['reference']}\", {$this->id}.id) }}" .
+	  "<a href='{{ page_url({ \"page\": \"show\", \"table\": {$ref_table}, \"id\": {$this->id}.id }) }}'>" .
+          "{{ entry_title({$ref_table}, {$this->id}.id) }}" .
 	  "</a>";
       }
     }
@@ -303,6 +312,20 @@ class Field_random extends Field {
     );
 
     return $ret;
+  }
+}
+
+class Field_backreference extends FieldWithValues {
+  function db_type() {
+    return null;
+  }
+
+  function form_type() {
+    return 'display';
+  }
+
+  function is_multiple() {
+    return true;
   }
 }
 //

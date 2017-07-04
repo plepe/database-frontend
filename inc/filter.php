@@ -32,8 +32,16 @@ function get_filter_form(&$param) {
     if (isset($field->def['reference']) && $field->def['reference']) {
       $f['type'] = 'select';
       $f['values'] = array();
-      foreach(get_db_table($field->def['reference'])->get_entries() as $o) {
-        $f['values'][$o->id] = $o->view();
+      if (strpos($field->def['reference'], ':') === false) {
+        foreach(get_db_table($field->def['reference'])->get_entries() as $o) {
+          $f['values'][$o->id] = $o->view();
+        }
+      } else {
+        list($ref_table, $ref_field) = explode(':', $field->def['reference']);
+        foreach(get_db_table($ref_table)->get_entries() as $o) {
+          $f['values'][$o->id] = $o->view();
+        }
+        // TODO!
       }
       $f['values_mode'] = 'keys';
     }

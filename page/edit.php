@@ -34,9 +34,16 @@ class Page_edit extends Page {
 
     $reference_fields = array();
     foreach ($def as $defk => $defv) {
+      if (isset($defv['backreference']) && $defv['backreference']) {
+        unset($def[$defk]);
+        continue;
+      }
+
       if (isset($defv['reference']) && $defv['reference'] && !in_array($defv['type'], array('checkbox')) && $defv['reference_create_new']) {
         $reference_fields[$defk] = $defv['count'];
         $subdefv = $defv;
+
+        $ref_table = get_db_table($defv['reference']);
 
         $def[$defk] = array(
           'type' => 'form',
@@ -47,7 +54,7 @@ class Page_edit extends Page {
             'new'      => array(
               'type'     => 'form',
               'hide_label' => true,
-              'def'      => get_db_table($defv['reference'])->def(),
+              'def'      => $ref_table->def(),
               'show_depend' => array('check', 'value', array('not', array('has_value'))),
             )
           ),

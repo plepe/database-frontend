@@ -14,8 +14,18 @@ class Page_admin_table_fields extends Page {
 	return null;
     }
 
-    foreach(get_db_tables() as $t)
+    $table_data = array();
+    $backreferences = array();
+    foreach(get_db_tables() as $t) {
       $tables_data[$t->id] = $t->data('name') ?: $t->id;
+
+      foreach ($t->fields() as $fid => $field) {
+        if (isset($field->def['reference']) && ($field->def['reference'] === $table->id)) {
+          // Backreference found!
+          $backreferences["{$t->id}:{$fid}"] = "{$t->name()} / {$field->def['name']}";
+        }
+      }
+    }
 
     $field_types = get_field_types();
 
@@ -119,9 +129,18 @@ EOT
 		// ... reference is null, and ...
 	        array('check', 'reference', array('has_value')),
 		// ... field type has a selector for values
-		array('check', 'type', array('not', array('is', 'checkbox'))),
+		array('check', 'type', array('not', array('or', array('is', 'backreference'), array('is', 'checkbox')))),
 	      ),
             ),
+	    'backreference' => array(
+	      'type'	=> 'select',
+	      'req'	=> false,
+	      'name'	=> 'Reference',
+	      'desc'	=> 'Use this to reference another table as possibles values for this field.',
+	      'values'	=> $backreferences,
+	      'show_depend'=>array('check', 'type', array('is', 'backreference')),
+              'include_data' => 'not_null',
+	    ),
             'values_mode' => array(
               'type'    => 'radio',
               'name'    => 'Values mode',
