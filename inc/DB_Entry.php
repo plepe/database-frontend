@@ -90,6 +90,15 @@ class DB_Entry {
         if($this->id !== null)
           $cmds[] = "delete from " . $db_conn->quoteIdent($this->type . '_' . $column_id) .
             " where " . $db_conn->quoteIdent('id') . "=" . $db_conn->quote($this->id);
+
+        if (isset($field->def['reference']) && $field->def['reference']) {
+          foreach ($this->data[$column_id] as $ref_id) {
+            $changeset->add(get_db_table($field->def['reference'])->get_entry($ref_id));
+          }
+          foreach ($data[$column_id] as $ref_id) {
+            $changeset->add(get_db_table($field->def['reference'])->get_entry($ref_id));
+          }
+        }
       }
       else {
 	$set[] = $db_conn->quoteIdent($column_id) . "=" . $db_conn->quote($d);
