@@ -294,9 +294,18 @@ EOT
 
 class Field_random extends Field {
   function __construct($column_id, $column_def, $table) {
+    global $db_conn;
+
     parent::__construct($column_id, $column_def, $table);
 
-    $this->def['default'] = 'foo';
+    $this->generator = new RandomIdGenerator(array(
+      'id' => $table->id . '_' . $column_id,
+      'db' => $db_conn,
+    ));
+    $this->generator->setCheckFun(function ($id) use ($table, $column_id) {
+      $entries = $table->get_entry_ids(array(array('field' => $column_id, 'op' => 'is', 'value' => $id)));
+      return !!sizeof($entries);
+    });
   }
 
   function form_type() {
@@ -310,6 +319,8 @@ class Field_random extends Field {
       'php' => "random_ids_get",
       'js' => "random_ids_get",
     );
+    $ret['random-ids-id'] = $this->generator->id;
+    $this->generator->exportToJs(32);
 
     return $ret;
   }

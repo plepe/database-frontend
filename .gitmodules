@@ -34,3 +34,6 @@
 [submodule "lib/modulekit/auth"]
 	path = lib/modulekit/auth
 	url = https://github.com/plepe/modulekit-auth.git
+[submodule "lib/modulekit/random-id-generator"]
+	path = lib/modulekit/random-id-generator
+	url = https://github.com/plepe/random-id-generator.git
