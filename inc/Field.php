@@ -301,6 +301,8 @@ class Field_random extends Field {
     $this->generator = new RandomIdGenerator(array(
       'id' => $table->id . '_' . $column_id,
       'db' => $db_conn,
+      'length' => array_key_exists('random-id-length', $column_def) ? $column_def['random-id-length'] : 4,
+      'prefix' => array_key_exists('random-id-prefix', $column_def) ? $column_def['random-id-prefix'] : '',
     ));
     $this->generator->setCheckFun(function ($id) use ($table, $column_id) {
       $entries = $table->get_entry_ids(array(array('field' => $column_id, 'op' => 'is', 'value' => $id)));

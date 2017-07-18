@@ -275,6 +275,20 @@ EOT
                 ),
               ),
             ),
+            'random-id-length' => array(
+              'type' => 'integer',
+              'default' => 4,
+              'name' => 'Random ID length',
+	      'show_depend'=>array('check', 'type', array('is', 'random')),
+	      'include_data'=>array('check', 'type', array('is', 'random')),
+            ),
+            'random-id-prefix' => array(
+              'type' => 'text',
+              'default' => '',
+              'name' => 'Random ID prefix',
+	      'show_depend'=>array('check', 'type', array('is', 'random')),
+	      'include_data'=>array('check', 'type', array('is', 'random')),
+            ),
 	    'old_key' => array(
 	      'type' => 'hidden',
 	    ),
