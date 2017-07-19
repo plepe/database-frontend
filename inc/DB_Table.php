@@ -4,8 +4,32 @@ $db_table_cache = array();
 class DB_Table {
   function __construct($type, $data) {
     $this->id = $type;
-    $this->data = $data;
     $this->entries_cache = array();
+
+    $this->_load($data);
+  }
+
+  function _load($data=null) {
+    if (!$data) {
+      global $db_conn;
+      $res = $db_conn->query("select * from __system__ where id=" . $db_conn->quote($this->id));
+
+      if($elem = $res->fetch()) {
+        $data = json_decode($elem['data'], true);
+
+        if($data === null) {
+          // COMPAT: json_last_error_msg() exists PHP >= 5.5
+          if(function_exists("json_last_error_msg"))
+            $error = json_last_error_msg();
+          else
+            $error = json_last_error();
+
+          throw new Exception("Can't load db table {$elem['id']}: " . $error);
+        }
+      }
+    }
+
+    $this->data = $data;
 
     // set 'old_key' for each field, so that later save() will leave
     // database structure intact. $new_data still has old_key information from
@@ -40,6 +64,10 @@ class DB_Table {
   }
 
   function data($key=null) {
+    if ($this->data === null) {
+      $this->_load();
+    }
+
     if($key !== null)
       return $this->data[$key];
 
