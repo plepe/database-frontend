@@ -736,6 +736,7 @@ class DB_Table {
 	  $ret[] = array(
 	    'table' => $field->sql_table_quoted(),
 	    'sort' => $r,
+            'select' => $field->sql_table_quoted() . '.' . $field->sql_column_quoted(),
 	  );
 	}
 	else
@@ -899,9 +900,12 @@ class DB_Table {
 
     $tables = array();
     $query = array();
+    $select = array();
     if($compiled_filter !== null) foreach($compiled_filter as $f) {
       if(array_key_exists('table', $f))
         $tables[$f['table']] = true;
+      if (array_key_exists('select', $f))
+        $select[] = $f['select'];
 
       $query[] = $f['query'];
     }
@@ -910,6 +914,8 @@ class DB_Table {
     if($compiled_sort !== null) foreach($compiled_sort as $f) {
       if(array_key_exists('table', $f))
         $tables[$f['table']] = true;
+      if (array_key_exists('select', $f))
+        $select[] = $f['select'];
 
       $order[] = $f['sort'];
     }
@@ -938,8 +944,16 @@ class DB_Table {
     if($offset && (!preg_match("/^[0-9]+$/", $offset)))
       unset($offset);
 
+    if (sizeof($select)) {
+      $select = ', ' . implode(', ', $select) . ' ';
+    }
+    else {
+      $select = ' ';
+    }
+
     $query =
       "select distinct " . $db_conn->quoteIdent($this->id) . ".id " .
+      $select .
       "from " . $db_conn->quoteIdent($this->id) . $joined_tables .
       $query . $order .
       // if not all sort options could be compiled, we need to select all
