@@ -52,6 +52,13 @@ class Page_edit extends Page {
           }
         }
 
+        if ($defv['count']) {
+          $defv['count'] = array(
+            'default' => 0,
+            'button:add_element' => lang('edit:add_subelement', 0, $defv['name']),
+          );
+        }
+
         $def[$defk] = array(
           'type' => 'form',
           'name' => $defv['name'],
