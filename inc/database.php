@@ -1,6 +1,7 @@
 <?php
 $db_conn = new PDOext($db);
 $db_conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+$db_conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 function db_return_error_info($db_conn) {
   $error = $db_conn->errorInfo();
