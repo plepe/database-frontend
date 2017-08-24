@@ -1,3 +1,4 @@
 {
-    "edit:add_subelement": "Add %s"
+    "edit:add_subelement": "Add %s",
+    "edit:add_field": "Add %s"
 }

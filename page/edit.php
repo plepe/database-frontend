@@ -78,6 +78,9 @@ class Page_edit extends Page {
         $def[$defk]['def']['value']['hide_label'] = true;
         $def[$defk]['def']['value']['placeholder'] = '-- create new --';
       }
+      else if (is_array($defv['count'])) {
+        $def[$defk]['count']['button:add_element'] = lang('edit:add_field', 0, $defv['name']);
+      }
     }
 
     $form = new form("data", $def);
