@@ -200,7 +200,16 @@ class DB_Entry {
       $changeset = new Changeset($changeset);
 
     foreach($this->table->column_tables() as $table) {
-      $query = "delete from " . $db_conn->quoteIdent($this->type . '_' . $table) . " where id=" . $db_conn->quote($this->id);
+      if (is_array($table)) {
+        if ($table['type'] === 'backreference') {
+          $query = "delete from " . $db_conn->quoteIdent($table['table']) . " where value=" . $db_conn->quote($this->id);
+        } else {
+          throw new Exception('unknown table type');
+        }
+      }
+      else {
+        $query = "delete from " . $db_conn->quoteIdent($this->type . '_' . $table) . " where id=" . $db_conn->quote($this->id);
+      }
 
       if(isset($debug) && $debug)
 	messages_debug($query);
