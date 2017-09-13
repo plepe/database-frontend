@@ -241,11 +241,13 @@ class DB_Table {
       if(array_key_exists($column_def['type'], $field_types))
 	$field_type = $field_types[$column_def['type']];
       else
-	$field_type = new FieldType();
+	$field_type = Field;
+
+      $field = new $field_type($column, $column_def, $this);
 
       // the field has multiple values -> create a separate table
       // to hold this data.
-      if(($field_type->is_multiple() === true) || ($column_def['count'])) {
+      if(($field->is_multiple() === true) || ($column_def['count'])) {
 	$multifield_cmds[] = "create table " . $db_conn->quoteIdent($tmp_name . '_' . $column) . " (\n" .
 		  "  " . $db_conn->quoteIdent('id') . " {$id_type} not null,\n" .
 		  "  " . $db_conn->quoteIdent('sequence') . " int not null,\n" .
@@ -266,10 +268,12 @@ class DB_Table {
 	  if(array_key_exists($old_def['type'], $field_types))
 	    $old_field_type = $field_types[$old_def['type']];
 	  else
-	    $old_field_type = new FieldType();
+	    $old_field_type = Field;
+
+          $old_field = new $old_field_type($column_def['old_key'], $old_def, $this);
 
 	  // ... it was already a field with multiple values
-	  if(($old_field_type->is_multiple() === true) || ($old_def['count'])) {
+	  if(($old_field->is_multiple() === true) || ($old_def['count'])) {
 	    if($db_conn->tableExists($this->old_id . '_' . $column_def['old_key']))
 	      $multifield_cmds[] = "insert into " . $db_conn->quoteIdent($tmp_name . '_' . $column) .
 		    "  select * from " . $db_conn->quoteIdent($this->old_id . '_' . $column_def['old_key']) . ";";
@@ -307,10 +311,12 @@ class DB_Table {
 	  if(array_key_exists($old_def['type'], $field_types))
 	    $old_field_type = $field_types[$old_def['type']];
 	  else
-	    $old_field_type = new FieldType();
+	    $old_field_type = Field;
+
+          $old_field = new $old_field_type($column_def['old_key'], $old_def, $this);
 
 	  // ... it was a field with multiple values -> aggregate data and concatenate by ';'
-	  if(($old_field_type->is_multiple() === true) || ($old_def['count'])) {
+	  if(($old_field->is_multiple() === true) || ($old_def['count'])) {
 	    if($db_conn->tableExists($this->old_id . '_' . $column_def['old_key']))
 	      $column_copy[] = "(select group_concat(value, ';') from " . $db_conn->quoteIdent($this->old_id . '_' . $column_def['old_key']) . " __sub__ where __sub__.id=" . $db_conn->quoteIdent($this->old_id) . ".id group by __sub__.id)";
 	    else
@@ -350,10 +356,11 @@ class DB_Table {
 	if(array_key_exists($old_def['type'], $field_types))
 	  $old_field_type = $field_types[$old_def['type']];
 	else
-	  $old_field_type = new FieldType();
+	  $old_field_type = Field;
 
+        $old_field = new $old_field_type($column_def['old_key'], $old_def, $this);
 	// ... it was already a field with multiple values
-	if(($old_field_type->is_multiple() === true) || ($old_def['count'])) {
+	if(($old_field->is_multiple() === true) || ($old_def['count'])) {
 	  if($db_conn->tableExists($this->old_id . '_' . $old_column_id)) {
 	    $drop_cmds[] = "drop table " . $db_conn->quoteIdent($this->old_id . '_' . $old_column_id) . ";";
 	  }
@@ -638,9 +645,11 @@ class DB_Table {
       if(array_key_exists($column_def['type'], $field_types))
 	$field_type = $field_types[$column_def['type']];
       else
-	$field_type = new FieldType();
+	$field_type = Field;
 
-      if(($field_type->is_multiple() === true) || ($column_def['count']))
+      $field = new $field_type($column, $column_def, $this);
+
+      if(($field->is_multiple() === true) || ($column_def['count']))
 	$cmds[] = "drop table if exists " . $db_conn->quoteIdent("{$this->id}_{$column}");
     }
 

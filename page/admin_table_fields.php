@@ -31,10 +31,11 @@ class Page_admin_table_fields extends Page {
 
     $has_values = array("check", "type", array("or"));
     $show_depend_count = array("check", "type", array("or"));
-    foreach($field_types as $k=>$type) {
-      if($type->is_multiple() === null)
+
+    foreach($field_types as $k => $type) {
+      if($type::is_multiple() === null)
 	$show_depend_count[2][] = array("is", $k);
-      if($type->need_values())
+      if($type::need_values())
 	$has_values[2][] = array("is", $k);
     }
 
@@ -89,7 +90,7 @@ EOT
 	      'type'	=>"select",
 	      'values_mode' => 'keys',
 	      'values'	=>array_map(function($f) {
-		return $f->type();
+		return $f::type();
 	      }, $field_types),
 	      'default'     =>'text',
 	    ),

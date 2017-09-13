@@ -23,9 +23,17 @@ class Field {
   }
 
   function is_multiple() {
+    if (!isset($this)) {
+      return null;
+    }
+
     if(array_key_exists('count', $this->def) && $this->def['count'])
       return true;
 
+    return false;
+  }
+
+  function need_values() {
     return false;
   }
 
@@ -209,6 +217,18 @@ class Field_textarea extends Field {
   }
 }
 
+class Field_integer extends Field {
+  function db_type() {
+    return 'integer';
+  }
+}
+
+class Field_float extends Field {
+  function db_type() {
+    return 'real';
+  }
+}
+
 class Field_date extends Field {
   function db_type() {
     return 'date';
@@ -251,6 +271,10 @@ class FieldWithValues extends Field {
 
     return "{{ {$key} }}";
   }
+
+  function need_values() {
+    return true;
+  }
 }
 
 class Field_radio extends FieldWithValues {
@@ -266,6 +290,12 @@ class Field_checkbox extends FieldWithValues {
 }
 
 class Field_select extends FieldWithValues {
+  function db_type() {
+    return 'text';
+  }
+}
+
+class Field_autocomplete extends FieldWithValues {
   function db_type() {
     return 'text';
   }
@@ -341,14 +371,14 @@ class Field_backreference extends FieldWithValues {
     return true;
   }
 }
-//
-//function get_fields() {
-//  $ret = array();
-//
-//  foreach(get_declared_classes() as $class) {
-//    if(substr($class, 0, 10) == "Field_")
-//      $ret[substr($class, 10)] = $class;
-//  }
-//
-//  return $ret;
-//}
+
+function get_field_types() {
+  $ret = array();
+
+  foreach(get_declared_classes() as $class) {
+    if(substr($class, 0, 6) == "Field_")
+      $ret[substr($class, 6)] = $class;
+  }
+
+  return $ret;
+}
