@@ -26,6 +26,7 @@
     </form>
     <a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table, "id": id }) }}' title='Ctrl+e' mousetrap='ctrl+e'>Edit</a>
     <a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table }) }}' title='Ctrl+n' mousetrap='ctrl+n'>New</a>
+    <a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table, "clone": id }) }}'>Clone</a>
     <a
       {% if filter_values|length > 0 %}
 	class='LinkButton active'
@@ -79,6 +80,7 @@
     </form>
     <a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table, "id": id }) }}' title='Ctrl+e' mousetrap='ctrl+e'>Edit</a>
     <a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table }) }}' title='Ctrl+n' mousetrap='ctrl+n'>New</a>
+    <a class='LinkButton' href='{{ page_url({ "page": "edit", "table": table, "clone": id }) }}'>Clone</a>
     <a
       {% if filter_values|length > 0 %}
 	class='LinkButton active'

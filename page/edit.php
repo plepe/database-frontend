@@ -18,6 +18,12 @@ class Page_edit extends Page {
 	return null;
     }
 
+    if(isset($param['clone'])) {
+      $ob = $table->get_entry($param['clone']);
+      if(!$ob)
+	return null;
+    }
+
     // if requested, delete entry
     if(isset($param['delete']) && $param['delete']) {
       if($ob) {
@@ -132,6 +138,10 @@ class Page_edit extends Page {
     if($form->is_empty()) {
       if(isset($ob)) {
         $data = $ob->data();
+
+        if(isset($param['clone'])) {
+          $data['id'] = null;
+        }
 
         foreach ($reference_fields as $f_id => $f_count) {
           if ($f_count) {
