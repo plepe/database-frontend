@@ -19,11 +19,22 @@
 
 <h3>Use the following values to specify access:</h3>
 <dl>
-  <dt>empty value</dt><dd>everybody has access</dd>
-  <dt>"*"</dt><dd>need to be logged in</dd>
-  <dt>"user1@domain;user2@domain"</dt><dd>only the specified user(s) have access</dd>
-  <dt>"&amp;group@domain"</dt><dd>only users which are group members have access</dd>
-</ul>
+  <dt>empty value</dt>
+  <dd>everybody has access</dd>
+
+  <dt>"*"</dt>
+  <dd>need to be logged in</dd>
+
+  <dt>"user1@domain;user2@domain"</dt>
+  <dd>only the specified user(s) have access</dd>
+
+  <dt>"&amp;group@domain"</dt>
+  <dd>only users which are group members have access</dd>
+
+  <dt>"group"</dt>
+  <dd>access is allowed for members of the group 'group', which is defined within the <tt>$auth_config</tt> in <tt>conf.php</tt>.</dd>
+</dl>
+
   </div>
 
   <div class='Panel'>
