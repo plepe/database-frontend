@@ -59,7 +59,7 @@ function get_filter_form(&$param) {
   $filter_form_def = array_merge($filter_form_def, array(
     '__custom__' => array(
       'name' => 'Additional filters',
-      'type' => 'filters',
+      'type' => 'form_chooser',
       'def'  => $custom_filters,
       'hide_label' => true,
       'order' => false,
