@@ -74,10 +74,13 @@ $auth_config = array(
 // * null: doesn't need any special access
 // * '*': need to be logged in
 // * 'user@domain': access is allowed only for user@domain
-// * '&group@domain': access is allowed only for users which are members of the group
+// * '&group@domain': access is allowed only for users which are members of the
+//   group
+// * 'group': access is allowed for members of the group 'group', which is
+//   defined within the $auth_config above.
 $base_access = array(
-  'index' => null, // access to index page
-  'admin' => '*', // access to admin page
+  'view' => true,  // who may view the content of the application
+  'admin' => 'admin', // access to admin page
 );
 
 // default settings
