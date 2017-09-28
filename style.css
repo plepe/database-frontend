@@ -152,6 +152,12 @@ a:hover, a:active {
 .TableLink:active{
   background: #62A489;
 }
+.edit {
+  margin-left: 0.25em;
+}
+.edit img {
+  vertical-align: middle;
+}
 
 table.table {
   border: solid 2px #C7C6E1;
