@@ -1,8 +1,18 @@
 
 <div class='MainBox'>
 
-  <div class='Panel'> 
-      <a class='LinkButton' href='{{ page_url({ "page": "index"}) }}'>Home</a> 
+  <div class='Panel'>
+    <div class='Navigation'>
+      <ul class='Breadcrumbs'>
+         <li><a href='?' title='Ctrl+h' mousetrap='ctrl+h'>{{ app.title }}</a></li>
+         <li><a href='{{ page_url({ 'page': 'admin' }) }}'>Configuration</a>
+      </ul>
+    </div>
+    <div>
+      <a class='LinkButton' href='{{ page_url({ 'page': 'admin_table_general' }) }}'>Create new table</a>
+      <a class='LinkButton' href='{{ page_url({ 'page': 'import_csv' }) }}'>Create new table from CSV</a>
+      <a class='LinkButton' href='{{ page_url({ 'page': 'import_export' }) }}'>Import &amp; Export</a>
+    </div>
   </div>
 
   <div class='Margin'>
@@ -25,10 +35,17 @@
   </div>
 
   <div class='Panel'>
+    <div class='Navigation'>
+      <ul class='Breadcrumbs'>
+         <li><a href='?' title='Ctrl+h' mousetrap='ctrl+h'>{{ app.title }}</a></li>
+         <li><a href='{{ page_url({ 'page': 'admin' }) }}'>Configuration</a>
+      </ul>
+    </div>
+    <div>
       <a class='LinkButton' href='{{ page_url({ 'page': 'admin_table_general' }) }}'>Create new table</a>
       <a class='LinkButton' href='{{ page_url({ 'page': 'import_csv' }) }}'>Create new table from CSV</a>
       <a class='LinkButton' href='{{ page_url({ 'page': 'import_export' }) }}'>Import &amp; Export</a>
+    </div>
   </div>
-
 
 </div>

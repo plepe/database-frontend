@@ -1,6 +1,8 @@
 <?php
 class Page_history extends Page {
   function content($param) {
+    global $app;
+
     if(!base_access('view')) {
       global $auth;
       if(!$auth->is_logged_in())
@@ -16,10 +18,14 @@ class Page_history extends Page {
     }
 
     $path = ".";
-    if(isset($param['table']))
+    if(isset($param['table'])) {
       $path = $param['table'];
-    if(isset($param['table']) && isset($param['id']))
+      $table = get_db_table($param['table']);
+    }
+    if(isset($param['table']) && isset($param['id'])) {
       $path = "{$param['table']}/{$param['id']}.json";
+      $ob = $table->get_entry($param['id']);
+    }
 
     $ret = adv_exec("git log -p " . shell_escape($path), "r");
     $ret = "<pre>" . htmlspecialchars($ret[1]) . "</pre>";
@@ -27,8 +33,11 @@ class Page_history extends Page {
     return array(
       'template' => 'history.html',
       'table' => $param['table'],
+      'table_name' => $table ? $table->name() : null,
       'id' => $param['id'],
+      'title' => $ob ? $ob->title() : null,
       'data' => $ret,
+      'app' => $app,
     );
   }
 }

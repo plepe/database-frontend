@@ -1,8 +1,13 @@
 
 <div class='MainBox'>
 
-  <div class='Panel'> 
-	  <h2> All your Tables</h2> 
+  <div class='Panel'>
+    <div class='Navigation'>
+      <ul class='Breadcrumbs'>
+         <li><a href='?' title='Ctrl+h' mousetrap='ctrl+h'>{{ app.title }}</a></li>
+      </ul>
+    </div>
+    <a class='LinkButton' href='{{ page_url({ 'page': 'admin' }) }}'>Configuration</a>
   </div>
 
   <div>
@@ -18,8 +23,12 @@
   </div>
 
   <div class='Panel'>
-    <a class='LinkButton' href='{{ page_url({ 'page': 'admin' }) }}'>Admin Page</a>
+    <div class='Navigation'>
+      <ul class='Breadcrumbs'>
+         <li><a href='?' title='Ctrl+h' mousetrap='ctrl+h'>{{ app.title }}</a></li>
+      </ul>
+    </div>
+    <a class='LinkButton' href='{{ page_url({ 'page': 'admin' }) }}'>Configuration</a>
   </div>
-
 
 </div>

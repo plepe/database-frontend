@@ -1,6 +1,8 @@
 <?php
 class Page_admin_table_views extends Page {
   function content($param) {
+    global $app;
+
      if(!base_access('admin')) {
       global $auth;
       if(!$auth->is_logged_in())
@@ -244,6 +246,9 @@ class Page_admin_table_views extends Page {
       'table' => $param['table'],
       'form' => $form,
       'replacement_patterns' => $replacement_patterns,
+      'data' => $table ? $table->view() : null,
+      'view_data' => $view_data,
+      'app' => $app,
     );
   }
 }

@@ -1,8 +1,15 @@
 <div class='MainBox'>
 
   <div class='Panel'>
-    <a class='LinkButton' href='{{ page_url({ "page": "admin"}) }}'>Admin Page</a>
-    <a class='LinkButton' href='{{ page_url({ "page": "admin_table", "table": table }) }}'>Table</a>
+    <div class='Navigation'>
+      <ul class='Breadcrumbs'>
+         <li><a href='?' title='Ctrl+h' mousetrap='ctrl+h'>{{ app.title }}</a></li>
+         <li><a href='{{ page_url({ 'page': 'admin' }) }}'>Configuration</a>
+         <li><a href='{{ page_url({ 'page': 'admin_table', 'table': table }) }}'>{{ data.name }}</a>
+         <li><a href='{{ page_url({ 'page': 'admin_table_fields', 'table': table }) }}'>Fields</a>
+      </ul>
+    </div>
+    &nbsp;
   </div>
 
   <div class='Margin'>
@@ -20,8 +27,15 @@
   </div>
 
   <div class='Panel'>
-    <a class='LinkButton' href='{{ page_url({ "page": "admin"}) }}'>Admin Page</a>
-    <a class='LinkButton' href='{{ page_url({ "page": "admin_table", "table": table }) }}'>Table</a>
+    <div class='Navigation'>
+      <ul class='Breadcrumbs'>
+         <li><a href='?' title='Ctrl+h' mousetrap='ctrl+h'>{{ app.title }}</a></li>
+         <li><a href='{{ page_url({ 'page': 'admin' }) }}'>Configuration</a>
+         <li><a href='{{ page_url({ 'page': 'admin_table', 'table': table }) }}'>{{ data.name }}</a>
+         <li><a href='{{ page_url({ 'page': 'admin_table_fields', 'table': table }) }}'>Fields</a>
+      </ul>
+    </div>
+    &nbsp;
   </div>
 
 </div>

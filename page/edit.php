@@ -1,6 +1,8 @@
 <?php
 class Page_edit extends Page {
   function content($param) {
+    global $app;
+
     $table = get_db_table($param['table']);
     if(!$table)
       return null;
@@ -160,9 +162,12 @@ class Page_edit extends Page {
     return array(
       'template' => 'edit.html',
       'table' => $param['table'],
+      'table_name' => $table->name(),
+      'title' => !isset($param['clone']) && $ob ? $ob->title() : null,
       'id' => $param['id'],
       'form' => $form,
       'data' => $ob ? $ob->view() : null,
+      'app' => $app,
     );
   }
 }

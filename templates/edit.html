@@ -1,8 +1,19 @@
 <div class='MainBox'>
-  <div class=Panel>
-    <div class=PanelH1>
-	Table: {{table}} / Row: {{id}}
+
+  <div class='Panel'>
+    <div class='Navigation'>
+      <ul class='Breadcrumbs'>
+         <li><a href='?' title='Ctrl+h' mousetrap='ctrl+h'>{{ app.title }}</a></li>
+         <li><a href='{{ page_url({ "page": "list", "table": table }) }}' title='Ctrl+o' mousetrap='ctrl+o'>{{ table_name }}</a></li>
+         {% if title == null %}
+         <li><a href='{{ page_url({ "page": "edit", "table": table }) }}'>New</a></li>
+         {% else %}
+         <li><a href='{{ page_url({ "page": "show", "table": table, "id": id }) }}'>{{ title|raw }}</a></li>
+         <li><a href='{{ page_url({ "page": "edit", "table": table, "id": id }) }}'>Edit</a></li>
+         {% endif %}
+      </ul>
     </div>
+    &nbsp;
   </div>
 	
   <form method='post'>
@@ -26,4 +37,21 @@
   </br>
   {% endif %}
   </br>
+
+  <div class='Panel'>
+    <div class='Navigation'>
+      <ul class='Breadcrumbs'>
+         <li><a href='?' title='Ctrl+h' mousetrap='ctrl+h'>{{ app.title }}</a></li>
+         <li><a href='{{ page_url({ "page": "list", "table": table }) }}' title='Ctrl+o' mousetrap='ctrl+o'>{{ table_name }}</a></li>
+         {% if title == null %}
+         <li><a href='{{ page_url({ "page": "edit", "table": table }) }}'>New</a></li>
+         {% else %}
+         <li><a href='{{ page_url({ "page": "show", "table": table, "id": id }) }}'>{{ title|raw }}</a></li>
+         <li><a href='{{ page_url({ "page": "edit", "table": table, "id": id }) }}'>Edit</a></li>
+         {% endif %}
+      </ul>
+    </div>
+    &nbsp;
+  </div>
+
 </div>

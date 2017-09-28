@@ -1,6 +1,7 @@
 <?php
 class Page_list extends Page {
   function content($param) {
+    global $app;
     global $auth;
     global $default_settings;
     $user_settings = $auth->current_user()->settings();
@@ -115,6 +116,7 @@ class Page_list extends Page {
       'view' => $view,
       'param' => $param,
       'views' => $table->views('list'),
+      'app' => $app,
     );
   }
 }

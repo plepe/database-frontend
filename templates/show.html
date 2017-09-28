@@ -5,7 +5,7 @@
     <div class='Navigation'>
       {% include 'show_pager.html' %}
       <ul class='Breadcrumbs'>
-         <li><a href='?' title='Ctrl+h' mousetrap='ctrl+h'>Home</a></li>
+         <li><a href='?' title='Ctrl+h' mousetrap='ctrl+h'>{{ app.title }}</a></li>
          <li><a href='{{ page_url({ "page": "list", "table": table }) }}' title='Ctrl+o' mousetrap='ctrl+o'>{{ table_name }}</a></li>
          <li><a href='{{ page_url({ "page": "show", "table": table, "id": id }) }}'>{{ title|raw }}</a></li>
       </ul>
@@ -59,7 +59,7 @@
     <div class='Navigation'>
       {% include 'show_pager.html' %}
       <ul class='Breadcrumbs'>
-         <li><a href='?' title='Ctrl+h' mousetrap='ctrl+h'>Home</a></li>
+         <li><a href='?' title='Ctrl+h' mousetrap='ctrl+h'>{{ app.title }}</a></li>
          <li><a href='{{ page_url({ "page": "list", "table": table }) }}' title='Ctrl+o' mousetrap='ctrl+o'>{{ table_name }}</a></li>
          <li><a href='{{ page_url({ "page": "show", "table": table, "id": id }) }}'>{{ title|raw }}</a></li>
       </ul>

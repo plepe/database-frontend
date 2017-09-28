@@ -1,6 +1,8 @@
 <?php
 class Page_index extends Page {
   function content($param) {
+    global $app;
+
     if(!base_access('view')) {
       global $auth;
       if(!$auth->is_logged_in())
@@ -16,6 +18,7 @@ class Page_index extends Page {
     return array(
       'template' => "index.html",
       'data' => $data,
+      'app' => $app,
     );
   }
 }

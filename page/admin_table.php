@@ -1,6 +1,8 @@
 <?php
 class Page_admin_table extends Page {
   function content($param) {
+    global $app;
+
     if(!base_access('admin')) {
       global $auth;
       if(!$auth->is_logged_in())
@@ -59,6 +61,7 @@ class Page_admin_table extends Page {
       'views' => $table ? $table->views() : null,
       'form' => $form,
       'data' => $table ? $table->view() : null,
+      'app' => $app,
     );
   }
 

@@ -1,6 +1,8 @@
 <?php
 class Page_show extends Page {
   function content($param) {
+    global $app;
+
     $table = get_db_table($param['table']);
     if(!$table)
       return null;
@@ -96,6 +98,7 @@ class Page_show extends Page {
       'pager' => $pager,
       'filter' => get_filter_form($param),
       'filter_values' => $filter_values,
+      'app' => $app,
     );
   }
 }

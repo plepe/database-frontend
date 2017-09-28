@@ -1,18 +1,45 @@
 <div class='MainBox'>
 
   <div class='Panel'>
-    <div class='PanelH1'>
-	   Table:  {{ table }}
+    <div class='Navigation'>
+      <ul class='Breadcrumbs'>
+         <li><a href='?' title='Ctrl+h' mousetrap='ctrl+h'>{{ app.title }}</a></li>
+         {% if table %}
+         <li><a href='{{ page_url({ "page": "list", "table": table }) }}' title='Ctrl+o' mousetrap='ctrl+o'>{{ table_name }}</a></li>
+         {% if id %}
+         <li><a href='{{ page_url({ "page": "show", "table": table, "id": id }) }}'>{{ title|raw }}</a></li>
+         <li><a href='{{ page_url({ "page": "history", "table": table, "id": id }) }}'>History</a></li>
+         {% else %}
+         <li><a href='{{ page_url({ "page": "history", "table": table }) }}'>History</a></li>
+         {% endif %}
+         {% else %}
+         <li><a href='{{ page_url({ "page": "history" }) }}'>History</a></li>
+         {% endif %}
+      </ul>
     </div>
+    &nbsp;
   </div>
 
 {{ data|raw }}
 
   <div class='Panel'>
-{% if id %}
-    <a class='LinkButton' href='{{ page_url({ "page": "show", "table": table, "id": id }) }}'>Show</a>
-{% endif %}
-    <a class='LinkButton' href='{{ page_url({ "page": "list", "table": table }) }}'>List</a>
+    <div class='Navigation'>
+      <ul class='Breadcrumbs'>
+         <li><a href='?' title='Ctrl+h' mousetrap='ctrl+h'>{{ app.title }}</a></li>
+         {% if table %}
+         <li><a href='{{ page_url({ "page": "list", "table": table }) }}' title='Ctrl+o' mousetrap='ctrl+o'>{{ table_name }}</a></li>
+         {% if id %}
+         <li><a href='{{ page_url({ "page": "show", "table": table, "id": id }) }}'>{{ title|raw }}</a></li>
+         <li><a href='{{ page_url({ "page": "history", "table": table, "id": id }) }}'>History</a></li>
+         {% else %}
+         <li><a href='{{ page_url({ "page": "history", "table": table }) }}'>History</a></li>
+         {% endif %}
+         {% else %}
+         <li><a href='{{ page_url({ "page": "history" }) }}'>History</a></li>
+         {% endif %}
+      </ul>
+    </div>
+    &nbsp;
   </div>
 
 </div>

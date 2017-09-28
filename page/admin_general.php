@@ -2,6 +2,7 @@
 class Page_admin_general extends Page {
   function content($param) {
     global $system;
+    global $app;
 
     if(!base_access('admin')) {
       global $auth;
@@ -46,6 +47,7 @@ class Page_admin_general extends Page {
       'template' => 'admin_general.html',
       'form' => $form,
       'data' => $system->view(),
+      'app' => $app,
     );
   }
 }

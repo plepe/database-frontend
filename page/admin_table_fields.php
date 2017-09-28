@@ -1,6 +1,8 @@
 <?php
 class Page_admin_table_fields extends Page {
   function content($param) {
+    global $app;
+
     if(!base_access('admin')) {
       global $auth;
       if(!$auth->is_logged_in())
@@ -375,6 +377,7 @@ EOT
       'table' => $param['table'],
       'form' => $form,
       'data' => $table ? $table->view() : null,
+      'app' => $app,
     );
   }
 }
