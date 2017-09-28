@@ -99,6 +99,7 @@ class Page_show extends Page {
       'filter' => get_filter_form($param),
       'filter_values' => $filter_values,
       'app' => $app,
+      'table_list' => get_db_table_names(),
     );
   }
 }

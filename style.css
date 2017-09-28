@@ -36,6 +36,58 @@ h4 {
   margin: 0.5em;
 }
 
+div#Jump_links_wide {
+  white-space: nowrap;
+}
+ul.Jump_links {
+  background: #DEE7F7;
+  margin: 0;
+  padding: 0;
+}
+ul.Jump_links li {
+  list-style: none;
+  display: inline-block;
+  background: white;
+  margin: 0;
+  padding: 0.25em 0.5em;
+  border-bottom: 1px solid #C7C6E1;
+  border-right: 1px solid #C7C6E1;
+}
+ul.Jump_links li.current {
+  border-bottom: 1px solid #DEE7F7;
+  background: none;
+}
+
+div#Jump_links_narrow {
+  background: #DEE7F7;
+}
+form.Jump_links {
+  margin: 0;
+  border-right: 1px solid #C7C6E1;
+  display: inline-block;
+}
+form.Jump_links select {
+  background: #DEE7F7;
+  color: #61819B;
+  border: none;
+  font: 14px arial, sans-serif;
+}
+form.Jump_links select option {
+  background: white;
+}
+form.Jump_links select option.current {
+  background: #DEE7F7;
+}
+
+div#Jump_links_wide,
+div#Jump_links_narrow {
+  display: none;
+}
+body.wide div#Jump_links_wide,
+body.narrow div#Jump_links_narrow {
+  display: block
+}
+
 /*============ PANEL ==========*/
 
 div.Navigation {
@@ -128,10 +180,10 @@ a:hover, a:active {
   text-decoration: underline;
 }
 
-#page_index ul li {
+#page_index .Content ul li {
   margin: 0.5em 0;
 }
-#page_index ul li a {
+#page_index .Content ul li a {
   font-weight: bold;
 }
 
@@ -172,7 +224,8 @@ table.table th a.table_link {
   color: #5E5E5E;
 }
 table.table.transposed th {
-  width: 1em;
+  width: 200px;
+  max-width: 25%;
 }
 
 td.table,

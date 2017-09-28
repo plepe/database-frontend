@@ -1076,3 +1076,13 @@ function get_db_tables() {
   $db_table_cache = $ret;
   return $db_table_cache;
 }
+
+function get_db_table_names () {
+  $ret = array();
+
+  foreach(get_db_tables() as $type) {
+    $ret[$type->id] = $type->name();
+  }
+
+  return $ret;
+}
