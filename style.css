@@ -36,11 +36,6 @@ h4 {
   margin: 0.5em;
 }
 
-ul.MultipleValues {
-  margin-top: 0px;
-  margin-bottom: 0px;
-}
-
 /*============ PANEL ==========*/
 
 div.Navigation {
@@ -171,9 +166,13 @@ table.table th{
   color: #5E5E5E;
   background: #DEE7F7; 
   padding: 2px;
+  text-align: left;
 }
 table.table th a.table_link {
   color: #5E5E5E;
+}
+table.table.transposed th {
+  width: 1em;
 }
 
 td.table,
@@ -181,8 +180,11 @@ table.table td{
   border: solid 2px #C7C6E1;
   color: #5E5E5E;
   padding: 2px;
+  vertical-align: top;
 }
-table.table ul {
+table.table td ul {
+  margin-top: 0px;
+  margin-bottom: 0px;
 }
 
 tr.group,
