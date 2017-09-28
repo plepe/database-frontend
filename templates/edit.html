@@ -16,18 +16,18 @@
     &nbsp;
   </div>
 	
+  <div class='Content'>
+
   <form method='post'>
-    <div class='Margin'>
     {{ form|show() }}
     <input type='submit' value='Save' title='Ctrl+s' mousetrap='ctrl+s'>
     <input type='submit' name='delete' value='Delete'>
     <input type='text' name='message' placeholder='commit message'>
-    </div>
   </form>
 
   {% if id %}
   </br>
-  <a class='LinkButton Margin' href='{{ page_url({ "page": "show", "table": table,
+  <a class='LinkButton' href='{{ page_url({ "page": "show", "table": table,
 	  "id": id }) }}'>Back</a>
   </br>
   {% else %}
@@ -37,6 +37,8 @@
   </br>
   {% endif %}
   </br>
+
+  </div>
 
   <div class='Panel'>
     <div class='Navigation'>

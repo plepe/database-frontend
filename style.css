@@ -32,8 +32,8 @@ h4 {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
-.Margin{
-  margin-left: 15px;
+.Content {
+  margin: 0.5em;
 }
 
 ul.MultipleValues {
@@ -139,9 +139,6 @@ ul.Breadcrumbs > li > a:active {
   background: #62A489;
 }
 
-div.table_wrapper {
-  margin: 10px;
-}
 table.table {
   border: solid 2px #C7C6E1;
   border-collapse: collapse;
