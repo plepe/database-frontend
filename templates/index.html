@@ -14,9 +14,8 @@
     <ul>
     {% for table in data.tables %}
     <li>
-    <strong>{{ table.name|default(table.id) }}</strong>
-    <a class='LinkButton' href='{{ page_url({'page':'list', 'table': table.id }) }}'>View</a> 
-    </li></br>
+    <a href='{{ page_url({'page':'list', 'table': table.id }) }}'>{{ table.name|default(table.id) }}</a>
+    </li>
     {% endfor %}
     </ul>
 

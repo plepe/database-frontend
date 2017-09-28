@@ -125,6 +125,20 @@ ul.Breadcrumbs > li > a:active {
   background: #8FA8BC;
 }
 
+a {
+  color: #61819B;
+  text-decoration: none;
+}
+a:hover, a:active {
+  text-decoration: underline;
+}
+
+#page_index ul li {
+  margin: 0.5em 0;
+}
+#page_index ul li a {
+  font-weight: bold;
+}
 
 /*=========== TABLE ===========*/
 
