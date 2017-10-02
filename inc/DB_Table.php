@@ -1040,6 +1040,7 @@ function get_db_table($type) {
 function get_db_tables() {
   global $db_conn;
   global $db_table_cache;
+  $ret = array();
 
   db_system_init();
 
@@ -1060,8 +1061,11 @@ function get_db_tables() {
 
       $db_table_cache[$elem['id']] = new DB_Table($elem['id'], $data);
     }
+
+    $ret[$elem['id']] = $db_table_cache[$elem['id']];
   }
   $res->closeCursor();
 
+  $db_table_cache = $ret;
   return $db_table_cache;
 }
