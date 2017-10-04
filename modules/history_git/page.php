@@ -38,6 +38,7 @@ class Page_history extends Page {
       'title' => $ob ? $ob->title() : null,
       'data' => $ret,
       'app' => $app,
+      'table_list' => get_db_table_names(),
     );
   }
 }

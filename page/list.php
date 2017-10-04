@@ -117,6 +117,7 @@ class Page_list extends Page {
       'param' => $param,
       'views' => $table->views('list'),
       'app' => $app,
+      'table_list' => get_db_table_names(),
     );
   }
 }

@@ -1,5 +1,6 @@
 <?php
 $db_table_cache = array();
+$db_table_cache_complete = false;
 
 class DB_Table {
   function __construct($type, $data) {
@@ -1040,6 +1041,12 @@ function get_db_table($type) {
 function get_db_tables() {
   global $db_conn;
   global $db_table_cache;
+  global $db_table_cache_complete;
+  $ret = array();
+
+  if ($db_table_cache_complete) {
+    return $db_table_cache;
+  }
 
   db_system_init();
 
@@ -1060,8 +1067,22 @@ function get_db_tables() {
 
       $db_table_cache[$elem['id']] = new DB_Table($elem['id'], $data);
     }
+
+    $ret[$elem['id']] = $db_table_cache[$elem['id']];
   }
   $res->closeCursor();
 
+  $db_table_cache_complete = true;
+  $db_table_cache = $ret;
   return $db_table_cache;
+}
+
+function get_db_table_names () {
+  $ret = array();
+
+  foreach(get_db_tables() as $type) {
+    $ret[$type->id] = $type->name();
+  }
+
+  return $ret;
 }

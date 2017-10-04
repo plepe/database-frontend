@@ -19,6 +19,7 @@ class Page_index extends Page {
       'template' => "index.html",
       'data' => $data,
       'app' => $app,
+      'table_list' => get_db_table_names(),
     );
   }
 }

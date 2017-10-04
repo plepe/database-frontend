@@ -168,6 +168,7 @@ class Page_edit extends Page {
       'form' => $form,
       'data' => $ob ? $ob->view() : null,
       'app' => $app,
+      'table_list' => get_db_table_names(),
     );
   }
 }

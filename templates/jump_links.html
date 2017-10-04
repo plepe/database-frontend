@@ -1,0 +1,20 @@
+<div id='Jump_links_wide'>
+<ul class='Jump_links'>
+{%- for k, v in table_list -%}
+<li class='{% if k == table %}current{%endif %}'><a href='{{ page_url({ "page": "list", "table": k }) }}'>{{ v }}</a></li>
+{%- endfor -%}
+</ul>
+</div>
+
+<div id='Jump_links_narrow'>
+<form class='Jump_links' method='get'>
+<input type='hidden' name='page' value='list'>
+<select name='table' onchange='this.form.submit()'>
+{%- for k, v in table_list -%}
+<option value='{{ k }}'
+{% if k == table %}class='current' selected{%endif %}>{{ v }}
+</option>
+{%- endfor -%}
+</select>
+</form>
+</div>
