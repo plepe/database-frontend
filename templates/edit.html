@@ -24,20 +24,8 @@
     <input type='submit' value='Save' title='Ctrl+s' mousetrap='ctrl+s'>
     <input type='submit' name='delete' value='Delete'>
     <input type='text' name='message' placeholder='commit message'>
+    <input type='submit' name='cancel' value='Cancel'>
   </form>
-
-  {% if id %}
-  </br>
-  <a class='LinkButton' href='{{ page_url({ "page": "show", "table": table,
-	  "id": id }) }}'>Back</a>
-  </br>
-  {% else %}
-  </br>
-  <a class='LinkButton Margin' href='{{ page_url({ "page": "list", "table": table })
-	  }}'>Back</a>
-  </br>
-  {% endif %}
-  </br>
 
   </div>
 

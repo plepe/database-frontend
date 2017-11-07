@@ -38,6 +38,17 @@ class Page_edit extends Page {
       return array();
     }
 
+    // if requested, cancel
+    if(isset($param['cancel']) && $param['cancel']) {
+      if ($param['id']) {
+        page_reload(page_url(array("page" => "show", "table" => $param['table'], "id" => $param['id'])));
+      } else {
+        page_reload(page_url(array("page" => "list", "table" => $param['table'])));
+      }
+
+      return array();
+    }
+
     $def = $table->def();
 
     $reference_fields = array();
