@@ -200,21 +200,40 @@ class DB_Table {
     $tmp_name = "__tmp__";
 
     // is this a new table?
-    if($this->id) {
+    if($this->id && $this->old_id) {
       $new_table = !$db_conn->tableExists($this->old_id);
     }
     else
       $new_table = true;
 
+    $pri_keys = array();
+    foreach ($data['fields'] as $column_id => $column_def) {
+      if ($column_def['prikey']) {
+        $pri_keys[] = $column_id;
+        $pri_keys_esc[] = $db_conn->quoteIdent($column_id);
+        $ref_columns[] = $db_conn->quoteIdent($column_id) . " {$column_def['coltype']}";
+        $foreign_keys[] = "foreign key(" . $db_conn->quoteIdent($column_id) . ") references `__tmp__`(" . $db_conn->quoteIdent($column_id) . ")";
+      }
+    }
+
+
     // if there's no 'id' field specified, add a generated one
-    if(!array_key_exists('id', $data['fields'])) {
+    if(!sizeof($pri_keys)) {
       $columns[] = $db_conn->quoteIdent('id'). " INTEGER auto_increment PRIMARY KEY";
+      $ref_columns[] = $db_conn->quoteIdent('id'). " INTEGER";
       $column_copy[] = $db_conn->quoteIdent('id');
       $id_type = "integer";
+      $pri_keys[] = 'id';
+      $pri_keys_esc[] = $db_conn->quoteIdent('id');
     }
     else {
       $id_type = "varchar(255) collate {$id_collate}";
     }
+
+    $pri_keys_esc = implode(', ', $pri_keys_esc);
+    $constraints[] = "primary key({$pri_keys_esc})";
+    $ref_columns = implode(",\n", $ref_columns);
+    $foreign_keys = implode(",\n", $foreign_keys);
 
     $cmds = array();
     $multifield_cmds = array();
@@ -250,15 +269,15 @@ class DB_Table {
       // to hold this data.
       if(($field->is_multiple() === true) || ($column_def['count'])) {
 	$multifield_cmds[] = "create table " . $db_conn->quoteIdent($tmp_name . '_' . $column) . " (\n" .
-		  "  " . $db_conn->quoteIdent('id') . " {$id_type} not null,\n" .
+                  $ref_columns . ",\n" .
 		  "  " . $db_conn->quoteIdent('sequence') . " int not null,\n" .
 		  "  " . $db_conn->quoteIdent('key') . " varchar(255) not null,\n" .
 		  "  " . $db_conn->quoteIdent('value') . " {$column_type} null,\n" .
-		  "  primary key(" . $db_conn->quoteIdent('id'). ", " . $db_conn->quoteIdent('key') . "),\n" .
+		  "  primary key(" . $pri_keys_esc . ", " . $db_conn->quoteIdent('key') . "),\n" .
 		  // foreign key to referenced table
 		  ((array_key_exists('reference', $column_def) && ($column_def['reference'] != null)) ? "foreign key(" . $db_conn->quoteIdent('value') . ") references " . $db_conn->quoteIdent($column_def['reference']) . "(" . $db_conn->quoteIdent('id') . "), " : "") .
 		  // /foreign key
-		  "  foreign key(" . $db_conn->quoteIdent('id') . ") references " . $db_conn->quoteIdent($tmp_name) . "(" . $db_conn->quoteIdent('id') . ")" .
+                  $foreign_keys .
 		  ") {$table_append};";
 
 	// if this is not a new table, copy data from ...
@@ -293,10 +312,6 @@ class DB_Table {
 
       // the field only has single value -> add to database table
       else {
-	// primary key
-	if($column == "id")
-	  $r .= " primary key";
-
 	$columns[] = $r;
 
 	// foreign key to referenced table
@@ -390,6 +405,7 @@ class DB_Table {
     // finally, execute all commands
     $created = array();
     foreach($cmds as $cmd) {
+      print $cmd;
       $res = $db_conn->query($cmd);
       if($res === false) {
         $error_info = $db_conn->errorInfo();
@@ -763,13 +779,27 @@ class DB_Table {
     return null;
   }
 
+  function primary_keys($ids) {
+    $pri_keys = array();
+
+    foreach ($this->fields() as $field_id => $field) {
+      if ($field->def['prikey']) {
+        $pri_keys[] = $field_id;
+      }
+    }
+
+    return $pri_keys;
+  }
+
   function load_entries_data($ids) {
     global $db_conn;
     $data = array();
 
+    $pri_keys = $this->primary_keys();
+
     $where_quoted = implode(" or ", array_map(function($x) {
       global $db_conn;
-      return "id=" . $db_conn->quote($x);
+      return "lastname=" . $db_conn->quote($x);
     }, $ids));
 
     $where_quoted_backreference = implode(" or ", array_map(function($x) {
@@ -779,7 +809,13 @@ class DB_Table {
 
     $res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->id) . " where " . $where_quoted);
     while($elem = $res->fetch()) {
-      $data[$elem['id']] = $elem;
+      $id = array();
+      foreach ($this->primary_keys() as $k) {
+        $id[] = $elem[$k];
+      }
+      $id = array_to_id($id);
+
+      $data[$id] = $elem;
     }
     $res->closeCursor();
 
@@ -792,8 +828,15 @@ class DB_Table {
           foreach($data as $id=>$d)
             $data[$id][$table['field_id']] = array();
 
-          while($elem = $res->fetch())
-            $data[$elem[$table['id']]][$table['field_id']][] = $elem[$table['value']];
+          while($elem = $res->fetch()) {
+            $id = array();
+            foreach ($this->primary_keys() as $k) {
+              $id[] = $elem[$k];
+            }
+            $id = array_to_id($id);
+
+            $data[$elem[$table['id']]][$id][] = $elem[$table['value']];
+          }
           $res->closeCursor();
         }
       }
@@ -839,8 +882,14 @@ class DB_Table {
     global $db_entry_cache;
 
     if(!array_key_exists($id, $this->entries_cache)) {
+      $r = id_to_array($id);
+      foreach ($this->primary_keys() as $i => $keys) {
+        $fields[] = $db_conn->quoteIdent($keys);
+        $where[] = $db_conn->quoteIdent($keys) . '=' . $db_conn->quote($r[$i]);
+      }
+
       if($data === null) {
-	$res = $db_conn->query("select id from " . $db_conn->quoteIdent($this->id) . " where id=" . $db_conn->quote($id));
+	$res = $db_conn->query("select " . implode(', ', $fields) . " from " . $db_conn->quoteIdent($this->id) . " where " . implode(' and ', $where));
 
 	if($res === false) {
 	  messages_debug("Table '{$this->id}'->get_entry('{$id}'): query failed");
@@ -935,7 +984,11 @@ class DB_Table {
 
     $joined_tables = "";
     foreach($tables as $t=>$dummy) { // $t is always quoted
-      $joined_tables .= " left join {$t} on {$main_table_quoted}.id = {$t}.id";
+      $r = array();
+      foreach ($this->primary_keys() as $key) {
+        $r[] = "{$main_table_quoted}." . $db_conn->quoteIdent($key) . " = {$t}." . $db_conn->quoteIdent($key);
+      }
+      $joined_tables .= " left join {$t} on " . implode(' and ', $r);
     }
 
     if(sizeof($query))
@@ -961,8 +1014,13 @@ class DB_Table {
       $select = ' ';
     }
 
+    $r = array();
+    foreach ($this->primary_keys() as $key) {
+      $r[] = $db_conn->quoteIdent($this->id) . "." . $db_conn->quoteIdent($key);
+    }
+
     $query =
-      "select distinct " . $db_conn->quoteIdent($this->id) . ".id " .
+      "select distinct " . implode(' ', $r) .
       $select .
       "from " . $db_conn->quoteIdent($this->id) . $joined_tables .
       $query . $order .
@@ -970,7 +1028,6 @@ class DB_Table {
       // values and sort them later
       (($sort === null) && $limit ? " limit {$limit}" .
       ($offset ? " offset {$offset}" : "") : "");
-    // messages_debug($query);
     $res = $db_conn->query($query);
 
     if($res === false) {
@@ -980,7 +1037,12 @@ class DB_Table {
 
     $ret = array();
     while($elem = $res->fetch()) {
-      $ret[] = $elem['id'];
+      $r = array();
+      foreach ($this->primary_keys() as $key) {
+        $r[] = $elem[$key];
+      }
+
+      $ret[] = array_to_id($r);
     }
     $res->closeCursor();
 
@@ -1085,4 +1147,12 @@ function get_db_table_names () {
   }
 
   return $ret;
+}
+
+function array_to_id ($r) {
+  return implode('|', $r);
+}
+
+function id_to_array ($r) {
+  return explode('|', $r);
 }

@@ -92,6 +92,11 @@ EOT
               'type'    =>"text",
               'default' =>"text",
             ),
+            'prikey'    => array(
+              'name'      => 'Primary Key',
+              'type'      => 'boolean',
+              'default'   => false,
+            ),
 	    'type'	=>array(
 	      'name'	=>"Type",
 	      'type'	=>"select",
