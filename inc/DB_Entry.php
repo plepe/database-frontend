@@ -12,6 +12,8 @@ class DB_Entry {
       $this->id = $id;
       $this->data = $data;
     }
+
+    $this->data['__id__'] = $this->id;
   }
 
   function data($key=null) {

@@ -559,7 +559,7 @@ class DB_Table {
       return $template;
     }
 
-    return '{{ id }}';
+    return '{{ __id__ }}';
   }
 
   /**
