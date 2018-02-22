@@ -87,6 +87,11 @@ EOT
 	      'type'	=>"textarea",
 	      'desc'	=>"Instructions for using this field (may contain HTML)",
 	    ),
+            'coltype'    =>array(
+              'name'    =>"DB Column Type",
+              'type'    =>"text",
+              'default' =>"text",
+            ),
 	    'type'	=>array(
 	      'name'	=>"Type",
 	      'type'	=>"select",

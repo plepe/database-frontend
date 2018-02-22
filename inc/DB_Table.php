@@ -223,13 +223,13 @@ class DB_Table {
 
     // iterate over all fields and see what to do with them
     foreach($data['fields'] as $column=>$column_def) {
-      $column_type = "text";
+      $column_type = $column_def['coltype'];
       if($column == "id") {
-	$column_type = "varchar(255) collate {$id_collate}";
+	$column_type .= " collate {$id_collate}";
       }
 
       if(array_key_exists('reference', $column_def) && ($column_def['reference'] != null)) {
-	$column_type = "varchar(255) collate {$id_collate}";
+	$column_type .= " collate {$id_collate}";
       }
 
       if(array_key_exists('backreference', $column_def) && ($column_def['backreference'] != null)) {

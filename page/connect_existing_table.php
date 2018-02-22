@@ -31,12 +31,12 @@ class Page_connect_existing_table {
 
       // analyze table
       $res = $db_conn->columns($data['table']);
-      messages_debug($res);
 
       foreach ($res as $colid => $meta) {
         $create_data['fields'][$colid] = array(
           'type' => 'text',
           'name' => $colid,
+          'coltype' => $meta['type'],
         );
       }
 
