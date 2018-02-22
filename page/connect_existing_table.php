@@ -14,7 +14,8 @@ class Page_connect_existing_table {
     $form_def = array(
       'table' => array(
 	'name' => "Table ID",
-	'type' => 'text',
+	'type' => 'select',
+        'values' => $db_conn->tables(),
 	'req' => true,
       ),
     );
@@ -29,14 +30,13 @@ class Page_connect_existing_table {
       );
 
       // analyze table
-      $res = $db_conn->query("select * from " . $db_conn->quoteIdent($data['table']) . " limit 1");
+      $res = $db_conn->columns($data['table']);
+      messages_debug($res);
 
-      for ($i = 0; $i < $res->columnCount(); $i++) {
-        $meta = $res->getColumnMeta($i);
-
-        $create_data['fields'][str_to_id($meta['name'])] = array(
+      foreach ($res as $colid => $meta) {
+        $create_data['fields'][$colid] = array(
           'type' => 'text',
-          'name' => $meta['name'],
+          'name' => $colid,
         );
       }
 
