@@ -32,6 +32,10 @@ class DB_Table {
 
     $this->data = $data;
 
+    if (!$this->data) {
+      return;
+    }
+
     // set 'old_key' for each field, so that later save() will leave
     // database structure intact. $new_data still has old_key information from
     // before
@@ -618,7 +622,9 @@ class DB_Table {
 
     // update cache
     global $db_table_cache;
-    unset($db_table_cache[$old_id]);
+    if (isset($old_id)) {
+      unset($db_table_cache[$old_id]);
+    }
     $db_table_cache[$this->id] = $this;
 
     $changeset->add($this);
