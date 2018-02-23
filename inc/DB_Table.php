@@ -204,7 +204,7 @@ class DB_Table {
     $tmp_name = "__tmp__";
 
     // is this a new table?
-    if($this->id) {
+    if($this->id && isset($this->old_id)) {
       $new_table = !$db_conn->tableExists($this->old_id);
     }
     else
