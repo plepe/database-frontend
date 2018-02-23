@@ -363,13 +363,15 @@ class DB_Table {
 	else
 	  $old_field_type = Field;
 
-        $old_field = new $old_field_type($column_def['old_key'], $old_def, $this);
-	// ... it was already a field with multiple values
-	if(($old_field->is_multiple() === true) || ($old_def['count'])) {
-	  if($db_conn->tableExists($this->old_id . '_' . $old_column_id)) {
-	    $drop_cmds[] = "drop table " . $db_conn->quoteIdent($this->old_id . '_' . $old_column_id) . ";";
-	  }
-	}
+        if (isset($column_def['old_key'])) {
+          $old_field = new $old_field_type($column_def['old_key'], $old_def, $this);
+          // ... it was already a field with multiple values
+          if(($old_field->is_multiple() === true) || ($old_def['count'])) {
+            if($db_conn->tableExists($this->old_id . '_' . $old_column_id)) {
+              $drop_cmds[] = "drop table " . $db_conn->quoteIdent($this->old_id . '_' . $old_column_id) . ";";
+            }
+          }
+        }
       }
     }
 

@@ -158,4 +158,33 @@ class DBMYSQL extends PHPUnit_Framework_TestCase {
     $entry = $table->get_entry(3);
     $this->assertEquals(null, $entry);
   }
+
+  public function test3_back () {
+    global $db_table_cache;
+    global $db_table_cache_complete;
+    $db_table_cache = array();
+    $db_table_cache_complete = false;
+
+    $table = get_db_table('test3');
+    print_r($table);
+
+    $data = $table->data();
+    $data['fields']['b']['old_key'] = 'b';
+    $data['fields']['back'] = array(
+      'type' => 'text',
+      'backreference' => 'test4:b',
+    );
+
+    $table->save($data);
+
+    $entry = $table->get_entry('foo');
+    print_r($entry->data());
+    $this->assertEquals(array('a' => 'foo', 'b' => 'foo', 'id' => 1), $entry->data());
+
+    $entry = $table->get_entry(2);
+    $this->assertEquals(array('a' => 'bar', 'b' => 'bar', 'id' => 2), $entry->data());
+
+    $entry = $table->get_entry(3);
+    $this->assertEquals(null, $entry);
+  }
 }
