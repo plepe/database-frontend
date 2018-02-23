@@ -1,6 +1,6 @@
 <?php
 class Page_index extends Page {
-  function content($param) {
+  function content() {
     global $app;
 
     if(!base_access('view')) {

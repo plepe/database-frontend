@@ -1,25 +1,25 @@
 <?php
 class Page_admin_table extends Page {
-  function content($param) {
+  function content() {
     global $app;
 
     if(!base_access('admin')) {
       global $auth;
       if(!$auth->is_logged_in())
-	page_reload(array("page" => "login", "return" => array("page" => "admin_table", "table" => $param['table'])));
+	page_reload(array("page" => "login", "return" => array("page" => "admin_table", "table" => $this->param['table'])));
       return "Permission denied.";
     }
 
-    if(array_key_exists('action', $param)) {
-      $page = "content_{$param['action']}";
+    if(array_key_exists('action', $this->param)) {
+      $page = "content_{$this->param['action']}";
       if(!method_exists($this, $page))
 	return false;
 
-      return $this->$page($param);
+      return $this->$page($this->param);
     }
 
-    if(isset($param['table'])) {
-      $table = get_db_table($param['table']);
+    if(isset($this->param['table'])) {
+      $table = get_db_table($this->param['table']);
       if(!$table)
 	return null;
     }
@@ -44,7 +44,7 @@ class Page_admin_table extends Page {
       if(!isset($table))
 	$table = new DB_table(null);
 
-      $table->save($data, $param['message']);
+      $table->save($data, $this->param['message']);
 
       page_reload(page_url(array("page" => "admin_table", "table" => $table->id)));
     }
@@ -57,7 +57,7 @@ class Page_admin_table extends Page {
 
     return array(
       'template' => 'admin_table.html',
-      'table' => $param['table'],
+      'table' => $this->param['table'],
       'views' => $table ? $table->views() : null,
       'form' => $form,
       'data' => $table ? $table->view() : null,
@@ -65,9 +65,9 @@ class Page_admin_table extends Page {
     );
   }
 
-  function content_drop($param) {
+  function content_drop() {
     $ret = "";
-    $table = get_db_table($param['table']);
+    $table = get_db_table($this->param['table']);
 
     if(!$table) {
       $ret .= "Table does not exist.";

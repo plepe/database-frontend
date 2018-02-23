@@ -80,7 +80,7 @@ class Page_import_csv {
 
       db_system_init();
 
-      $changeset = new Changeset($param['message']);
+      $changeset = new Changeset($this->param['message']);
       $changeset->open();
 
       $table = new DB_Table(null);

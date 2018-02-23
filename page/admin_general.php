@@ -1,6 +1,6 @@
 <?php
 class Page_admin_general extends Page {
-  function content($param) {
+  function content() {
     global $system;
     global $app;
 
@@ -29,7 +29,7 @@ class Page_admin_general extends Page {
     if($form->is_complete()) {
       $data = $form->get_data();
       
-      $result = $system->save($data, $param['message']);
+      $result = $system->save($data, $this->param['message']);
 
       if($result === true) {
 	page_reload(page_url(array("page" => "admin_general")));

@@ -1,49 +1,49 @@
 <?php
 class Page_edit extends Page {
-  function content($param) {
+  function content() {
     global $app;
 
-    $table = get_db_table($param['table']);
+    $table = get_db_table($this->param['table']);
     if(!$table)
       return null;
 
     if(!base_access('view') || !access($table->data('access_edit'))) {
       global $auth;
       if(!$auth->is_logged_in())
-	page_reload(array("page" => "login", "return" => array("page" => "edit", "table" => $param['table'], "id" => $param['id'])));
+	page_reload(array("page" => "login", "return" => array("page" => "edit", "table" => $this->param['table'], "id" => $this->param['id'])));
       return "Permission denied.";
     }
 
-    if(isset($param['id'])) {
-      $ob = $table->get_entry($param['id']);
+    if(isset($this->param['id'])) {
+      $ob = $table->get_entry($this->param['id']);
       if(!$ob)
 	return null;
     }
 
-    if(isset($param['clone'])) {
-      $ob = $table->get_entry($param['clone']);
+    if(isset($this->param['clone'])) {
+      $ob = $table->get_entry($this->param['clone']);
       if(!$ob)
 	return null;
     }
 
     // if requested, delete entry
-    if(isset($param['delete']) && $param['delete']) {
+    if(isset($this->param['delete']) && $this->param['delete']) {
       if($ob) {
-	$ob->remove($param['message']);
+	$ob->remove($this->param['message']);
 	messages_add("Entry deleted", MSG_NOTICE);
       }
 
-      page_reload(page_url(array("page" => "list", "table" => $param['table'])));
+      page_reload(page_url(array("page" => "list", "table" => $this->param['table'])));
 
       return array();
     }
 
     // if requested, cancel
-    if(isset($param['cancel']) && $param['cancel']) {
-      if ($param['id']) {
-        page_reload(page_url(array("page" => "show", "table" => $param['table'], "id" => $param['id'])));
+    if(isset($this->param['cancel']) && $this->param['cancel']) {
+      if ($this->param['id']) {
+        page_reload(page_url(array("page" => "show", "table" => $this->param['table'], "id" => $this->param['id'])));
       } else {
-        page_reload(page_url(array("page" => "list", "table" => $param['table'])));
+        page_reload(page_url(array("page" => "list", "table" => $this->param['table'])));
       }
 
       return array();
@@ -105,12 +105,12 @@ class Page_edit extends Page {
     $form = new form("data", $def);
 
     if($form->is_complete()) {
-      $changeset = new Changeset($param['message']);
+      $changeset = new Changeset($this->param['message']);
       $changeset->open();
 
       $data = $form->get_data();
-      if(!isset($param['id']))
-	$ob = new DB_Entry($param['table'], null);
+      if(!isset($this->param['id']))
+	$ob = new DB_Entry($this->param['table'], null);
 
       foreach ($reference_fields as $f_id => $f_count) {
         if ($f_count) {
@@ -141,7 +141,7 @@ class Page_edit extends Page {
       $changeset->commit();
 
       if($result === true) {
-	page_reload(page_url(array("page" => "show", "table" => $param['table'], "id" => $ob->id)));
+	page_reload(page_url(array("page" => "show", "table" => $this->param['table'], "id" => $ob->id)));
       }
       else {
 	messages_add("An error occured while saving: {$result}", MSG_ERROR);
@@ -152,7 +152,7 @@ class Page_edit extends Page {
       if(isset($ob)) {
         $data = $ob->data();
 
-        if(isset($param['clone'])) {
+        if(isset($this->param['clone'])) {
           $data['id'] = null;
         }
 
@@ -172,10 +172,10 @@ class Page_edit extends Page {
 
     return array(
       'template' => 'edit.html',
-      'table' => $param['table'],
+      'table' => $this->param['table'],
       'table_name' => $table->name(),
-      'title' => !isset($param['clone']) && $ob ? $ob->title() : null,
-      'id' => $param['id'],
+      'title' => !isset($this->param['clone']) && $ob ? $ob->title() : null,
+      'id' => $this->param['id'],
       'form' => $form,
       'data' => $ob ? $ob->view() : null,
       'app' => $app,

@@ -1,18 +1,18 @@
 <?php
 class Page_admin_table_general extends Page {
-  function content($param) {
+  function content() {
     global $app;
 
     if(!base_access('admin')) {
       global $auth;
       if(!$auth->is_logged_in())
-	page_reload(array("page" => "login", "return" => array("page" => "admin_table_general", "table" => $param['table'])));
+	page_reload(array("page" => "login", "return" => array("page" => "admin_table_general", "table" => $this->param['table'])));
       return "Permission denied.";
     }
 
     $views = array('default');
-    if(isset($param['table'])) {
-      $table = get_db_table($param['table']);
+    if(isset($this->param['table'])) {
+      $table = get_db_table($this->param['table']);
       $views = $table->views();
     }
 
@@ -70,7 +70,7 @@ class Page_admin_table_general extends Page {
       if(!isset($table))
 	$table = new DB_table(null);
 
-      $result = $table->save($data, $param['message']);
+      $result = $table->save($data, $this->param['message']);
 
       if($result === true) {
 	page_reload(page_url(array("page" => "admin_table", "table" => $table->id)));
@@ -88,7 +88,7 @@ class Page_admin_table_general extends Page {
 
     return array(
       'template' => 'admin_table_general.html',
-      'table' => $param['table'],
+      'table' => $this->param['table'],
       'form' => $form,
       'data' => $table ? $table->view() : null,
       'app' => $app,

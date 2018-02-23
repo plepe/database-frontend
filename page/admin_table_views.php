@@ -1,16 +1,16 @@
 <?php
 class Page_admin_table_views extends Page {
-  function content($param) {
+  function content() {
     global $app;
 
      if(!base_access('admin')) {
       global $auth;
       if(!$auth->is_logged_in())
-	page_reload(array("page" => "login", "return" => array("page" => "admin_table_views", "table" => $param['table'], "view" => $param['view'])));
+	page_reload(array("page" => "login", "return" => array("page" => "admin_table_views", "table" => $this->param['table'], "view" => $this->param['view'])));
       return "Permission denied.";
     }
 
-   $table = get_db_table($param['table']);
+   $table = get_db_table($this->param['table']);
     $keys = $table->def();
     $keys['__custom__'] = 'Custom Field';
 
@@ -171,11 +171,11 @@ class Page_admin_table_views extends Page {
 
     $form = new form('data', $form_def);
 
-    if (isset($param['remove'])) {
+    if (isset($this->param['remove'])) {
       $views = $table->data['views'];
 
-      if (isset($param['view'])) {
-        unset($views[$param['view']]);
+      if (isset($this->param['view'])) {
+        unset($views[$this->param['view']]);
         $table->save(array('views' => $views));
         messages_add("View removed.");
         page_reload(page_url(array("page" => "admin_table", "table" => $table->id)));
@@ -194,15 +194,15 @@ class Page_admin_table_views extends Page {
       $view_key = $view_data['title'];
 
       // if view has been renamed, remove old view name
-      if(array_key_exists('view', $param) && ($view_key != $param['view']))
-        unset($views[$param['view']]);
+      if(array_key_exists('view', $this->param) && ($view_key != $this->param['view']))
+        unset($views[$this->param['view']]);
 
       // set new view name
       $views[$view_key] = $view_data;
 
       $data['views'] = $views;
 
-      $result = $table->save($data, $param['message']);
+      $result = $table->save($data, $this->param['message']);
 
       if($result === true) {
 	messages_add("View saved.");
@@ -217,8 +217,8 @@ class Page_admin_table_views extends Page {
       $views = $table->data['views'];
       $view_data = array();
 
-      if(isset($param['view']) && (array_key_exists($param['view'], $views))) {
-	$view_data = $views[$param['view']];
+      if(isset($this->param['view']) && (array_key_exists($this->param['view'], $views))) {
+	$view_data = $views[$this->param['view']];
       }
 
       $form->set_data($view_data);
@@ -243,7 +243,7 @@ class Page_admin_table_views extends Page {
 
     return array(
       'template' => 'admin_table_views.html',
-      'table' => $param['table'],
+      'table' => $this->param['table'],
       'form' => $form,
       'replacement_patterns' => $replacement_patterns,
       'data' => $table ? $table->view() : null,

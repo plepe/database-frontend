@@ -1,42 +1,42 @@
 <?php
 class Page_show extends Page {
-  function content($param) {
+  function content() {
     global $app;
 
-    $table = get_db_table($param['table']);
+    $table = get_db_table($this->param['table']);
     if(!$table)
       return null;
 
     if(!base_access('view') || !access($table->data('access_view'))) {
       global $auth;
       if(!$auth->is_logged_in())
-	page_reload(array("page" => "login", "return" => array("page" => "show", "table" => $param['table'], "id" => $param['id'])));
+	page_reload(array("page" => "login", "return" => array("page" => "show", "table" => $this->param['table'], "id" => $this->param['id'])));
       return "Permission denied.";
     }
 
     $ret = "";
 
-    $object = $table->get_entry($param['id']);
+    $object = $table->get_entry($this->param['id']);
     if(!$object)
       return null;
 
     $table_extract = new DB_TableExtract($table);
-    $filter_values = get_filter($param);
+    $filter_values = get_filter($this->param);
     $table_extract->set_filter($filter_values);
     $pager_index = $table_extract->index($object->id);
 
     // if no 'view'-parameter is set, use session or view with lowest weight
-    if(!isset($param['view'])) {
+    if(!isset($this->param['view'])) {
       if(array_key_exists("{$table->id}_view_show", $_SESSION))
         $view = $_SESSION["{$table->id}_view_show"];
       else
         $view = $table->data('default_view_show');
     }
     else {
-      $view = $param['view'];
+      $view = $this->param['view'];
       $_SESSION["{$table->id}_view_show"] = $view;
     }
-    $param['view'] = $view;
+    $this->param['view'] = $view;
 
     $def = $table->view_def($view);
     if ($def === false) {
@@ -45,10 +45,10 @@ class Page_show extends Page {
 
     if(array_key_exists('class', $def)) {
       $view_class = "View_{$def['class']}";
-      $view = new $view_class($def, $param);
+      $view = new $view_class($def, $this->param);
     }
     else {
-      $view = new View_Table($def, $param);
+      $view = new View_Table($def, $this->param);
     }
 
     $extract = new DB_TableExtract($table);
@@ -87,16 +87,16 @@ class Page_show extends Page {
 
     return array(
       'template' => "show.html",
-      'table' => $param['table'],
+      'table' => $this->param['table'],
       'table_name' => $table->name(),
-      'id' => $param['id'],
+      'id' => $this->param['id'],
       'title' => $object->title(),
       'view' => $view,
-      'param' => $param,
+      'param' => $this->param,
       'views' => $table->views('show'),
       'data' => $object->view(),
       'pager' => $pager,
-      'filter' => get_filter_form($param),
+      'filter' => get_filter_form($this->param),
       'filter_values' => $filter_values,
       'app' => $app,
       'table_list' => get_db_table_names(),

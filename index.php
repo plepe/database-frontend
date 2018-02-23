@@ -30,7 +30,7 @@ if(!array_key_exists('page', $_REQUEST)) {
 $ret = null;
 $page = get_page($_REQUEST);
 if($page) {
-  $ret = $page->content($_REQUEST);
+  $ret = $page->content();
 
   if(is_array($ret)) {
     $ret = twig_render($ret['template'], $ret);

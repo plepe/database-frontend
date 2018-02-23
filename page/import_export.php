@@ -1,6 +1,6 @@
 <?php
 class Page_import_export extends Page {
-  function content($param) {
+  function content() {
     if(!base_access('admin')) {
       global $auth;
       if(!$auth->is_logged_in())
