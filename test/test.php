@@ -2,8 +2,10 @@
 <?php global $db_conn; ?>
 <?php include "modulekit/loader.php"; /* loads all php-includes */ ?>
 <?php
+$db_conn->query('SET foreign_key_checks = 0');
 $db_conn->query('drop table if exists __system__');
 $db_conn->query('drop table if exists __tmp__b');
+$db_conn->query('drop table if exists __tmp___b');
 $db_conn->query('drop table if exists __tmp__');
 $db_conn->query('drop table if exists test1');
 $db_conn->query('drop table if exists test2_b');
@@ -12,6 +14,7 @@ $db_conn->query('drop table if exists test4_b');
 $db_conn->query('drop table if exists test4');
 $db_conn->query('drop table if exists test3_b');
 $db_conn->query('drop table if exists test3');
+$db_conn->query('SET foreign_key_checks = 1');
 
 db_system_init();
 
