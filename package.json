@@ -2,6 +2,9 @@
   "name": "database-frontend",
   "version": "0.1.0",
   "description": "A simple but powerful database frontend",
+  "scripts": {
+    "test": "phpunit test/test.php"
+  },
   "repository": "https://github.com/plepe/database-frontend/",
   "author": "Stephan Bösch-Plepelits <skunk@xover.mud.at>",
   "license": "GPL-3.0"
