@@ -12,13 +12,13 @@ class DB_Entry {
       $this->id = $id;
       $this->data = $data;
     }
-
-    $this->data['__id__'] = $this->id;
   }
 
   function data($key=null) {
     if($this->data === null)
       $this->load();
+
+    $this->data['__id__'] = $this->id;
 
     if($key !== null)
       return $this->data[$key];
@@ -56,16 +56,30 @@ class DB_Entry {
     $insert_columns = array();
     $insert_values = array();
 
-    if(array_key_exists('id', $data))
-      $new_id = $data['id'];
-    else
-      $new_id = $this->id;
-
     if(($changeset === null) || is_string($changeset))
       $changeset = new Changeset($changeset);
 
+    $where = array();
+    foreach ($this->table->primary_keys() as $key) {
+      $where[] = $db_conn->quoteIdent($key) . "=" . $db_conn->quote($data[$key]);
+      $new_id[] = $data[$key];
+    }
+
+    if (sizeof($new_id)) {
+      $new_id = array_to_id($new_id);
+      $where = implode(' and ', $where);
+    } else {
+      $new_id = $this->id;
+      $where
+    }
+
+    if(array_key_exists('__id__', $data))
+      $new_id = $data['__id__'];
+    else
+      $new_id = $this->id;
+
     if($new_id != $this->id) {
-      $res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->type) . " where " . $db_conn->quoteIdent('id') . "=" . $db_conn->quote($new_id));
+      $res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->type) . " where " . $where;
       if($res->fetch()) {
 	$res->closeCursor();
 	$changeset->rollBack();
