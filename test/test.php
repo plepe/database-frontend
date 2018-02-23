@@ -8,6 +8,10 @@ $db_conn->query('drop table if exists __tmp__');
 $db_conn->query('drop table if exists test1');
 $db_conn->query('drop table if exists test2_b');
 $db_conn->query('drop table if exists test2');
+$db_conn->query('drop table if exists test4_b');
+$db_conn->query('drop table if exists test4');
+$db_conn->query('drop table if exists test3_b');
+$db_conn->query('drop table if exists test3');
 
 db_system_init();
 
@@ -21,7 +25,7 @@ class DBMYSQL extends PHPUnit_Framework_TestCase {
   }
 
   public function test1 () {
-    $table = new DB_Table('test1', null);
+    $table = new DB_Table(null, null);
     
     $table->save(array(
       'id' => 'test1',
@@ -52,7 +56,7 @@ class DBMYSQL extends PHPUnit_Framework_TestCase {
   }
 
   public function test2 () {
-    $table = new DB_Table('test2', null);
+    $table = new DB_Table(null, null);
     
     $table->save(array(
       'id' => 'test2',
@@ -79,6 +83,77 @@ class DBMYSQL extends PHPUnit_Framework_TestCase {
 
     $entry = $table->get_entry(2);
     $this->assertEquals(array('a' => 'bar', 'b' => array('3', '2', '1'), 'id' => 2), $entry->data());
+
+    $entry = $table->get_entry(3);
+    $this->assertEquals(null, $entry);
+  }
+
+  public function test3 () {
+    $table = new DB_Table(null, null);
+
+    $table->save(array(
+      'id' => 'test3',
+      'fields' => array(
+        'id' => array(
+          'type' => 'text',
+          'count' => false,
+        ),
+        'a' => array(
+          'type' => 'text',
+          'count' => false,
+        ),
+        'b' => array(
+          'type' => 'text',
+          'count' => true,
+        ),
+      ),
+    ));
+
+    $entry = new DB_Entry('test3', null);
+    $entry->save(array('id' => 'foo', 'a' => 'foo', 'b' => array('1', '2', '3')));
+
+    $entry = new DB_Entry('test3', null);
+    $entry->save(array('id' => 'bar', 'a' => 'bar', 'b' => array('3', '2', '1')));
+
+    $entry = $table->get_entry('foo');
+    $this->assertEquals(array('id' => 'foo', 'a' => 'foo', 'b' => array('1', '2', '3')), $entry->data());
+
+    $entry = $table->get_entry('bar');
+    $this->assertEquals(array('id' => 'bar', 'a' => 'bar', 'b' => array('3', '2', '1')), $entry->data());
+
+    $entry = $table->get_entry('xyz');
+    $this->assertEquals(null, $entry);
+  }
+
+  public function test4 () {
+    $table = new DB_Table(null, null);
+
+    $table->save(array(
+      'id' => 'test4',
+      'fields' => array(
+        'a' => array(
+          'type' => 'text',
+          'count' => false,
+        ),
+        'b' => array(
+          'type' => 'select',
+          'reference' => 'test3',
+          'count' => false,
+        ),
+      ),
+    ));
+
+    $entry = new DB_Entry('test4', null);
+    $entry->save(array('a' => 'foo', 'b' => 'foo'));
+
+    $entry = new DB_Entry('test4', null);
+    $entry->save(array('a' => 'bar', 'b' => 'bar'));
+
+    $entry = $table->get_entry(1);
+    $this->assertEquals(array('a' => 'foo', 'b' => 'foo', 'id' => 1), $entry->data());
+
+    $entry = $table->get_entry(2);
+    $this->assertEquals(array('a' => 'bar', 'b' => 'bar', 'id' => 2), $entry->data());
 
     $entry = $table->get_entry(3);
     $this->assertEquals(null, $entry);
