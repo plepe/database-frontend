@@ -20,8 +20,23 @@ function get_table_fields_form(&$param, $view_def) {
   $def = array(
     'table_fields' => array(
       'name' => 'Additional table fields',
-      'type' => 'select',
+      'type' => 'select_other',
       'count' => array('default' => 1),
+      'button:other' => 'Custom',
+      'other_def' => array(
+        'type' => 'form',
+        'def' => array(
+          'name' => array(
+            'name' => 'Title',
+            'type' => 'text',
+          ),
+          'format' => array(
+            'name' => 'Format',
+            'type' => 'textarea',
+	    'desc' => 'Specify a different format for this field (mandatory for custom fields). This field uses the <a href="http://twig.sensiolabs.org/">Twig template engine</a>. You can use replacement patterns.',
+          ),
+        ),
+      ),
       'values' => $view_fields,
       'values_mode' => 'keys',
     ),
@@ -60,7 +75,10 @@ function modify_table_fields(&$param, &$def) {
   $fields = $table->view_fields();
 
   foreach ($data['table_fields'] as $field_id) {
-    if ($field_id) {
+    if (is_array($field_id)) {
+      $def['fields'][] = $field_id;
+    }
+    else if ($field_id) {
       $def['fields'][] = $fields[$field_id]->view_def();
     }
   }
