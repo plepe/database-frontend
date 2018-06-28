@@ -19,6 +19,7 @@
 [submodule "lib/Twig"]
 	path = lib/Twig
 	url = git://github.com/twigphp/Twig.git
+        branch = 1.x
 [submodule "lib/twig.js"]
 	path = lib/twig.js
 	url = https://github.com/justjohn/twig.js
@@ -34,6 +35,7 @@
 [submodule "lib/modulekit/auth"]
 	path = lib/modulekit/auth
 	url = https://github.com/plepe/modulekit-auth.git
+        branch = devel
 [submodule "lib/modulekit/random-id-generator"]
 	path = lib/modulekit/random-id-generator
 	url = https://github.com/plepe/random-id-generator.git
