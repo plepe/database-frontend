@@ -1,12 +1,12 @@
 <?php
 class Page_history extends Page {
-  function content($param=array()) {
+  function content() {
     global $app;
 
     if(!base_access('view')) {
       global $auth;
       if(!$auth->is_logged_in())
-	page_reload(array("page" => "login", "return" => array("page" => "history", "table" => $param['table'], "id" => $param['id'])));
+	page_reload(array("page" => "login", "return" => array("page" => "history", "table" => $this->param['table'], "id" => $this->param['id'])));
       return "Permission denied.";
     }
 
@@ -18,13 +18,13 @@ class Page_history extends Page {
     }
 
     $path = ".";
-    if(isset($param['table'])) {
-      $path = $param['table'];
-      $table = get_db_table($param['table']);
+    if(isset($this->param['table'])) {
+      $path = $this->param['table'];
+      $table = get_db_table($this->param['table']);
     }
-    if(isset($param['table']) && isset($param['id'])) {
-      $path = "{$param['table']}/{$param['id']}.json";
-      $ob = $table->get_entry($param['id']);
+    if(isset($this->param['table']) && isset($this->param['id'])) {
+      $path = "{$this->param['table']}/{$this->param['id']}.json";
+      $ob = $table->get_entry($this->param['id']);
     }
 
     $ret = adv_exec("git log -p " . shell_escape($path), "r");
@@ -32,9 +32,9 @@ class Page_history extends Page {
 
     return array(
       'template' => 'history.html',
-      'table' => $param['table'],
+      'table' => $this->param['table'],
       'table_name' => $table ? $table->name() : null,
-      'id' => $param['id'],
+      'id' => $this->param['id'],
       'title' => $ob ? $ob->title() : null,
       'data' => $ret,
       'app' => $app,
