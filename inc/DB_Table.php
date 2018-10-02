@@ -454,7 +454,7 @@ class DB_Table {
     return $ret;
   }
 
-  function views($type) { // type: 'list' or 'show'
+  function views($type='list') { // type: 'list' or 'show'
     $views = array();
 
     if(array_key_exists('views', $this->data))
@@ -542,7 +542,7 @@ class DB_Table {
     return $view[0];
   }
 
-  function title_format($prefix) {
+  function title_format($prefix='') {
     if ($template = $this->data('title')) {
       return $template;
     }

@@ -1,6 +1,6 @@
 <?php
 class Page_history extends Page {
-  function content($param) {
+  function content($param=array()) {
     global $app;
 
     if(!base_access('view')) {
