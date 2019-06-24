@@ -714,10 +714,7 @@ class DB_Table {
           continue;
         }
 
-        $ret[] = array(
-          'table' => $field->sql_table_quoted(),
-          'query' => $r,
-        );
+        $ret[] = $r;
       }
     }
 
@@ -749,11 +746,7 @@ class DB_Table {
 
         $r = $field->compile_sort($f);
         if($r !== null) {
-	  $ret[] = array(
-	    'table' => $field->sql_table_quoted(),
-	    'sort' => $r,
-            'select' => $field->sql_table_quoted() . '.' . $field->sql_column_quoted(),
-	  );
+	  $ret[] = $r;
 	}
 	else
 	  $sort_success = false;

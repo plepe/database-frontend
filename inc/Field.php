@@ -127,25 +127,41 @@ class Field {
   function compile_filter($def) {
     global $db_conn;
 
+    $ret = array(
+      'table' => $this->sql_table_quoted(),
+      'query' => '',
+    );
+
     $column = $this->sql_table_quoted() . '.' . $this->sql_column_quoted();
 
     switch($def['op']) {
       case 'contains':
-        return "{$column} like " . $db_conn->quote('%' . $def['value'] . '%');
+        $ret['query'] = "{$column} like " . $db_conn->quote('%' . $def['value'] . '%');
+        break;
       case 'is':
-        return "{$column}=" . $db_conn->quote($def['value']);
+        $ret['query'] = "{$column}=" . $db_conn->quote($def['value']);
+        break;
       case '>':
       case '>=':
       case '<':
       case '<=':
-        return "{$column}{$def['op']}" . $db_conn->quote($def['value']);
+        $ret['query'] = "{$column}{$def['op']}" . $db_conn->quote($def['value']);
+        break;
       default:
         return null;
     }
+
+    return $ret;
   }
 
   function compile_sort($def) {
-    $ret = "";
+    global $db_conn;
+
+    $ret = array(
+      'table' => $this->sql_table_quoted(),
+      'sort' => '',
+      'select' => $this->sql_table_quoted() . '.' . $this->sql_column_quoted()
+    );
 
     if($def['type'] == 'nat')
       return null;
@@ -162,20 +178,20 @@ class Field {
     if(isset($def['null'])) {
       switch($def['null']) {
         case 'higher':
-          $ret .= $column . ' is null ' . (array_key_exists('dir', $def) && ($def['dir'] == 'desc') ? ' desc' : ' asc') . ', ';
+          $ret['sort'] .= $column . ' is null ' . (array_key_exists('dir', $def) && ($def['dir'] == 'desc') ? ' desc' : ' asc') . ', ';
           break;
         case 'first':
-          $ret .= $column . ' is null desc, ';
+          $ret['sort'] .= $column . ' is null desc, ';
           break;
         case 'last':
-          $ret .= $column . ' is null asc, ';
+          $ret['sort'] .= $column . ' is null asc, ';
           break;
         case 'lower':
         default:
       }
     }
 
-    $ret .= $modifier . ' ' . $column . (array_key_exists('dir', $def) && ($def['dir'] == 'desc') ? ' desc' : ' asc');
+    $ret['sort'] .= $modifier . ' ' . $column . (array_key_exists('dir', $def) && ($def['dir'] == 'desc') ? ' desc' : ' asc');
 
     return $ret;
   }
