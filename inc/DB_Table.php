@@ -912,7 +912,7 @@ class DB_Table {
     $select = array();
     if($compiled_filter !== null) foreach($compiled_filter as $f) {
       if(array_key_exists('table', $f))
-        $tables[$f['table']] = true;
+        $tables[$f['table']] = $f['id_field'];
       if (array_key_exists('select', $f))
         $select[] = $f['select'];
 
@@ -922,7 +922,7 @@ class DB_Table {
     $order = array();
     if($compiled_sort !== null) foreach($compiled_sort as $f) {
       if(array_key_exists('table', $f))
-        $tables[$f['table']] = true;
+        $tables[$f['table']] = $f['id_field'];
       if (array_key_exists('select', $f))
         $select[] = $f['select'];
 
@@ -933,8 +933,8 @@ class DB_Table {
     unset($tables[$main_table_quoted]);
 
     $joined_tables = "";
-    foreach($tables as $t=>$dummy) { // $t is always quoted
-      $joined_tables .= " left join {$t} on {$main_table_quoted}.id = {$t}.id";
+    foreach($tables as $t=>$column) { // $t is always quoted
+      $joined_tables .= " left join {$t} on {$main_table_quoted}.id = {$t}.{$column}";
     }
 
     if(sizeof($query))

@@ -129,6 +129,7 @@ class Field {
 
     $ret = array(
       'table' => $this->sql_table_quoted(),
+      'id_field' => 'id',
       'query' => '',
     );
 
@@ -159,6 +160,7 @@ class Field {
 
     $ret = array(
       'table' => $this->sql_table_quoted(),
+      'id_field' => 'id',
       'sort' => '',
       'select' => $this->sql_table_quoted() . '.' . $this->sql_column_quoted()
     );
