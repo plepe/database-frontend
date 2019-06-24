@@ -44,6 +44,11 @@ class Field {
   function sql_table_quoted() {
     global $db_conn;
 
+    if(array_key_exists('backreference', $this->def) && ($this->def['backreference'] !== null)) {
+      list($ref_table, $ref_field) = explode(':', $this->def['backreference']);
+      return $db_conn->quoteIdent($ref_table . '_' . $ref_field);
+    }
+
     if($this->is_multiple())
       return $db_conn->quoteIdent($this->table->id . '_' . $this->id);
 
@@ -57,6 +62,10 @@ class Field {
    */
   function sql_column_quoted() {
     global $db_conn;
+
+    if(array_key_exists('backreference', $this->def) && ($this->def['backreference'] !== null)) {
+      return $db_conn->quoteIdent('id') . ' as value';
+    }
 
     if($this->is_multiple())
       return $db_conn->quoteIdent('value');
@@ -133,7 +142,12 @@ class Field {
       'query' => '',
     );
 
-    $column = $this->sql_table_quoted() . '.' . $this->sql_column_quoted();
+    if(array_key_exists('backreference', $this->def) && ($this->def['backreference'] !== null)) {
+      $column = $this->sql_table_quoted() . '.' . $db_conn->quoteIdent('id');
+      $ret['id_field'] = 'value';
+    } else {
+      $column = $this->sql_table_quoted() . '.' . $this->sql_column_quoted();
+    }
 
     switch($def['op']) {
       case 'contains':
@@ -170,7 +184,12 @@ class Field {
 
     $modifier = "";
 
-    $column = $this->sql_table_quoted() . '.' . $this->sql_column_quoted();
+    if(array_key_exists('backreference', $this->def) && ($this->def['backreference'] !== null)) {
+      $column = $this->sql_table_quoted() . '.' . $db_conn->quoteIdent('id');
+      $ret['id_field'] = 'value';
+    } else {
+      $column = $this->sql_table_quoted() . '.' . $this->sql_column_quoted();
+    }
 
     if($def['type'] == 'alpha')
       $modifier = "BINARY";
