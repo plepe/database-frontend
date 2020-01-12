@@ -68,7 +68,7 @@ class Page_admin_table_general extends Page {
       $data = $form->get_data();
       
       if(!isset($table))
-	$table = new DB_table(null);
+	$table = new DB_table(null, null);
 
       $result = $table->save($data, $this->param['message']);
 

@@ -83,7 +83,7 @@ class Page_import_csv {
       $changeset = new Changeset($this->param['message']);
       $changeset->open();
 
-      $table = new DB_Table(null);
+      $table = new DB_table(null, null);
       $table->save($create_data, $changeset);
 
       while($r = fgetcsv($f, 0, $data['delimiter'], $data['enclosure'], $data['escape'])) {
