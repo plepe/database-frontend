@@ -1,3 +1,5 @@
+const Twig = require('twig')
+
 const DB_Entry = require('./DB_Entry')
 
 let db_table_cache = {}
@@ -25,7 +27,7 @@ class DB_Table {
         if (req.status == 200) {
           this._data = JSON.parse(req.responseText)
         } else {
-          db_table_cache[this.id] = null
+          delete db_table_cache[this.id]
           err = new Error('table does not exist')
         }
 
@@ -69,6 +71,20 @@ class DB_Table {
   create_entry (data, changeset, callback) {
     let entry = new DB_Entry(this)
     entry.save(data, changeset, callback)
+  }
+
+  title_template () {
+    if (!this._title_template) {
+      let data
+
+      if (!(data = this.data('title'))) {
+        data = '{{ id }}'
+      }
+
+      this._title_template = new Twig.twig({data})
+    }
+
+    return this._title_template
   }
 }
 

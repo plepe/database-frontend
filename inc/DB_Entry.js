@@ -11,6 +11,10 @@ class DB_Entry {
     }
   }
 
+  title () {
+    return this.table.title_template().render(this.view())
+  }
+
   _load () {
     let req = new XMLHttpRequest()
 
@@ -21,7 +25,7 @@ class DB_Entry {
         if (req.status == 200) {
           this._data = JSON.parse(req.responseText)
         } else {
-          this.table.entries_cache[this.id] = null
+          delete this.table.entries_cache[this.id]
           err = new Error('entry does not exist')
         }
 
@@ -35,11 +39,15 @@ class DB_Entry {
   }
 
   data (key) {
-    if (key !== null) {
+    if (key !== undefined) {
       return this._data[key]
     }
 
     return this._data
+  }
+
+  view (key) {
+    return this.data(key)
   }
 
   save (data, changeset, callback) {
