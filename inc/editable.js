@@ -5,10 +5,17 @@ window.addEventListener('load', () => {
 
     if (td.hasAttribute('data-field')) {
       td.ondblclick = () => {
-        let field = td.getAttribute('data-field')
+        let table = td.getAttribute('data-table')
         let id = td.getAttribute('data-id')
+        let field = td.getAttribute('data-field')
 
-        console.log(id, field)
+        get_entry(table, id, (err, ob) => {
+          if (err) {
+            return alert(err)
+          }
+
+          console.log(table, id, field, ob.view(field))
+        })
       }
     }
   }
