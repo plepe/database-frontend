@@ -33,8 +33,11 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
         print json_readable_encode($ob->data());
       }
-      else {
+      elseif ($_REQUEST['list']) {
         print json_readable_encode($table->get_entry_ids());
+      }
+      else {
+        print json_readable_encode($table->data());
       }
     }
 
