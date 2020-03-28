@@ -23,7 +23,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
         Header('HTTP/1.0 404 Not Found');
         exit(0);
       }
-        
+
       if ($_REQUEST['id']) {
         $ob = $table->get_entry($_REQUEST['id']);
         if (!$ob) {
@@ -37,6 +37,33 @@ switch ($_SERVER['REQUEST_METHOD']) {
         print json_readable_encode($table->get_entry_ids());
       }
       else {
+        print json_readable_encode($table->data());
+      }
+    }
+
+    break;
+  case 'PATCH':
+    $data = json_decode(file_get_contents("php://input"), true);
+
+    if ($_REQUEST['table']) {
+      $table = get_db_table($_REQUEST['table']);
+      if (!$table) {
+        Header('HTTP/1.0 404 Not Found');
+        exit(0);
+      }
+
+      if ($_REQUEST['id']) {
+        $ob = $table->get_entry($_REQUEST['id']);
+        if (!$ob) {
+          Header('HTTP/1.0 404 Not Found');
+          exit(0);
+        }
+
+        $ob->save($data);
+        print json_readable_encode($ob->data());
+      }
+      else {
+        $table->save($data);
         print json_readable_encode($table->data());
       }
     }
