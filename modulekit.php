@@ -42,6 +42,7 @@ $include = array(
     'inc/table_fields.js',
     'inc/random_ids.js',
     'inc/editable.js',
+    'dist/app.js'
   ),
 
   'css' => array(
