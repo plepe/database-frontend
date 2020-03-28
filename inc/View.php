@@ -2,6 +2,7 @@
 class View {
   function __construct($def, $param) {
     $this->def = $def;
+    $this->id = $def['title'];
     $this->param = $param;
   }
 
