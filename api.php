@@ -31,13 +31,13 @@ switch ($_SERVER['REQUEST_METHOD']) {
           exit(0);
         }
 
-        print json_readable_encode($ob->data());
+        print json_readable_encode($ob->view());
       }
       elseif ($_REQUEST['list']) {
         print json_readable_encode($table->get_entry_ids());
       }
       else {
-        print json_readable_encode($table->data());
+        print json_readable_encode($table->view());
       }
     }
 
@@ -60,11 +60,11 @@ switch ($_SERVER['REQUEST_METHOD']) {
         }
 
         $ob->save($data);
-        print json_readable_encode($ob->data());
+        print json_readable_encode($ob->view());
       }
       else {
         $table->save($data);
-        print json_readable_encode($table->data());
+        print json_readable_encode($table->view());
       }
     }
 
@@ -82,7 +82,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
       $ob = new DB_Entry($table->id);
       $ob->save($data);
 
-      print json_readable_encode($ob->data());
+      print json_readable_encode($ob->view());
     }
 
     break;
