@@ -52,11 +52,7 @@ print twig_render("page.html", array(
     modulekit_to_javascript() . /* pass modulekit configuration to JavaScript */
     modulekit_include_js() . /* prints all js-includes */
     modulekit_include_css() . /* prints all css-includes */
-    get_add_html_headers() . /* additional html headers */
-    (file_exists("js/{$_REQUEST['page']}.js")
-      ? "<script foobar src=\"js/{$_REQUEST['page']}.js\"></script>"
-      : ""
-    ) ,
+    get_add_html_headers() , /* additional html headers */
   'app' => $app,
   'user_info' => auth_user_menu(),
   'page' => $page->param,
