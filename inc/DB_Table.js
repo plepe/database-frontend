@@ -65,6 +65,11 @@ class DB_Table {
     entry._load_callbacks.push(callback)
     entry._load()
   }
+
+  create_entry (data, changeset, callback) {
+    let entry = new DB_Entry(this)
+    entry.save(data, changeset, callback)
+  }
 }
 
 function get_table (id, callback) {

@@ -833,6 +833,10 @@ class DB_Table {
     }, $data);
   }
 
+  function create_entry($id) {
+    return new DB_Entry($id);
+  }
+
   function get_entry($id, $data=null) {
     global $db_conn;
     global $db_entry_cache;

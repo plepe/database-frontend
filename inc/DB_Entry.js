@@ -1,9 +1,14 @@
 class DB_Entry {
   constructor (table, id) {
     this.table = table
-    this.table.entries_cache[id] = this
-    this.id = id
-    this._load_callbacks = []
+    if (id) {
+      this.table.entries_cache[id] = this
+      this.id = id
+      this._load_callbacks = []
+    } else {
+      this.id = null
+      this._load_callbacks = null
+    }
   }
 
   _load () {
@@ -46,6 +51,13 @@ class DB_Entry {
 
         if (req.status == 200) {
           this._data = JSON.parse(req.responseText)
+
+          if ((this.id === null) || (this.id !== this._data.id)) {
+            delete this.table.entries_cache[this.id]
+            this.id = this._data.id
+            this.table.entries_cache[this.id] = this
+          }
+
           return callback(null)
         } else {
           return callback(new Error('entry updating object'))
@@ -53,7 +65,12 @@ class DB_Entry {
       }
     }
 
-    req.open('PATCH', 'api.php?table=' + encodeURIComponent(this.table.id) + '&id=' + encodeURIComponent(this.id), true)
+    if (this.id === null) {
+      req.open('POST', 'api.php?table=' + encodeURIComponent(this.table.id), true)
+    } else {
+      req.open('PATCH', 'api.php?table=' + encodeURIComponent(this.table.id) + '&id=' + encodeURIComponent(this.id), true)
+    }
+
     req.send(JSON.stringify(data))
   }
 }

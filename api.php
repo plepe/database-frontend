@@ -69,6 +69,23 @@ switch ($_SERVER['REQUEST_METHOD']) {
     }
 
     break;
+  case 'POST':
+    $data = json_decode(file_get_contents("php://input"), true);
+
+    if ($_REQUEST['table']) {
+      $table = get_db_table($_REQUEST['table']);
+      if (!$table) {
+        Header('HTTP/1.0 404 Not Found');
+        exit(0);
+      }
+
+      $ob = new DB_Entry($table->id);
+      $ob->save($data);
+
+      print json_readable_encode($ob->data());
+    }
+
+    break;
   default:
     Header('HTTP/1.0 400 Bad Request');
 }
