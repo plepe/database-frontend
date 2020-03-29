@@ -1,7 +1,11 @@
 const Twig = require('twig')
 const queryString = require('query-string')
+const async = {
+  parallel: require('async/parallel')
+}
 
 const templates = require('./templates')
+const pages = require('./pages')
 
 function page_url (param) {
   let data = {}
@@ -16,23 +20,42 @@ function page_url (param) {
 }
 
 function load (param, callback) {
-  templates.get(
-    param.page || 'index',
-    (err, result) => {
-      if (err) {
-        return alert(err)
-      }
+  if (!((param.page || 'index') in pages)) {
+    return false
+  }
 
-      let div = document.createElement('div')
-      div.innerHTML = result.render({app: {title: 'Foo'}, data: {tables: []}})
-      document.body.appendChild(div)
+  let pageId = param.page || 'index'
 
-      document.body.removeChild(document.getElementById('content'))
-      div.id = 'content'
-
-      callback()
+  let page = pages[pageId]
+  let pageData
+  let template
+  async.parallel([
+    done => {
+      page.get(param, (err, result) => {
+        pageData = result
+        done(err)
+      })
+    },
+    done => {
+      templates.get(pageId, (err, result) => {
+        template = result
+        done(err)
+      })
     }
-  )
+  ], (err) => {
+    if (err) {
+      return alert(err)
+    }
+
+    let div = document.createElement('div')
+    div.innerHTML = template.render(pageData)
+    document.body.appendChild(div)
+
+    document.body.removeChild(document.getElementById('content'))
+    div.id = 'content'
+
+    callback()
+  })
 
   return true
 }
