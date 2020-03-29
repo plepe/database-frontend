@@ -313,3 +313,17 @@ form.pager_options {
   border: solid 1px black;
   padding: 7px 14px 14px;
 }
+
+form.editable {
+  position: fixed;
+  top: 5em;
+  width: 20em;
+  left: 50%;
+  margin-left: -10em;
+  z-index: 10000;
+  background: #DEE7F7;
+  border-collapse: collapse;
+  border: solid 1px #C7C6E1;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  padding: 0.5em;
+}
