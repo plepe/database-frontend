@@ -15,7 +15,7 @@ function page_url (param) {
   return '?' + queryString.stringify(data)
 }
 
-function load (param) {
+function load (param, callback) {
   templates.get(
     param.page || 'index',
     (err, result) => {
@@ -29,10 +29,13 @@ function load (param) {
 
       document.body.removeChild(document.getElementById('content'))
       div.id = 'content'
+
+      callback()
     }
   )
-}
 
+  return true
+}
 
 module.exports = {
   init () {

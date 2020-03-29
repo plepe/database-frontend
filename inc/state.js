@@ -23,6 +23,8 @@ function init () {
   for (let k in newState) {
     currentState[k] = newState[k]
   }
+
+  updateLinks()
 }
 
 function apply (param) {
@@ -33,7 +35,28 @@ function apply (param) {
     currentState[k] = param[k]
   }
 
-  page.load(currentState)
+  return page.load(currentState, () => {
+    updateLinks()
+  })
+}
+
+function updateLinks () {
+  let links = document.getElementsByTagName('a')
+
+  for (let i = 0; i < links.length; i++) {
+    let link = links[i]
+
+    link.onclick = () => {
+      let appPath = location.origin + location.pathname
+      if (link.href.substr(0, appPath.length) === appPath) {
+        let param = queryString.parse(link.href.substr(appPath.length))
+
+        if (apply(param)) {
+          return false
+        }
+      }
+    }
+  }
 }
 
 module.exports = {
