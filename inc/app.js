@@ -1,6 +1,7 @@
 window.Twig = require('twig')
 
 window.DB_Table = require('./DB_Table')
+window.observe = require('./observe')
 
 window.get_table = (table_id, callback) => {
   DB_Table.get(table_id, callback)

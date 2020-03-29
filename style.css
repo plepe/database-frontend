@@ -314,16 +314,34 @@ form.pager_options {
   padding: 7px 14px 14px;
 }
 
-form.editable {
+div.editable {
+  display: flex;
+  justify-content: center;
+}
+div.editable > form {
   position: fixed;
   top: 5em;
-  width: 20em;
-  left: 50%;
-  margin-left: -10em;
+  width: 30em;
+  max-width: calc(100% - 4em);
+  max-height: calc(100% - 7em);
   z-index: 10000;
   background: #DEE7F7;
   border-collapse: collapse;
   border: solid 1px #C7C6E1;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   padding: 0.5em;
+  resize: both;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+div.editable > form > table {
+  order: 0;
+}
+div.editable > form > div:first-of-type {
+  order: 1;
+}
+div.editable > form > div.actions {
+  order: 2;
 }

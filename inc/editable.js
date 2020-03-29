@@ -25,24 +25,34 @@ window.addEventListener('load', () => {
               document.body.removeChild(dom)
             }
 
-            dom = document.createElement('form')
+            dom = document.createElement('div')
             dom.className = 'editable'
             document.body.appendChild(dom)
 
+            let f = document.createElement('form')
+            dom.appendChild(f)
+
             let form_def = {}
             form_def[field_id] = table._data.fields[field_id]
+            form_def[field_id].hide_label = true
 
             let form_editable = new form('editable', form_def)
 
-            form_editable.show(dom)
+            observe(f, {attributes: true}, () => form_editable.resize())
+
+            form_editable.show(f)
             form_editable.set_data(entry.view())
+
+            let actions = document.createElement('div')
+            actions.className = 'actions'
+            f.appendChild(actions)
 
             let input = document.createElement('input')
             input.type = 'submit'
             input.value = 'Save'
-            dom.appendChild(input)
+            actions.appendChild(input)
 
-            dom.onsubmit = () => {
+            f.onsubmit = () => {
               let data = form_editable.get_data()
 
               entry.save(data, null, (err) => {
@@ -58,8 +68,23 @@ window.addEventListener('load', () => {
 
               return false
             }
+
+            actions.appendChild(document.createTextNode(' '))
+
+            input = document.createElement('input')
+            input.type = 'button'
+            input.value = 'Cancel'
+            actions.appendChild(input)
+            input.onclick = () => {
+              document.body.removeChild(dom)
+              dom = null
+
+              return false
+            }
           })
         })
+
+        return false
       }
     }
   }
