@@ -16,6 +16,8 @@
     "watchify": "^3.11.1"
   },
   "dependencies": {
+    "query-string": "^6.11.1",
+    "sheet-router": "^4.2.3",
     "twig": "^1.15.0"
   }
 }

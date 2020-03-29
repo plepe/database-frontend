@@ -1,5 +1,7 @@
 window.Twig = require('twig')
 
+const state = require('./state')
+
 window.DB_Table = require('./DB_Table')
 window.observe = require('./observe')
 
@@ -18,3 +20,10 @@ window.get_entry = (table_id, id, callback) => {
     }
   )
 }
+
+window.addEventListener('load', () => {
+  state.init()
+  require('./page').init()
+
+  //window.setTimeout(() => state.apply({page:'index'}), 2000)
+})
