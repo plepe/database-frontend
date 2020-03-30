@@ -5,21 +5,21 @@ let templates = {}
 
 module.exports = {
   get (page, callback) {
+    let pageId = page || 'index'
+
     if (page in templates) {
       return callback(null, templates[page])
     }
 
-    httpRequest(
-      'templates/' + (page || 'index') + '.html',
-      {},
-      (err, result) => {
-        if (err) {
-          return callback(err)
-        }
+    twig({
+      id: pageId,
+      href: 'templates/' + pageId + '.html',
+      async: true,
+      load: function (template) {
+        templates[page] = template
 
-        templates[page] = twig({data: result.body})
-        callback(null, templates[page])
+        callback(null, template)
       }
-    )
+    })
   }
 }
