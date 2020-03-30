@@ -1,5 +1,6 @@
 const Twig = require('twig')
 
+const httpRequest = require('./httpRequest')
 const DB_Entry = require('./DB_Entry')
 
 let db_table_cache = {}
@@ -108,7 +109,19 @@ function get_table (id, callback) {
   table._load()
 }
 
+function get_db_tables (query, callback) {
+  httpRequest('?list=1&full=1', {}, (err, result) => {
+    if (err) {
+      return callback(err)
+    }
+
+    let data = JSON.parse(result.body)
+    callback(null, data)
+  })
+}
+
 module.exports = {
   get: get_table,
+  get_all: get_db_tables,
   cache: db_table_cache
 }
