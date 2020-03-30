@@ -4,6 +4,8 @@ const httpRequest = require('./httpRequest')
 const DB_Entry = require('./DB_Entry')
 
 let db_table_cache = {}
+let db_table_complete = false
+let _load_tables_callbacks = null
 
 class DB_Table {
   constructor (id, data) {
@@ -42,11 +44,19 @@ class DB_Table {
   }
 
   data (key) {
-    if (key !== null) {
+    if (key !== undefined) {
       return this._data[key]
     }
 
     return this._data
+  }
+
+  view (key) {
+    return this.data(key)
+  }
+
+  name () {
+    return this.data('name') || this.id
   }
 
   get_entry (id, callback) {
@@ -110,13 +120,33 @@ function get_table (id, callback) {
 }
 
 function get_db_tables (query, callback) {
-  httpRequest('?list=1&full=1', {}, (err, result) => {
+  if (db_table_complete) {
+    return callback(null, Object.values(db_table_cache))
+  }
+
+  if (_load_tables_callbacks !== null) {
+    return _load_tables_callbacks.push(callback)
+  }
+
+  _load_tables_callbacks = [callback]
+
+  httpRequest('api.php?list=1&full=1', {}, (err, result) => {
     if (err) {
       return callback(err)
     }
 
     let data = JSON.parse(result.body)
-    callback(null, data)
+
+    data.forEach(d => {
+      if (!(d.id in db_table_cache)) {
+        new DB_Table(d.id, d)
+      }
+    })
+
+    let r = Object.values(db_table_cache)
+    _load_tables_callbacks.forEach(cb => cb(null, r))
+    _load_tables_callbacks = null
+    db_table_complete = true
   })
 }
 
