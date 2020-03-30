@@ -1,3 +1,11 @@
+## GET ?list=1
+
+Returns a JSON array with all table ids
+
+## GET ?list=1&full=1
+
+Returns a JSON array with all tables as JSON objects
+
 ## GET ?table=x
 
 Returns the configuration of the table as JSON object

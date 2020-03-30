@@ -40,6 +40,22 @@ switch ($_SERVER['REQUEST_METHOD']) {
         print json_readable_encode($table->view());
       }
     }
+    else {
+      if (isset($_REQUEST['list']) && $_REQUEST['list']) {
+        if (isset($_REQUEST['full']) && $_REQUEST['full']) {
+          $data = array_map(function ($table) {
+            return $table->view();
+          }, get_db_tables());
+
+          print json_readable_encode(array_values($data));
+        }
+        else {
+          $data = array_keys(get_db_tables());
+
+          print json_readable_encode($data);
+        }
+      }
+    }
 
     break;
   case 'PATCH':
