@@ -25,6 +25,7 @@ window.addEventListener('load', () => {
   state.init()
   require('./page').init()
   require('./panel').init()
+  require('./twig_show').init()
 
   //window.setTimeout(() => state.apply({page:'index'}), 2000)
 })
