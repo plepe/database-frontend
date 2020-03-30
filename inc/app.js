@@ -24,6 +24,7 @@ window.get_entry = (table_id, id, callback) => {
 window.addEventListener('load', () => {
   state.init()
   require('./page').init()
+  require('./panel').init()
 
   //window.setTimeout(() => state.apply({page:'index'}), 2000)
 })

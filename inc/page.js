@@ -64,5 +64,6 @@ module.exports = {
   init () {
     Twig.extendFunction("page_url", param => page_url(param))
   },
+  url: page_url,
   load
 }
