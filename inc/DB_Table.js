@@ -140,6 +140,8 @@ function get_db_tables (query, callback) {
     data.forEach(d => {
       if (!(d.id in db_table_cache)) {
         new DB_Table(d.id, d)
+      } else if (db_table_cache[d.id]._load_callbacks !== null) {
+        db_table_cache[d.id]._data = d
       }
     })
 
