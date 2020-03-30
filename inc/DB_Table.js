@@ -6,6 +6,7 @@ const async = {
 
 const httpRequest = require('./httpRequest')
 const DB_Entry = require('./DB_Entry')
+const Fields = require('./Fields')
 
 let db_table_cache = {}
 let db_table_complete = false
@@ -160,6 +161,92 @@ class DB_Table {
     }
 
     return this._title_template
+  }
+
+  def () {
+    let ret = JSON.parse(JSON.stringify(this._data.fields))
+
+    for (let k in this._data.fields) {
+      let d = this._data.fields[k]
+      let field = this.field(k)
+
+      ret[k].type = field.form_type()
+    }
+
+    return ret
+  }
+
+  fields () {
+    if (!this._fields) {
+      this._fields = {}
+      for (let columnId in this._data.fields) {
+        let columnDef = this._data.fields[columnId]
+
+        let type = 'default'
+        if (columnDef.type in Fields) {
+          type = columnDef.type
+        }
+
+        this._fields[columnId] = new Fields[type](columnId, columnDef, this)
+      }
+    }
+
+    return this._fields
+  }
+
+  field (fieldId) {
+    this.fields()
+
+    if (fieldId in this._fields) {
+      return this._fields[fieldId]
+    }
+  }
+
+  view_def (k) {
+    if (k == 'json') {
+      return {
+        title: 'JSON',
+        class: 'JSON',
+        weight: 100,
+        fields: this.def()
+      }
+    }
+
+    if (!(k in this._data.views)) {
+      alert('View does not exist!')
+      return false
+    }
+
+    let def = this.def()
+    let ret = JSON.parse(JSON.stringify(this._data.views[k]))
+
+    ret.fields = {}
+    for (let i in this._data.views[k].fields) {
+      let d = this._data.views[k].fields[i]
+      let key = d.key
+      let field
+
+      if (key == '__custom__') {
+        key = '__custom' + i + '__'
+        field = new Field(null, [], this)
+      } else {
+        field = this.field(d.key)
+      }
+
+      d.name = d.title || field.def.name
+
+      if (!d.format) {
+        d.format = field.view_def().format
+      }
+
+      if (!d.sortable) {
+        d.sortable = this._data.fields[key].sortable
+      }
+
+      ret.fields[key] = d
+    }
+
+    return ret
   }
 }
 

@@ -5,7 +5,8 @@ module.exports = {
     Twig.extendFilter("show", param => {
     })
 
-    Twig.extendFilter("show_list", param => {
+    Twig.extendFilter("show_list", (value, param) => {
+      return value.show_list(param)
     })
 
     Twig.extendFilter("entry_title", param => {
