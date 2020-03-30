@@ -44,6 +44,7 @@ if($ret === null) {
 }
 
 call_hooks("page_ready");
+html_export_var(array('app' => $app));
 
 print twig_render("page.html", array(
   'content' => $ret,
