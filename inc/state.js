@@ -35,8 +35,10 @@ function apply (param) {
     currentState[k] = param[k]
   }
 
+  document.body.classList.add('loading')
   return page.load(currentState, () => {
     updateLinks()
+    document.body.classList.remove('loading')
   })
 }
 

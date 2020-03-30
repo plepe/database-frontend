@@ -1,6 +1,16 @@
 body {
    font: 14px arial, sans-serif;
 }
+body.loading #loadingIndicator {
+  z-index: 10001;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  position: fixed;
+  background: white;
+  opacity: 0.4;
+}
 
 h1 {
    font: 16px arial, sans-serif;
