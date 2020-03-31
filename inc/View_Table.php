@@ -4,7 +4,7 @@ class View_Table extends View {
     $fields = $this->def['fields'];
 
     foreach ($fields as $key => $def) {
-      $fields[$key]['html_attributes'] = 'data-field="' . htmlentities($key) . '" data-id="{{ id }}"';
+      $fields[$key]['html_attributes'] = 'data-table="' . htmlentities($this->param['table']) . '" data-id="{{ id }}" data-field="' . htmlentities($key) . '" data-view="' . htmlentities($this->id) . '"';
     }
 
     $view = new table($fields, $this->extract, array("template_engine"=>"twig"));
@@ -14,10 +14,6 @@ class View_Table extends View {
 
   function show_list() {
     $fields = $this->def['fields'];
-
-    foreach ($fields as $key => $def) {
-      $fields[$key]['html_attributes'] = 'data-field="' . htmlentities($key) . '" data-id="{{ id }}"';
-    }
 
     $first_field = array_keys($fields)[0];
     $fields[$first_field]['format'] =
