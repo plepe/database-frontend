@@ -1,4 +1,5 @@
 window.Twig = require('twig')
+window.twig = require('twig').twig
 
 const state = require('./state')
 

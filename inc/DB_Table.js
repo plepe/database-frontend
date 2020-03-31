@@ -228,7 +228,7 @@ class DB_Table {
 
       if (key == '__custom__') {
         key = '__custom' + i + '__'
-        field = new Field(null, [], this)
+        field = new Fields.default(null, [], this)
       } else {
         field = this.field(d.key)
       }
@@ -240,7 +240,7 @@ class DB_Table {
       }
 
       if (!d.sortable) {
-        d.sortable = this._data.fields[key].sortable
+        d.sortable = key in this._data.fields ? this._data.fields[key].sortable : null
       }
 
       ret.fields[key] = d
