@@ -23,11 +23,16 @@ module.exports = {
         return ''
       }
 
+      let entry = DB_Table.get_loaded_entry_sync(table, id)
+      if (entry) {
+        return entry.title()
+      }
+
       return table + '/' + id
     })
 
     Twig.extendFunction("get_entry", (table, id) => {
-      return 'get_entry("' + table + '", "' + id + '")'
+      return DB_Table.get_loaded_entry_sync(table, id)
     })
 
     Twig.extendFunction("get_entries", (table, filter) => {

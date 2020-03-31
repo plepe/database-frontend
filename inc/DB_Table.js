@@ -1,7 +1,8 @@
 const Twig = require('twig')
 const queryString = require('query-string')
 const async = {
-  each: require('async/each')
+  each: require('async/each'),
+  eachOf: require('async/eachOf')
 }
 
 const httpRequest = require('./httpRequest')
@@ -11,6 +12,7 @@ const Fields = require('./Fields')
 let db_table_cache = {}
 let db_table_complete = false
 let _load_tables_callbacks = null
+const missing_entries = {}
 
 class DB_Table {
   constructor (id, data) {
@@ -82,6 +84,17 @@ class DB_Table {
     let entry = new DB_Entry(this, id)
     entry._load_callbacks.push(callback)
     entry._load()
+  }
+
+  get_loaded_entry_sync (id) {
+    if (id in this.entries_cache) {
+      return this.entries_cache[id]
+    } else {
+      if (!(this.id in missing_entries)) {
+        missing_entries[this.id] = {}
+      }
+      missing_entries[this.id][id] = true
+    }
   }
 
   get_entries_by_id (ids, callback) {
@@ -303,8 +316,52 @@ function get_db_tables (query, callback) {
   })
 }
 
+function get_loaded_entry_sync (table_id, id) {
+  if (table_id in db_table_cache) {
+    return db_table_cache[table_id].get_loaded_entry_sync(id)
+  } else {
+    if (!(table_id in missing_entries)) {
+      missing_entries[table.id] = {}
+    }
+    missing_entries[table.id][id] = true
+  }
+}
+
+function load_missing_entries (callback) {
+  async.eachOf(missing_entries,
+    (ids, table_id, done) => {
+      get_table(table_id, (err, table) => {
+        if (err) {
+          return done(err)
+        }
+
+        table.get_entries_by_id(Object.keys(ids), done)
+      })
+    },
+    (err) => {
+      if (err) {
+        return callback(err)
+      }
+
+      for (let k in missing_entries) {
+        delete(missing_entries[k])
+      }
+
+      callback(null)
+    }
+  )
+}
+
+function has_missing_entries () {
+  return !!Object.keys(missing_entries).length
+}
+
 module.exports = {
   get: get_table,
   get_all: get_db_tables,
+  get_loaded_entry_sync,
+  missing_entries,
+  has_missing_entries,
+  load_missing_entries,
   cache: db_table_cache
 }

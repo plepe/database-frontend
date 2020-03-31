@@ -15,10 +15,7 @@ class View_Table extends View {
     }
 
     let view = new table(fields, this.extract, {template_engine: 'twig'})
-    view.show('html-transposed', param, (result) => {
-      this.result = result
-      callback(null)
-    })
+    this.render_view(view, 'html-transposed', param, callback)
   }
 
   show_list (value, param) {
@@ -44,9 +41,26 @@ class View_Table extends View {
     }
 
     let view = new table(fields, this.extract, {template_engine: 'twig'})
-    view.show('html', param, (result) => {
+    this.render_view(view, 'html', param, callback)
+  }
+
+  render_view (view, type, param, callback) {
+    view.show(type, param, (result) => {
       this.result = result
-      callback(null)
+
+      if (DB_Table.has_missing_entries()) {
+        DB_Table.load_missing_entries(
+          (err) => {
+            if (err) {
+              return callback(err)
+            }
+
+            this.render_view(view, type, param, callback)
+          }
+        )
+      } else {
+        callback(null)
+      }
     })
   }
 }
