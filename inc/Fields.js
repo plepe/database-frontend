@@ -38,13 +38,12 @@ class Field {
 
     if (this.def.reference || this.def.backreference) {
       let ref_table = null
-      let ref_field = null
 
-      if (this.def.reference) {
-        ref_table = this.def.reference
+      if (this.def.backreference) {
+        ref_table = this.def.backreference.split(/:/)[0]
       }
       else {
-        [ret_table, ref_field] = this.def.backreference.split(/:/)
+        ref_table = this.def.reference
       }
       ref_table = JSON.stringify(ref_table)
 
@@ -153,6 +152,12 @@ class Field_checkbox extends FieldWithValues {
 class Field_select extends FieldWithValues {
 }
 
+class Field_backreference extends FieldWithValues {
+  is_multiple () {
+    return true
+  }
+}
+
 module.exports = {
   default: Field,
   textarea: Field_textarea,
@@ -161,5 +166,6 @@ module.exports = {
   boolean: Field_boolean,
   radio: Field_radio,
   checkbox: Field_checkbox,
-  select: Field_select
+  select: Field_select,
+  backreference: Field_backreference
 }
