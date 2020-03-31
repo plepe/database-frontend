@@ -110,7 +110,10 @@ EOT
               ),
 	      'include_data'=>$show_depend_count,
 	      'default' => 'no',
-	      'req' => true,
+	      'req' => array('not', array('and',
+                $show_depend_count,
+                array('check', '@k', array('not', array('is', 'id'))),
+              )),
 	    ),
 	    'reference' => array(
 	      'type'	=> 'select',
