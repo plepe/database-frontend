@@ -11,7 +11,7 @@ module.exports = {
       weight_sort(items)
 
       return items
-        .map(item => '<a class="LinkButton" href="' + page.url(item.url) + '">' + item.title + '</a>')
+        .map(item => '<a class="LinkButton" href="' + page_url(item.url) + '">' + item.title + '</a>')
         .join('\n')
     })
   }

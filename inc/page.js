@@ -1,23 +1,11 @@
 const Twig = require('twig')
-const queryString = require('query-string')
 const async = {
   parallel: require('async/parallel')
 }
 
 const templates = require('./templates')
 const pages = require('./pages')
-
-function page_url (param) {
-  let data = {}
-
-  for (let k in param) {
-    if (k !== '_keys') {
-      data[k] = param[k]
-    }
-  }
-
-  return '?' + queryString.stringify(data)
-}
+const page_url = require('./page_url')
 
 function load (param, callback) {
   if (!((param.page || 'index') in pages)) {
@@ -64,6 +52,5 @@ module.exports = {
   init () {
     Twig.extendFunction("page_url", param => page_url(param))
   },
-  url: page_url,
   load
 }
