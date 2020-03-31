@@ -38,7 +38,7 @@ class DB_Table {
           this._data = JSON.parse(req.responseText)
         } else {
           delete db_table_cache[this.id]
-          err = new Error('table does not exist')
+          err = new Error('table ' + this.id + ' does not exist')
         }
 
         this._load_callbacks.forEach(cb => cb(err, db_table_cache[this.id]))
@@ -71,7 +71,7 @@ class DB_Table {
       let entry = this.entries_cache[id]
 
       if (!entry) {
-        return callback(new Error('entry does not exist'), null)
+        return callback(new Error('entry ' + this.id + '/' + id + ' does not exist'), null)
       }
 
       if (entry._load_callbacks === null) {
@@ -268,7 +268,7 @@ function get_table (id, callback) {
     let table = db_table_cache[id]
 
     if (!table) {
-      return callback(new Error('table does not exist'), null)
+      return callback(new Error('table ' + id + ' does not exist'), null)
     }
 
     if (table._load_callbacks === null) {

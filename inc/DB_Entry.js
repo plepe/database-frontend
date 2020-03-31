@@ -26,7 +26,7 @@ class DB_Entry {
           this._data = JSON.parse(req.responseText)
         } else {
           delete this.table.entries_cache[this.id]
-          err = new Error('entry does not exist')
+          err = new Error('entry ' + this.table.id + '/' + this.id + ' does not exist')
         }
 
         this._load_callbacks.forEach(cb => cb(err, this.table.entries_cache[this.id]))
