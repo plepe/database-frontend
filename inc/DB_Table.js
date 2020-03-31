@@ -1,4 +1,8 @@
 const Twig = require('twig')
+const queryString = require('query-string')
+const async = {
+  each: require('async/each')
+}
 
 const httpRequest = require('./httpRequest')
 const DB_Entry = require('./DB_Entry')
@@ -77,6 +81,66 @@ class DB_Table {
     let entry = new DB_Entry(this, id)
     entry._load_callbacks.push(callback)
     entry._load()
+  }
+
+  get_entries_by_id (ids, callback) {
+    let toLoad = ids.filter(id => !(id in this.entries_cache))
+
+    async.each(toLoad,
+      (id, done) => this.get_entry(id, done),
+      (err) => {
+        if (err) {
+          return callback(err)
+        }
+
+        let result = ids.map(id => this.entries_cache[id])
+        callback(null, result)
+      }
+    )
+  }
+
+  get_entry_ids (filter, sort, offset, limit, callback) {
+    let param = {
+      table: this.id,
+      list: 1
+    }
+
+    if (filter != null) {
+      param.filter = filter
+    }
+    if (sort != null) {
+      param.sort = sort
+    }
+    if (offset != null) {
+      param.offset = offset
+    }
+    if (limit != null) {
+      param.limit = limit
+    }
+
+    httpRequest('api.php?' + queryString.stringify(param), {},
+      (err, result) => {
+        if (err) {
+          return callback(err)
+        }
+
+        let ids = JSON.parse(result.body)
+
+        callback(null, ids)
+      }
+    )
+  }
+
+  get_entries (filter, sort, offset, limit, callback) {
+    this.get_entry_ids(filter, sort, offset, limit,
+      (err, ids) => {
+        if (err) {
+          return callback(err)
+        }
+
+        this.get_entries_by_id(ids, callback)
+      }
+    )
   }
 
   create_entry (data, changeset, callback) {
