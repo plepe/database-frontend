@@ -138,10 +138,28 @@ class Field_boolean extends Field {
   }
 }
 
+class Field_radio extends FieldWithValues {
+  is_multiple () {
+    return false
+  }
+}
+
+class Field_checkbox extends FieldWithValues {
+  is_multiple () {
+    return true
+  }
+}
+
+class Field_select extends FieldWithValues {
+}
+
 module.exports = {
   default: Field,
   textarea: Field_textarea,
   date: Field_date,
   datetime: Field_datetime,
-  boolean: Field_boolean
+  boolean: Field_boolean,
+  radio: Field_radio,
+  checkbox: Field_checkbox,
+  select: Field_select
 }
