@@ -316,6 +316,20 @@ function get_db_tables (query, callback) {
   })
 }
 
+function get_table_list (callback) {
+  get_db_tables(null, (err, tables) => {
+    if (err) {
+      return callback(err)
+    }
+
+    let result = {}
+
+    tables.forEach(table => result[table.id] = table.name())
+
+    callback(null, result)
+  })
+}
+
 function get_loaded_entry_sync (table_id, id) {
   if (table_id in db_table_cache) {
     return db_table_cache[table_id].get_loaded_entry_sync(id)
@@ -359,6 +373,7 @@ function has_missing_entries () {
 module.exports = {
   get: get_table,
   get_all: get_db_tables,
+  get_table_list,
   get_loaded_entry_sync,
   missing_entries,
   has_missing_entries,

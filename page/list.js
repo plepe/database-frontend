@@ -19,8 +19,11 @@ module.exports = {
           return done(err)
         }
 
-        result.table_list = tables.map(t => t.name())
         done()
+      }),
+      done => DB_Table.get_table_list((err, table_list) => {
+        result.table_list = table_list
+        done(err)
       }),
       done => DB_Table.get(param.table,
         (err, table) => {
