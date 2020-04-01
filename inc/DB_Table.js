@@ -215,6 +215,26 @@ class DB_Table {
     }
   }
 
+  views (type = 'list') { // type: 'list' or 'show'
+    let views = {}
+
+    if (this._data.views) {
+      views = this._data.views
+    }
+
+    if (type == 'show') {
+      views.json = {
+        title: 'JSON',
+        weight: 100,
+        class: 'JSON'
+      }
+    }
+
+    views = weight_sort(views, 'weight')
+
+    return views
+  }
+
   view_def (k) {
     if (k == 'json') {
       return {

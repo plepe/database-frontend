@@ -58,6 +58,7 @@ module.exports = {
           let viewClass = (viewDef.class || 'Table')
           let view = new Views[viewClass](viewDef, param)
           result.view = view
+          result.views = table.views('show')
 
           view.set_extract(table_extract)
 
@@ -82,5 +83,20 @@ module.exports = {
 
       callback(null, result)
     })
+  },
+
+  connect (state) {
+    let el = document.getElementById('choose_view')
+    if (el) {
+      el.onsubmit = () => {
+        global.state_apply_from_form(el)
+        return false
+      }
+
+      el.elements.view.onchange = () => {
+        global.state_apply_from_form(el)
+        return false
+      }
+    }
   }
 }

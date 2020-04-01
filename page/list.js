@@ -58,6 +58,7 @@ module.exports = {
           let viewClass = (viewDef.class || 'Table')
           let view = new Views[viewClass](viewDef, param)
           result.view = view
+          result.views = table.views('list')
 
           view.set_extract(table_extract)
           view.render_list(param, done)
