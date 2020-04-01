@@ -43,6 +43,20 @@ class DB_TableExtract {
       })
     }
   }
+
+  pager_info (callback) {
+    this.table.get_entry_ids(this.filter, this.sort, null, null, (err, list) => {
+      if (err) {
+        return callback(err)
+      }
+
+      let result = {}
+
+      result.result_count = list.length
+
+      callback(null, result)
+    })
+  }
 }
 
 module.exports = DB_TableExtract

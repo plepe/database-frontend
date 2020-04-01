@@ -54,14 +54,23 @@ module.exports = {
           let table_extract = new DB_TableExtract(table)
           //let filterValues = get_filter(param)
           //table_extract.setFilter(filterValues)
-
           let viewClass = (viewDef.class || 'Table')
           let view = new Views[viewClass](viewDef, param)
           result.view = view
           result.views = table.views('list')
 
           view.set_extract(table_extract)
-          view.render_list(param, done)
+
+          async.parallel([
+            done => view.render_list(param, done),
+            done => table_extract.pager_info((err, info) => {
+              if (info) {
+                result.result_count = info.result_count
+              }
+
+              done(err)
+            })
+          ], done)
         }
       )
     ], err => {
