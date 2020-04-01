@@ -1,4 +1,4 @@
-register_hook('init', function() {
+function init () {
   var pagers = document.getElementsByClassName('pager_gear');
 
   for(var i = 0; i < pagers.length; i++) {
@@ -74,4 +74,8 @@ register_hook('init', function() {
       pager.has_pager_options = true;
     }.bind(this, pager);
   }
-});
+}
+
+module.exports = {
+  init
+}

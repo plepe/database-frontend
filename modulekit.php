@@ -35,7 +35,6 @@ $include = array(
   ),
   'js' => array(
     'inc/index.js',
-    'inc/pager.js',
     'inc/mousetrap.min.js',
     'inc/mousetrap-auto.js',
     'inc/filter.js',
