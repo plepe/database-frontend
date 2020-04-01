@@ -60,7 +60,19 @@ module.exports = {
           result.view = view
 
           view.set_extract(table_extract)
-          view.render_single(param, done)
+
+          async.parallel([
+            done => view.render_single(param, done),
+            done => table.get_entry(param.id, (err, entry) => {
+              if (err) {
+                return done(err)
+              }
+
+              result.id = param.id
+              result.title = entry.title()
+              done()
+            })
+          ], done)
         }
       )
     ], err => {
