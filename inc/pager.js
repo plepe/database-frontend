@@ -1,3 +1,5 @@
+const httpRequest = require('./httpRequest')
+
 function connect (param) {
   let pagers = document.getElementsByClassName('pager_gear')
 
@@ -36,16 +38,30 @@ function connect (param) {
       /// / Limit select
       let select = document.createElement('select')
       select.name = 'limit'
-      select.onchange = function (pager_options) {
-        pager_options.submit()
-      }.bind(this, pager_options)
+      select.onchange = () => {
+        httpRequest('user_settings.php', {limit: select.value},
+          (err) => {
+            if (err) {
+              alert(err)
+            } else {
+              pager.removeChild(pager_options)
+            }
+          }
+        )
+      }
 
       let limits = [10, 25, 50, 100, 0]
+      let limit = parseInt(global.user_settings.limit)
+      if ('limit' in param) {
+        limit = parseInt(param.limit)
+      }
+
       for (let i in limits) {
         let option = document.createElement('option')
         option.value = limits[i]
-        if (limits[i] === param.limit) { option.selected = true }
-        if ((limits[i] === 0) && (param.limit === null)) { option.selected = true }
+        if (limits[i] === limit) {
+          option.selected = true
+        }
 
         option.appendChild(document.createTextNode(limits[i] === 0 ? '∞' : limits[i]))
 
