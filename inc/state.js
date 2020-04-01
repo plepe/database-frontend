@@ -25,9 +25,13 @@ function init () {
   }
 
   updateLinks()
+
+  window.addEventListener('popstate', e => {
+    apply(e.state, true)
+  })
 }
 
-function apply (param) {
+function apply (param, noPushState = false) {
   for (let k in currentState) {
     delete currentState[k]
   }
@@ -38,6 +42,9 @@ function apply (param) {
   document.body.classList.add('loading')
   return page.load(currentState, () => {
     updateLinks()
+    if (!noPushState) {
+      history.pushState(currentState, '', decodeURI(page_url(currentState).replace(/&amp;/g, '&')))
+    }
     document.body.classList.remove('loading')
   })
 }
