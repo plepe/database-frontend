@@ -42,7 +42,7 @@ function load (param, callback) {
     div.id = 'content'
 
     if ('connect' in page) {
-      page.connect()
+      page.connect(param)
     }
 
     callback()
@@ -61,7 +61,7 @@ function connect (param) {
   let page = pages[pageId]
 
   if (page) {
-    page.connect()
+    page.connect(param)
   }
 }
 

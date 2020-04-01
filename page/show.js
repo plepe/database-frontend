@@ -4,6 +4,7 @@ const async = {
   parallel: require('async/parallel')
 }
 const Views = require('../inc/Views.js')
+const pager = require('../inc/pager.js')
 
 module.exports = {
   get (param, callback) {
@@ -85,7 +86,7 @@ module.exports = {
     })
   },
 
-  connect (state) {
+  connect (param) {
     let el = document.getElementById('choose_view')
     if (el) {
       el.onsubmit = () => {
@@ -98,5 +99,7 @@ module.exports = {
         return false
       }
     }
+
+    pager.connect(param)
   }
 }
