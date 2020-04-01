@@ -44,7 +44,12 @@ if($ret === null) {
 }
 
 call_hooks("page_ready");
-html_export_var(array('app' => $app));
+$user_settings = $default_settings;
+foreach ($auth->current_user()->settings()->data as $k => $v) {
+  $user_settings[$k] = $v;
+}
+
+html_export_var(array('app' => $app, 'user_settings' => $user_settings));
 
 print twig_render("page.html", array(
   'content' => $ret,
