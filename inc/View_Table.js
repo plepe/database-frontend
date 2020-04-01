@@ -1,5 +1,4 @@
 const View = require('./View')
-const page_url = require('./page_url')
 const htmlentities = require('html-escaper').escape
 
 class View_Table extends View {

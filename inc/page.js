@@ -5,7 +5,6 @@ const async = {
 
 const templates = require('./templates')
 const pages = require('./pages')
-const page_url = require('./page_url')
 
 function load (param, callback) {
   if (!((param.page || 'index') in pages)) {
