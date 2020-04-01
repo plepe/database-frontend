@@ -41,15 +41,34 @@ function load (param, callback) {
     document.body.removeChild(document.getElementById('content'))
     div.id = 'content'
 
+    if ('connect' in page) {
+      page.connect()
+    }
+
     callback()
   })
 
   return true
 }
 
+function connect (param) {
+  if (!((param.page || 'index') in pages)) {
+    return false
+  }
+
+  let pageId = param.page || 'index'
+
+  let page = pages[pageId]
+
+  if (page) {
+    page.connect()
+  }
+}
+
 module.exports = {
   init () {
     Twig.extendFunction("page_url", param => page_url(param))
   },
+  connect,
   load
 }

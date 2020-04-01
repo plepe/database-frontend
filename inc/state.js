@@ -25,6 +25,7 @@ function init () {
   }
 
   updateLinks()
+  page.connect(currentState)
 
   window.addEventListener('popstate', e => {
     apply(e.state, true)
@@ -67,6 +68,20 @@ function updateLinks () {
     }
   }
 }
+
+function apply_from_form (dom) {
+  let data = {}
+  for (let i = 0; i < dom.elements.length; i++) {
+    if (dom.elements[i].name) {
+      data[dom.elements[i].name] = dom.elements[i].value
+    }
+  }
+
+  return apply(data)
+}
+
+global.state_apply = apply
+global.state_apply_from_form = apply_from_form
 
 module.exports = {
   init,
