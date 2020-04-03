@@ -4,6 +4,7 @@ const page = require('./page')
 const httpRequest = require('./httpRequest')
 
 let currentState = {}
+global.currentState = currentState
 
 function parse (str) {
   return queryString.parse(str)

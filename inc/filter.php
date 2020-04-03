@@ -62,6 +62,7 @@ function get_filter_form(&$param) {
       'type' => 'form_chooser',
       'def'  => $custom_filters,
       'hide_label' => true,
+      'include_data' => 'not_null',
       'order' => false,
       'button:add_element' => 'Add filter',
     ),

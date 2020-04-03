@@ -14,6 +14,17 @@ Returns the configuration of the table as JSON object
 
 Returns a JSON array with all entry ids.
 
+## GET ?table=x&list=1&filter[0][field]=id&filter[0][op]=is&filter[0][value]=foo
+
+Returns a JSON array with all entry ids matching the supplied filter(s).
+
+`filter` is an array. each entry has field, op and value.
+
+The following `op`s are available (depending on data type):
+* contains (use mysql' like)
+* is (exact match)
+* >, >=, <, <=
+
 ## GET ?table=x&list=1&full=1
 
 Returns a JSON array with all entry objects.

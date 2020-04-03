@@ -44,7 +44,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
           $data = array_values(array_map(function ($ob) { return $ob->view(); }, $table->get_entries()));
           print json_readable_encode($data);
         } else {
-          print json_readable_encode($table->get_entry_ids());
+          print json_readable_encode($table->get_entry_ids($_REQUEST['filter']));
         }
       }
       else {

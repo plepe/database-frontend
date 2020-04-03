@@ -19,5 +19,8 @@ module.exports = {
         table_list
       })
     })
+  },
+
+  connect () {
   }
 }
