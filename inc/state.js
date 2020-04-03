@@ -1,5 +1,4 @@
-const hash = require('sheet-router/hash')
-const queryString = require('query-string')
+const queryString = require('qs')
 
 const page = require('./page')
 const httpRequest = require('./httpRequest')
@@ -59,7 +58,7 @@ function updateLinks () {
     link.onclick = () => {
       let appPath = location.origin + location.pathname
       if (link.href.substr(0, appPath.length) === appPath) {
-        let param = queryString.parse(link.href.substr(appPath.length))
+        let param = queryString.parse(link.href.substr(appPath.length + 1))
 
         if (apply(param)) {
           return false

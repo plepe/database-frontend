@@ -1,5 +1,5 @@
 const Twig = require('twig')
-const queryString = require('query-string')
+const queryString = require('qs')
 const async = {
   each: require('async/each'),
   eachOf: require('async/eachOf')
