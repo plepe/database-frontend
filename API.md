@@ -14,9 +14,17 @@ Returns the configuration of the table as JSON object
 
 Returns a JSON array with all entry ids.
 
+## GET ?table=x&list=1&full=1
+
+Returns a JSON array with all entry objects.
+
 ## GET ?table=x&id=y
 
 Returns the specified object as JSON
+
+## GET ?table=x&id[]=y&id[]=z
+
+Returns a JSON array with all the specified objects. If an object does not exist, it will return `null` at that position.
 
 ## PATCH ?table=x
 

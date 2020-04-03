@@ -24,17 +24,28 @@ switch ($_SERVER['REQUEST_METHOD']) {
         exit(0);
       }
 
-      if ($_REQUEST['id']) {
-        $ob = $table->get_entry($_REQUEST['id']);
-        if (!$ob) {
-          Header('HTTP/1.0 404 Not Found');
-          exit(0);
+      if (isset($_REQUEST['id']) && $_REQUEST['id']) {
+        if (is_array($_REQUEST['id'])) {
+          $data = array_values(array_map(function ($ob) { return $ob ? $ob->view() : null; }, $table->get_entries_by_id($_REQUEST['id'])));
+          print json_readable_encode($data);
         }
+        else {
+          $ob = $table->get_entry($_REQUEST['id']);
+          if (!$ob) {
+            Header('HTTP/1.0 404 Not Found');
+            exit(0);
+          }
 
-        print json_readable_encode($ob->view());
+          print json_readable_encode($ob->view());
+        }
       }
       elseif ($_REQUEST['list']) {
-        print json_readable_encode($table->get_entry_ids());
+        if (isset($_REQUEST['full']) && $_REQUEST['full']) {
+          $data = array_values(array_map(function ($ob) { return $ob->view(); }, $table->get_entries()));
+          print json_readable_encode($data);
+        } else {
+          print json_readable_encode($table->get_entry_ids());
+        }
       }
       else {
         print json_readable_encode($table->view());

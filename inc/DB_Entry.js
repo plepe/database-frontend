@@ -1,10 +1,15 @@
 class DB_Entry {
-  constructor (table, id) {
+  constructor (table, id, data) {
     this.table = table
     if (id) {
       this.table.entries_cache[id] = this
       this.id = id
       this._load_callbacks = []
+
+      if (data) {
+        this._data = data
+        this._load_callbacks = null
+      }
     } else {
       this.id = null
       this._load_callbacks = null

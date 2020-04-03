@@ -100,17 +100,30 @@ class DB_Table {
   get_entries_by_id (ids, callback) {
     let toLoad = ids.filter(id => !(id in this.entries_cache))
 
-    async.each(toLoad,
-      (id, done) => this.get_entry(id, done),
-      (err) => {
-        if (err) {
-          return callback(err)
-        }
+    if (toLoad.length) {
+      httpRequest('api.php?table=' + encodeURIComponent(this.id) + 
+        toLoad.map(id => '&id[]=' + encodeURIComponent(id)).join('') +
+        '&full=1',
+        {},
+        (err, req) => {
+          if (err) { return callback(err) }
 
-        let result = ids.map(id => this.entries_cache[id])
-        callback(null, result)
-      }
-    )
+          let list = JSON.parse(req.body)
+
+          list.forEach(entry => {
+            if (entry) {
+              new DB_Entry(this, entry.id, entry)
+            }
+          })
+
+          let result = ids.map(id => this.entries_cache[id])
+          callback(null, result)
+        }
+      )
+    } else {
+      let result = ids.map(id => this.entries_cache[id])
+      callback(null, result)
+    }
   }
 
   get_entry_ids (filter, sort, offset, limit, callback) {
