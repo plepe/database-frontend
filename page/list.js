@@ -8,6 +8,7 @@ const pager = require('../inc/pager.js')
 
 module.exports = {
   get (param, callback) {
+    let table
     let result = {
       table: param.table,
       app: global.app,
@@ -27,11 +28,12 @@ module.exports = {
         done(err)
       }),
       done => DB_Table.get(param.table,
-        (err, table) => {
+        (err, _table) => {
           if (err) {
             return done(err)
           }
 
+          table = _table
           result.table_name = table.name()
 
           let viewId
@@ -44,34 +46,10 @@ module.exports = {
           }
           param.view = viewId
 
-          let viewDef = table.view_def(viewId)
-          if (viewDef === false) {
-            viewDef = table.view_def('default')
-          }
           // modify_table_fields(param, viewDef)
 
           // remove show_priority=0
-          
-          let table_extract = new DB_TableExtract(table)
-          //let filterValues = get_filter(param)
-          //table_extract.setFilter(filterValues)
-          let viewClass = (viewDef.class || 'Table')
-          let view = new Views[viewClass](viewDef, param)
-          result.view = view
-          result.views = table.views('list')
-
-          view.set_extract(table_extract)
-
-          async.parallel([
-            done => view.render_list(param, done),
-            done => table_extract.pager_info((err, info) => {
-              if (info) {
-                result.result_count = info.result_count
-              }
-
-              done(err)
-            })
-          ], done)
+          done()
         }
       )
     ], err => {
@@ -79,7 +57,32 @@ module.exports = {
         alert(err)
       }
 
-      callback(null, result)
+      let table_extract = new DB_TableExtract(table)
+
+      let viewDef = table.view_def(param.view)
+      if (viewDef === false) {
+        viewDef = table.view_def('default')
+      }
+
+      let viewClass = (viewDef.class || 'Table')
+      let view = new Views[viewClass](viewDef, param)
+      result.view = view
+      result.views = table.views('list')
+
+      view.set_extract(table_extract)
+
+      async.parallel([
+        done => view.render_list(param, done),
+        done => table_extract.pager_info((err, info) => {
+          if (info) {
+            result.result_count = info.result_count
+          }
+
+          done(err)
+        })
+      ], (err) => {
+        callback(err, result)
+      })
     })
   },
 
