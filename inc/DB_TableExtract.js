@@ -8,10 +8,12 @@ class DB_TableExtract {
 
   set_sort (sort) {
     this.sort = sort
+    this.ids = null
   }
 
   set_filter (filter) {
     this.filter = filter
+    this.ids = null
   }
 
   set_ids (ids) {
@@ -26,22 +28,49 @@ class DB_TableExtract {
 
   get (offset, limit, callback) {
     if (this.ids) {
-      this.table.get_entries_by_id(this.ids, (err, result) => {
+      let ids
+      if (offset === null || offset === undefined) {
+        offset = 0
+      }
+      if (limit === null || limit === undefined) {
+        ids = this.ids.slice(offset)
+      } else {
+        ids = this.ids.slice(offset, offset + limit)
+      }
+
+      this.table.get_entries_by_id(ids, (err, result) => {
         if (err) {
-          return alert(err)
+          alert(err)
         }
 
+        // TODO: convert to (null, result) !!!
         callback(result)
       })
     } else {
-      this.table.get_entries(this.filter, this.sort, offset, limit, (err, result) => {
+      this.get_ids((err) => {
         if (err) {
-          return alert(err)
+          return callback(err)
         }
 
-        callback(result)
+        this.get(offset, limit, callback)
       })
     }
+  }
+
+  get_ids (callback) {
+    if (this.ids) {
+      return callback(null, this.ids)
+    }
+
+    this.table.get_entry_ids(this.filter, this.sort, 0, null, (err, result) => {
+      if (err) {
+        return callback(err)
+      }
+
+      this.ids = result
+
+      callback(null, result)
+    })
   }
 
   pager_info (callback) {
