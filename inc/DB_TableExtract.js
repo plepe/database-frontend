@@ -4,21 +4,24 @@ class DB_TableExtract {
     this.filter = null
     this.sort = null
     this.ids = null
+    this._ids = null
+    this._get_ids_callbacks = []
   }
 
   set_sort (sort) {
     this.sort = sort
-    this.ids = null
+    this._ids = null
   }
 
   set_filter (filter) {
     this.filter = filter
-    this.ids = null
+    this._ids = null
   }
 
   set_ids (ids) {
     this.filter = null
     this.ids = ids
+    this._ids = ids // TODO: set after sorting
   }
 
   count (callback) {
@@ -27,15 +30,15 @@ class DB_TableExtract {
   }
 
   get (offset, limit, callback) {
-    if (this.ids) {
+    if (this._ids) {
       let ids
       if (offset === null || offset === undefined) {
         offset = 0
       }
       if (limit === null || limit === undefined) {
-        ids = this.ids.slice(offset)
+        ids = this._ids.slice(offset)
       } else {
-        ids = this.ids.slice(offset, offset + limit)
+        ids = this._ids.slice(offset, offset + limit)
       }
 
       this.table.get_entries_by_id(ids, (err, result) => {
@@ -58,8 +61,20 @@ class DB_TableExtract {
   }
 
   get_ids (callback) {
+    if (this._ids) {
+      return callback(null, this._ids)
+    }
+
     if (this.ids) {
-      return callback(null, this.ids)
+      // TODO: sort list on server
+      this._ids = this.ids
+      return callback(null, this._ids)
+    }
+
+    this._get_ids_callbacks.push(callback)
+
+    if (this._get_ids_callbacks.length > 1) {
+      return
     }
 
     this.table.get_entry_ids(this.filter, this.sort, 0, null, (err, result) => {
@@ -67,14 +82,15 @@ class DB_TableExtract {
         return callback(err)
       }
 
-      this.ids = result
+      this._ids = result
 
-      callback(null, result)
+      this._get_ids_callbacks.forEach(cb => cb(null, result))
+      this._get_ids_callbacks = []
     })
   }
 
   pager_info (callback) {
-    this.table.get_entry_ids(this.filter, this.sort, null, null, (err, list) => {
+    this.get_ids((err, list) => {
       if (err) {
         return callback(err)
       }
