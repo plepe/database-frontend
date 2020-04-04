@@ -19,13 +19,6 @@ module.exports = {
     }
 
     async.parallel([
-      done => DB_Table.get_all({}, (err, tables) => {
-        if (err) {
-          return done(err)
-        }
-
-        done()
-      }),
       done => DB_Table.get_table_list((err, table_list) => {
         result.table_list = table_list
         done(err)
@@ -40,7 +33,6 @@ module.exports = {
 
           result.filter = {show: () => '<div id="show-filter"></div>'}
           result.filter_values = current_filter.get_data()
-          console.log(result.filter_values)
           done(err)
         })
       },
