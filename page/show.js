@@ -9,9 +9,19 @@ function page (result, callback) {
   let extract = new DB_TableExtract(result.table_object)
   extract.set_ids([result.param.id])
   result.view.set_extract(extract)
+  result.pager = {}
 
   async.parallel([
     done => result.view.render_single(result.param, done),
+    done => result.table_extract.pager_info_show(result.param.id, (err, info) => {
+      if (info) {
+        for (let k in info) {
+          result.pager[k] = info[k]
+        }
+      }
+
+      done(err)
+    }),
     done => result.table_object.get_entry(result.param.id, (err, entry) => {
       if (err) {
         return done(err)

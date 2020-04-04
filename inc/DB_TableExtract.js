@@ -95,9 +95,34 @@ class DB_TableExtract {
         return callback(err)
       }
 
-      let result = {}
+      let result = {
+        result_count: list.length
+      }
 
-      result.result_count = list.length
+      callback(null, result)
+    })
+  }
+
+  pager_info_show (id, callback) {
+    this.get_ids((err, list) => {
+      if (err) {
+        return callback(err)
+      }
+
+      let index = list.indexOf(id)
+      index = index === -1 ? null : index
+
+      let result = {
+        index,
+        first: list[0],
+        last: list[list.length - 1],
+        result_count: list.length
+      }
+
+      if (index !== null) {
+        result.prev = list[index - 1]
+        result.next = list[index + 1]
+      }
 
       callback(null, result)
     })
