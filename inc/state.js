@@ -1,10 +1,11 @@
 const queryString = require('qs')
 
-const page = require('./page')
 const httpRequest = require('./httpRequest')
 
 let currentState = {}
 global.currentState = currentState
+
+let loader
 
 function parse (str) {
   return queryString.parse(str)
@@ -24,8 +25,7 @@ function init () {
     currentState[k] = newState[k]
   }
 
-  updateLinks()
-  page.connect(currentState)
+  loader.oninit(currentState)
 
   window.addEventListener('popstate', e => {
     apply(e.state, true)
@@ -41,32 +41,16 @@ function apply (param, noPushState = false) {
   }
 
   document.body.classList.add('loading')
-  return page.load(currentState, () => {
-    updateLinks()
+  return loader.onapply(currentState, (err) => {
+    if (err) {
+      return alert(err)
+    }
+
     if (!noPushState) {
       history.pushState(currentState, '', decodeURI(page_url(currentState).replace(/&amp;/g, '&')))
     }
     document.body.classList.remove('loading')
   })
-}
-
-function updateLinks () {
-  let links = document.getElementsByTagName('a')
-
-  for (let i = 0; i < links.length; i++) {
-    let link = links[i]
-
-    link.onclick = () => {
-      let appPath = location.origin + location.pathname
-      if (link.href.substr(0, appPath.length) === appPath) {
-        let param = queryString.parse(link.href.substr(appPath.length + 1))
-
-        if (apply(param)) {
-          return false
-        }
-      }
-    }
-  }
 }
 
 function apply_from_form (dom) {
@@ -87,5 +71,6 @@ module.exports = {
   init,
   apply,
   parse,
+  set_loader: (_loader) => loader = _loader,
   data: currentState
 }

@@ -23,6 +23,7 @@ window.get_entry = (table_id, id, callback) => {
 }
 
 window.addEventListener('load', () => {
+  require('./loader').init()
   state.init()
   require('./page').init()
   require('./panel').init()
