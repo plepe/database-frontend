@@ -94,10 +94,8 @@ function connect (param, current_filter) {
   let choose_filter = document.getElementById('choose_filter')
   if (choose_filter) {
     choose_filter.onsubmit = () => {
-      let new_state = JSON.parse(JSON.stringify(state.data))
-
-      new_state.filter = current_filter.get_data()
-      state.apply(new_state)
+      let filter = current_filter.get_data()
+      state.change({filter})
       return false
     }
   }

@@ -52,6 +52,16 @@ function apply (param, noPushState = false) {
   })
 }
 
+function change (param, noPushState = false) {
+  let newState = JSON.parse(JSON.stringify(currentState))
+
+  for (let k in param) {
+    newState[k] = param[k]
+  }
+
+  apply(newState, noPushState)
+}
+
 function apply_from_form (dom) {
   let data = {}
   for (let i = 0; i < dom.elements.length; i++) {
@@ -66,6 +76,7 @@ function apply_from_form (dom) {
 module.exports = {
   init,
   apply,
+  change,
   parse,
   set_loader: (_loader) => loader = _loader,
   data: currentState
