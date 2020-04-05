@@ -37,7 +37,6 @@ $include = array(
     'inc/index.js',
     'inc/mousetrap.min.js',
     'inc/mousetrap-auto.js',
-    'inc/table_fields.js',
     'inc/random_ids.js',
     'inc/editable.js',
     'dist/app.js'

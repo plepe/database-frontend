@@ -29,6 +29,7 @@ window.addEventListener('load', () => {
   require('./panel').init()
   require('./twig_show').init()
   require('./pager').init()
+  require('./table_fields').init()
 
   //window.setTimeout(() => state.apply({page:'index'}), 2000)
 })
