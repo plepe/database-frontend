@@ -3,7 +3,6 @@ const queryString = require('qs')
 const httpRequest = require('./httpRequest')
 
 let currentState = {}
-global.currentState = currentState
 
 let loader
 
@@ -63,9 +62,6 @@ function apply_from_form (dom) {
 
   return apply(data)
 }
-
-global.state_apply = apply
-global.state_apply_from_form = apply_from_form
 
 module.exports = {
   init,

@@ -6,6 +6,7 @@ const async = {
 const Views = require('./Views.js')
 const pager = require('./pager.js')
 const filter = require('./filter.js')
+const state = require('./state.js')
 
 let current_filter
 
@@ -93,12 +94,12 @@ module.exports = {
     let el = document.getElementById('choose_view')
     if (el) {
       el.onsubmit = () => {
-        global.state_apply_from_form(el)
+        state.apply_from_form(el)
         return false
       }
 
       el.elements.view.onchange = () => {
-        global.state_apply_from_form(el)
+        state.apply_from_form(el)
         return false
       }
     }

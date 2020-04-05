@@ -2,6 +2,8 @@ const async = {
   parallel: require('async/parallel')
 }
 
+const state = require('./state')
+
 const filters = {}
 
 global.show_filter = function () {
@@ -92,10 +94,10 @@ function connect (param, current_filter) {
   let choose_filter = document.getElementById('choose_filter')
   if (choose_filter) {
     choose_filter.onsubmit = () => {
-      let new_state = JSON.parse(JSON.stringify(global.currentState))
+      let new_state = JSON.parse(JSON.stringify(state.data))
 
       new_state.filter = current_filter.get_data()
-      state_apply(new_state)
+      state.apply(new_state)
       return false
     }
   }
