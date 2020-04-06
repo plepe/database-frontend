@@ -176,6 +176,39 @@ class DB_Table {
   }
 
   /**
+   * Return definition of ID field
+   */
+  function id_field ($data=null) {
+    if ($data === null) {
+      $data = $this->data;
+    }
+
+    if(!array_key_exists('id', $data['fields'])) {
+      return array(
+        'key' => 'id',
+        'type' => 'integer',
+        'options' => 'auto_increment primary key',
+      );
+    }
+    else {
+      switch($db_conn->getAttribute(PDO::ATTR_DRIVER_NAME)) {
+        case 'sqlite':
+          $id_collate = "binary";
+          break;
+        case 'mysql':
+          $id_collate = "utf8_bin";
+          break;
+      }
+
+      return array(
+        'key' => 'id',
+        'type' => "varchar(255) collate {$id_collate}",
+        'options' => '',
+      );
+    }
+  }
+
+  /**
    * updates database structure to specified data
    * first a table __tmp__ and sub-tables __tmp___XXX are created, then these
    * are filled with data from the old table (if it is not new) and then they
@@ -211,13 +244,11 @@ class DB_Table {
       $new_table = true;
 
     // if there's no 'id' field specified, add a generated one
+    $id_field = $this->id_field($data);
+    $id_type = $id_field['type'];
     if(!array_key_exists('id', $data['fields'])) {
-      $columns[] = $db_conn->quoteIdent('id'). " INTEGER auto_increment PRIMARY KEY";
-      $column_copy[] = $db_conn->quoteIdent('id');
-      $id_type = "integer";
-    }
-    else {
-      $id_type = "varchar(255) collate {$id_collate}";
+      $columns[] = $db_conn->quoteident('id') . " {$id_field['type']} {$id_field['options']}";
+      $column_copy[] = $db_conn->quoteident('id');
     }
 
     $cmds = array();
