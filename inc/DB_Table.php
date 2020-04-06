@@ -264,7 +264,8 @@ class DB_Table {
       }
 
       if(array_key_exists('reference', $column_def) && ($column_def['reference'] != null)) {
-	$column_type = "varchar(255) collate {$id_collate}";
+        $foreign_id_field = get_db_table($column_def['reference'])->id_field();
+        $column_type = $foreign_id_field['type'];
       }
 
       if(array_key_exists('backreference', $column_def) && ($column_def['backreference'] != null)) {
