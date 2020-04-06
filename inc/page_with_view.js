@@ -7,6 +7,7 @@ const Views = require('./Views.js')
 const pager = require('./pager.js')
 const filter = require('./filter.js')
 const state = require('./state.js')
+const table_fields = require('./table_fields.js')
 
 let current_filter
 
@@ -57,8 +58,6 @@ module.exports = {
           }
           param.view = viewId
 
-          // modify_table_fields(param, viewDef)
-
           // remove show_priority=0
           done()
         }
@@ -79,13 +78,19 @@ module.exports = {
         viewDef = table.view_def('default')
       }
 
-      let viewClass = (viewDef.class || 'Table')
-      let view = new Views[viewClass](viewDef, param)
-      result.view = view
-      result.views = table.views(param.page)
+      table_fields.modify_viewdef(param, table, viewDef, (err) => {
+        if (err) { return callback(err) }
 
-      page(result, (err) => {
-        callback(err, result)
+        let viewClass = (viewDef.class || 'Table')
+        let view = new Views[viewClass](viewDef, param)
+        result.view = view
+        result.views = table.views(param.page)
+        result.table_fields = {show: () => '<div id="table_fields_placeholder"></div>'}
+        result.table_fields_values = param.table_fields
+
+        page(result, (err) => {
+          callback(err, result)
+        })
       })
     })
   },

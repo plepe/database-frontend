@@ -8,6 +8,7 @@ const async = {
 const httpRequest = require('./httpRequest')
 const DB_Entry = require('./DB_Entry')
 const Fields = require('./Fields')
+const ViewField = require('./ViewField')
 
 let db_table_cache = {}
 let db_table_complete = false
@@ -218,6 +219,41 @@ class DB_Table {
     }
 
     return this._fields
+  }
+
+  view_fields (callback) {
+    let ret = {}
+
+    let fields = this.fields()
+    for (let f in fields) {
+      ret[f] = fields[f]
+    }
+
+    // TODO: ViewBackreferenceField
+    // get_db_tables(null, (table) => {
+    // })
+
+    let views = this.views()
+    for (let view_id in views) {
+      let view = views[view_id]
+
+      if (view.class === 'Table') {
+        for (let field_num in view.fields) {
+          let field = JSON.parse(JSON.stringify(view.fields[field_num]))
+
+          if (field.key === '__custom__' || field.format) {
+            field.name = field.key === '__custom__'
+              ? (field.title || '') + " (View: " + view.title + ")"
+              : this.field(field.key).def.name + " (View: " + view.title + ")"
+
+            field.id = '__custom:' + view_id + ':' + field_num + '__'
+            ret[field.id] = new ViewField(field)
+          }
+        }
+      }
+    }
+
+    callback(null, ret)
   }
 
   field (fieldId) {
