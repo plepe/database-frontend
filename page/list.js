@@ -22,6 +22,15 @@ function page (result, callback) {
 
 module.exports = {
   get (param, callback) {
+    if (!('limit' in param)) {
+      if ('limit' in global.user_settings) {
+        param.limit = global.user_settings.limit
+      }
+    }
+    if (!('offset' in param)) {
+      param.offset = 0
+    }
+
     page_with_view.get(param, page, callback)
   },
 

@@ -39,6 +39,7 @@ function connect (param) {
       let select = document.createElement('select')
       select.name = 'limit'
       select.onchange = () => {
+        user_settings.limit = select.value
         httpRequest('user_settings.php', {limit: select.value},
           (err) => {
             if (err) {
