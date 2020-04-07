@@ -46,7 +46,7 @@ function apply (param, noPushState = false) {
     }
 
     if (!noPushState) {
-      history.pushState(currentState, '', decodeURI(page_url(currentState).replace(/&amp;/g, '&')))
+      history.pushState(currentState, '', '?' + queryString.stringify(currentState))
     }
     document.body.classList.remove('loading')
   })

@@ -1,3 +1,4 @@
+const queryString = require('qs')
 const Twig = require('twig')
 const async = {
   parallel: require('async/parallel')
@@ -67,7 +68,10 @@ function connect (param) {
 
 module.exports = {
   init () {
-    Twig.extendFunction("page_url", param => page_url(param))
+    Twig.extendFunction("page_url", param => {
+      delete param._keys
+      return '?' + queryString.stringify(param)
+    })
   },
   connect,
   load

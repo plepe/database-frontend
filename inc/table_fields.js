@@ -20,7 +20,6 @@ function submit () {
 
   url = url.join('&')
   url = queryString.parse(url)
-  console.log(url)
 
   state.change({table_fields: url.table_fields})
 
