@@ -21,6 +21,8 @@ function submit () {
   url = url.join('&')
   url = queryString.parse(url)
 
+  table_fields_values[url.table] = url.table_fields
+
   state.change({table_fields: url.table_fields})
 
   return false
@@ -158,6 +160,9 @@ function create_table_fields_form (param, callback) {
 function init () {
   if (form_table_fields) {
     table_fields_forms[state.data.table] = form_table_fields
+    let url = queryString.parse(location.search.substr(1))
+
+    table_fields_values[url.table] = url.table_fields
   }
 }
 
@@ -202,5 +207,6 @@ function modify_viewdef (param, table, def, callback) {
 module.exports = {
   init,
   connect,
-  modify_viewdef
+  modify_viewdef,
+  current_value: table_fields_values
 }

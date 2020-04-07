@@ -20,6 +20,13 @@ module.exports = {
       param,
     }
 
+    if (!param.table_fields) {
+      let table_fields_value = table_fields.current_value[param.table]
+      if (table_fields_value) {
+        param.table_fields = table_fields_value
+      }
+    }
+
     async.parallel([
       done => DB_Table.get_table_list((err, table_list) => {
         result.table_list = table_list
