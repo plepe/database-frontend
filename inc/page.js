@@ -6,6 +6,7 @@ const async = {
 
 const templates = require('./templates')
 const pages = require('./pages')
+const update_links = require('./update_links')
 
 function load (param, callback) {
   if (!((param.page || 'index') in pages)) {
@@ -41,6 +42,8 @@ function load (param, callback) {
 
     document.body.removeChild(document.getElementById('content'))
     div.id = 'content'
+
+    update_links()
 
     if ('post_render' in page) {
       page.post_render(param, pageData, callback)
