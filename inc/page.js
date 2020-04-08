@@ -42,11 +42,15 @@ function load (param, callback) {
     document.body.removeChild(document.getElementById('content'))
     div.id = 'content'
 
-    if ('connect' in page) {
-      page.connect(param)
-    }
+    if ('post_render' in page) {
+      page.post_render(param, pageData, callback)
+    } else {
+      if ('connect' in page) {
+        page.connect(param)
+      }
 
-    callback()
+      callback()
+    }
   })
 
   return true

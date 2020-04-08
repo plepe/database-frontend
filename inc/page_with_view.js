@@ -1,15 +1,19 @@
 const DB_Table = require('./DB_Table')
 const DB_TableExtract = require('./DB_TableExtract')
 const async = {
+  each: require('async/each'),
   parallel: require('async/parallel')
 }
 const Views = require('./Views.js')
 const pager = require('./pager.js')
 const filter = require('./filter.js')
 const state = require('./state.js')
-const table_fields = require('./table_fields.js')
 
 let current_filter
+
+const modules = [
+  require('./table_fields.js')
+]
 
 module.exports = {
   get (param, page, callback) {
@@ -20,12 +24,7 @@ module.exports = {
       param,
     }
 
-    if (!param.table_fields) {
-      let table_fields_value = table_fields.current_value[param.table]
-      if (table_fields_value) {
-        param.table_fields = table_fields_value
-      }
-    }
+    modules.forEach(module => module.permalink(param))
 
     async.parallel([
       done => DB_Table.get_table_list((err, table_list) => {
@@ -80,25 +79,26 @@ module.exports = {
 
       table_extract.set_filter(filter_values)
 
-      let viewDef = table.view_def(param.view)
-      if (viewDef === false) {
-        viewDef = table.view_def('default')
+      result.view_def = table.view_def(param.view)
+      if (result.view_def === false) {
+        result.view_def = table.view_def('default')
       }
 
-      table_fields.modify_viewdef(param, table, viewDef, (err) => {
-        if (err) { return callback(err) }
+      async.each(modules,
+        (module, done) => module.pre_render(param, result, done),
+        (err) => {
+          if (err) { return callback(err) }
 
-        let viewClass = (viewDef.class || 'Table')
-        let view = new Views[viewClass](viewDef, param)
-        result.view = view
-        result.views = table.views(param.page)
-        result.table_fields = {show: () => '<div id="table_fields_placeholder"></div>'}
-        result.table_fields_values = param.table_fields
+          let viewClass = (result.view_def.class || 'Table')
+          let view = new Views[viewClass](result.view_def, param)
+          result.view = view
+          result.views = table.views(param.page)
 
-        page(result, (err) => {
-          callback(err, result)
-        })
-      })
+          page(result, (err) => {
+            callback(err, result)
+          })
+        }
+      )
     })
   },
 
@@ -124,5 +124,14 @@ module.exports = {
 
     pager.connect(param)
     filter.connect(param, current_filter)
+
+    modules.forEach(module => module.connect_server_rendered(param))
+  },
+
+  post_render(param, page_data, callback) {
+    async.each(modules,
+      (module, done) => module.post_render(param, page_data, done),
+      callback
+    )
   }
 }

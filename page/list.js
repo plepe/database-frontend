@@ -3,7 +3,6 @@ const async = {
 }
 
 const page_with_view = require('../inc/page_with_view.js')
-const table_fields = require('../inc/table_fields.js')
 
 function page (result, callback) {
   result.view.set_extract(result.table_extract)
@@ -34,8 +33,11 @@ module.exports = {
     page_with_view.get(param, page, callback)
   },
 
+  post_render (param, page_data, callback) {
+    page_with_view.post_render(param, page_data, callback)
+  },
+
   connect (param) {
     page_with_view.connect(param)
-    table_fields.connect(param)
   }
 }

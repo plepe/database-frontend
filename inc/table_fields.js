@@ -157,15 +157,6 @@ function create_table_fields_form (param, callback) {
   }
 }
 
-function init () {
-  if (form_table_fields) {
-    table_fields_forms[state.data.table] = form_table_fields
-    let url = queryString.parse(location.search.substr(1))
-
-    table_fields_values[url.table] = url.table_fields
-  }
-}
-
 function connect (param) {
   let choose_fields = document.getElementById('choose_table_fields')
 
@@ -173,40 +164,75 @@ function connect (param) {
     choose_fields.onsubmit = submit
   }
 
-  document.getElementById("Table_Fields").className = 'hidden'
-  if ('table_fields' in param) {
-    show_table_fields(param)
+  let dom = document.getElementById("Table_Fields")
+  if (dom) {
+    dom.className = 'hidden'
+    if ('table_fields' in param) {
+      show_table_fields(param)
+    }
   }
-}
-
-function modify_viewdef (param, table, def, callback) {
-  if (!param.table_fields) {
-    return callback(null)
-  }
-
-  get_table_fields_form(param, (err, form_table_fields) => {
-    let data = form_table_fields.get_data()
-    table.view_fields((err, fields) => {
-      if (err) { return callback(err) }
-
-      data.table_fields.forEach((field_id, i) => {
-        if (field_id === null) {
-          // nothing
-        } else if (typeof field_id === 'object') {
-          def.fields['__table_fields:' + i + '__'] = field_id
-        } else {
-          def.fields['__table_fields:' + i + '__'] = fields[field_id].view_def()
-        }
-      })
-
-      callback(null)
-    })
-  })
 }
 
 module.exports = {
-  init,
-  connect,
-  modify_viewdef,
-  current_value: table_fields_values
+  init () {
+  },
+
+  connect_server_rendered (param) {
+    if (form_table_fields) {
+      table_fields_forms[param.table] = form_table_fields
+
+      let url = queryString.parse(location.search.substr(1))
+      table_fields_values[url.table] = url.table_fields
+    }
+
+    connect(param)
+  },
+
+  permalink (param) {
+    if (!param.table_fields) {
+      let table_fields_value = table_fields_values[param.table]
+      if (table_fields_value) {
+        param.table_fields = table_fields_value
+      }
+    }
+  },
+
+  pre_render (param, result, callback) {
+    result.table_fields = {show: () => '<div id="table_fields_placeholder"></div>'}
+    result.table_fields_values = param.table_fields
+
+    if (!param.table_fields) {
+      return callback(null)
+    }
+
+    let def = result.view_def
+
+    DB_Table.get(param.table, (err, table) => {
+      if (err) { return callback(err) }
+
+      get_table_fields_form(param, (err, form_table_fields) => {
+        let data = form_table_fields.get_data()
+        table.view_fields((err, fields) => {
+          if (err) { return callback(err) }
+
+          data.table_fields.forEach((field_id, i) => {
+            if (field_id === null) {
+              // nothing
+            } else if (typeof field_id === 'object') {
+              def.fields['__table_fields:' + i + '__'] = field_id
+            } else {
+              def.fields['__table_fields:' + i + '__'] = fields[field_id].view_def()
+            }
+          })
+
+          callback(null)
+        })
+      })
+    })
+  },
+
+  post_render (param, page_data, callback) {
+    connect(param)
+    callback(null)
+  }
 }
