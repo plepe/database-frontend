@@ -5,6 +5,7 @@ const async = {
 const state = require('./state')
 
 const filters = {}
+let current_filter
 
 global.show_filter = function () {
   var div = document.getElementById("Filter");
@@ -90,7 +91,13 @@ function get_filter_form (param, callback) {
   })
 }
 
-function connect (param, current_filter) {
+function connect (param) {
+  if (current_filter) {
+    current_filter.show(document.getElementById('show-filter'))
+  } else {
+    current_filter = form_filter
+  }
+
   let choose_filter = document.getElementById('choose_filter')
   if (choose_filter) {
     choose_filter.onsubmit = () => {
@@ -135,7 +142,38 @@ function convert (table, form_filter) {
 }
 
 module.exports = {
-  get: get_filter_form,
-  convert,
-  connect
+  init () {
+  },
+
+  connect_server_rendered (param) {
+    connect(param)
+  },
+
+  permalink (param) {
+  },
+
+  pre_render (param, page_data, callback) {
+    get_filter_form(param, (err, filter_form) => {
+      if (err) { return callback(err) }
+
+      current_filter = filter_form
+
+      if ('filter' in param) {
+        current_filter.set_data(param.filter)
+      }
+
+      page_data.filter = {show: () => '<div id="show-filter"></div>'}
+      page_data.filter_values = current_filter.get_data()
+
+      let filter_values = convert(table, current_filter)
+      page_data.table_extract.set_filter(filter_values)
+
+      callback()
+    })
+  },
+
+  post_render (param, page_data, callback) {
+    connect(param)
+    callback()
+  }
 }

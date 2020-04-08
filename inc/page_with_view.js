@@ -6,13 +6,11 @@ const async = {
 }
 const Views = require('./Views.js')
 const pager = require('./pager.js')
-const filter = require('./filter.js')
 const state = require('./state.js')
 
-let current_filter
-
 const modules = [
-  require('./table_fields.js')
+  require('./table_fields.js'),
+  require('./filter.js')
 ]
 
 module.exports = {
@@ -31,19 +29,6 @@ module.exports = {
         result.table_list = table_list
         done(err)
       }),
-      done => {
-        filter.get(param, (err, filter_form) => {
-          current_filter = filter_form
-
-          if ('filter' in param) {
-            current_filter.set_data(param.filter)
-          }
-
-          result.filter = {show: () => '<div id="show-filter"></div>'}
-          result.filter_values = current_filter.get_data()
-          done(err)
-        })
-      },
       done => DB_Table.get(param.table,
         (err, _table) => {
           if (err) {
@@ -75,9 +60,6 @@ module.exports = {
 
       let table_extract = new DB_TableExtract(table)
       result.table_extract = table_extract
-      let filter_values = filter.convert(table, current_filter)
-
-      table_extract.set_filter(filter_values)
 
       result.view_def = table.view_def(param.view)
       if (result.view_def === false) {
@@ -116,14 +98,7 @@ module.exports = {
       }
     }
 
-    if (current_filter) {
-      current_filter.show(document.getElementById('show-filter'))
-    } else {
-      current_filter = form_filter
-    }
-
     pager.connect(param)
-    filter.connect(param, current_filter)
 
     modules.forEach(module => module.connect_server_rendered(param))
   },
