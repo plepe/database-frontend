@@ -178,8 +178,8 @@ module.exports = {
   },
 
   connect_server_rendered (param) {
-    if (form_table_fields) {
-      table_fields_forms[param.table] = form_table_fields
+    if (global.form_table_fields) {
+      table_fields_forms[param.table] = global.form_table_fields
 
       let url = queryString.parse(location.search.substr(1))
       table_fields_values[url.table] = url.table_fields
