@@ -28,6 +28,11 @@ class DB_Table {
     }
   }
 
+  _call_load_callbacks (err) {
+    this._load_callbacks.forEach(cb => cb(err, db_table_cache[this.id]))
+    this._load_callbacks = null
+  }
+
   _load () {
     let req = new XMLHttpRequest()
 
@@ -42,8 +47,7 @@ class DB_Table {
           err = new Error('table ' + this.id + ' does not exist')
         }
 
-        this._load_callbacks.forEach(cb => cb(err, db_table_cache[this.id]))
-        this._load_callbacks = null
+        this._call_load_callbacks(err)
       }
     }
 
@@ -375,6 +379,7 @@ function get_db_tables (query, callback) {
         new DB_Table(d.id, d)
       } else if (db_table_cache[d.id]._load_callbacks !== null) {
         db_table_cache[d.id]._data = d
+        db_table_cache[d.id]._call_load_callbacks(null)
       }
     })
 
