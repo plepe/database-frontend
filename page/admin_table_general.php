@@ -58,6 +58,11 @@ class Page_admin_table_general extends Page {
           'values'       => $views,
           'default'      => 'default',
         ),
+        'ts' => array(
+          'type'         => 'boolean',
+          'name'         => 'Add a timestamp field',
+          'default'      => true,
+        ),
     );
 
     call_hooks("admin_table_general", $def);

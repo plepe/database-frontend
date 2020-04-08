@@ -163,6 +163,7 @@ class DB_Entry {
           }
 
           $cmds[] = "insert into " . $db_conn->quoteIdent($this->type . '_' . $column_id) .
+            " (" . $db_conn->quoteIdent('id') . ', ' .  $db_conn->quoteIdent('sequence') . ', ' . $db_conn->quoteIdent('key') . ', ' . $db_conn->quoteIdent('value') . ') ' .
             " values (" . $db_conn->quote($this->id) . ", " . $db_conn->quote($sequence) . ", " .
             $db_conn->quote($k) . ", " . $db_conn->quote($v) . ")";
 

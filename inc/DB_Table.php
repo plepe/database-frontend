@@ -94,6 +94,14 @@ class DB_Table {
 
         $this->_fields[$column_id] = new $type($column_id, $column_def, $this);
       }
+
+      if ($this->data('ts')) {
+        $this->_fields['ts'] = new Field_datetime('ts', array(
+          'name' => 'Timestamp',
+          'count' => null,
+          'sortable' => true,
+        ), $this);
+      }
     }
 
     return $this->_fields;
@@ -292,6 +300,8 @@ class DB_Table {
 		  "  " . $db_conn->quoteIdent('sequence') . " int not null,\n" .
 		  "  " . $db_conn->quoteIdent('key') . " varchar(255) not null,\n" .
 		  "  " . $db_conn->quoteIdent('value') . " {$column_type} null,\n" .
+                  "  " . ($data['ts'] ? $db_conn->quoteIdent('ts') . " TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n" : '') .
+
 		  "  primary key(" . $db_conn->quoteIdent('id'). ", " . $db_conn->quoteIdent('key') . "),\n" .
 		  // foreign key to referenced table
 		  ((array_key_exists('reference', $column_def) && ($column_def['reference'] != null)) ? "foreign key(" . $db_conn->quoteIdent('value') . ") references " . $db_conn->quoteIdent($column_def['reference']) . "(" . $db_conn->quoteIdent('id') . "), " : "") .
@@ -315,7 +325,13 @@ class DB_Table {
 	  if(($old_field->is_multiple() === true) || ($old_def['count'])) {
 	    if($db_conn->tableExists($this->old_id . '_' . $column_def['old_key']))
 	      $multifield_cmds[] = "insert into " . $db_conn->quoteIdent($tmp_name . '_' . $column) .
-		    "  select * from " . $db_conn->quoteIdent($this->old_id . '_' . $column_def['old_key']) . ";";
+		    "  select " .
+                    $db_conn->quoteIdent('id') . ', ' .  $db_conn->quoteIdent('sequence') . ', ' . $db_conn->quoteIdent('key') . ', ' . $db_conn->quoteIdent('value') .
+                    ($data['ts'] ?
+                      (array_key_exists('ts', $old_data) && $old_data['ts'] ? ", " . $db_conn->quoteIdent('ts') : ", now()") :
+                      ""
+                    ) .
+                    " from " . $db_conn->quoteIdent($this->old_id . '_' . $column_def['old_key']) . ";";
 	  }
 	  // ... it was a field with a single value
 	  else {
@@ -371,6 +387,11 @@ class DB_Table {
 	else
 	  $column_copy[] = "null";
       }
+    }
+
+    if ($data['ts']) {
+      $columns[] = $db_conn->quoteIdent('ts') . " TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP";
+      $column_copy[] = $old_data['ts'] ? $db_conn->quoteIdent('ts') : 'now()';
     }
 
     // the new create table statement
@@ -810,7 +831,25 @@ class DB_Table {
       return "value=" . $db_conn->quote($x);
     }, $ids));
 
-    $res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->id) . " where " . $where_quoted);
+    $ts = '';
+    if ($this->data('ts')) {
+      $ts = array();
+      foreach($this->column_tables() as $table) {
+        if (is_array($table)) {
+        }
+        else {
+          $ts[] = 'coalesce((select max(ts) from ' . $db_conn->quoteIdent($this->id . '_' . $table) . " where " . $db_conn->quoteIdent($this->id) . '.id=' . $db_conn->quoteIdent($this->id . '_' . $table) . '.id), ' . $db_conn->quote('') . ')';
+        }
+      }
+      if (sizeof($ts)) {
+        $ts = ', greatest(ts, ' . implode(', ', $ts) . ') as ts';
+      }
+      else {
+        $ts = ', ts';
+      }
+    }
+
+    $res = $db_conn->query("select * {$ts} from " . $db_conn->quoteIdent($this->id) . " where " . $where_quoted);
     while($elem = $res->fetch()) {
       $data[$elem['id']] = $elem;
     }
@@ -837,8 +876,14 @@ class DB_Table {
         foreach($data as $id=>$d)
           $data[$id][$table] = array();
 
-        while($elem = $res->fetch())
+        while($elem = $res->fetch()) {
           $data[$elem['id']][$table][$elem['key']] = $elem['value'];
+
+          if ($this->data['ts'] && $elem['ts'] > $data[$elem['id']]['ts']) {
+            $data[$elem['id']]['ts'] = $elem['ts'];
+          }
+        }
+
         $res->closeCursor();
       }
     }
