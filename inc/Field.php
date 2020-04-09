@@ -97,16 +97,16 @@ class Field {
 	$ret['format'] =
 	  "<ul class='MultipleValues'>\n" .
 	  "{% for _ in {$this->id} %}\n" .
-	  "<li><a href='{{ page_url({ \"page\": \"show\", \"table\": {$ref_table}, \"id\": _.id }) }}'>" .
-          "{{ entry_title({$ref_table}, _.id) }}" .
+	  "<li><a href='{{ page_url({ \"page\": \"show\", \"table\": {$ref_table}, \"id\": _ }) }}'>" .
+          "{{ entry_title({$ref_table}, _) }}" .
 	  "</a>" .
 	  "{% endfor %}\n" .
 	  "</ul>\n";
       }
       else {
 	$ret['format'] =
-	  "<a href='{{ page_url({ \"page\": \"show\", \"table\": {$ref_table}, \"id\": {$this->id}.id }) }}'>" .
-          "{{ entry_title({$ref_table}, {$this->id}.id) }}" .
+	  "<a href='{{ page_url({ \"page\": \"show\", \"table\": {$ref_table}, \"id\": {$this->id} }) }}'>" .
+          "{{ entry_title({$ref_table}, {$this->id}) }}" .
 	  "</a>";
       }
     }

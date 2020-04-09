@@ -236,38 +236,6 @@ class DB_Entry {
 
     $this->view_cache = $this->data();
 
-    foreach($this->table->fields() as $field) {
-      $k = $field->id;
-      if(array_key_exists('reference', $field->def) && ($field->def['reference'] != null)) {
-	if($field->is_multiple() === true) {
-	  $this->view_cache[$k] = array();
-	  foreach($this->data[$k] as $v) {
-              $o = get_db_table($field->def['reference'])->get_entry($v);
-              if($o)
-                $this->view_cache[$k][] = &$o->view();
-          }
-        }
-	else {
-	  if($this->data[$k]) {
-	    $o = get_db_table($field->def['reference'])->get_entry($this->data[$k]);
-	    if($o)
-	      $this->view_cache[$k] = &$o->view();
-	  }
-	}
-      }
-
-      if(array_key_exists('backreference', $field->def) && ($field->def['backreference'] != null)) {
-        // backreferences are always multiple
-	$this->view_cache[$k] = array();
-        list($ref_table, $ref_field) = explode(':', $field->def['backreference']);
-	foreach($this->data[$k] as $v) {
-          $o = get_db_table($ref_table)->get_entry($v);
-          if($o)
-            $this->view_cache[$k][] = &$o->view();
-	}
-      }
-    }
-
     return $this->view_cache;
   }
 }
