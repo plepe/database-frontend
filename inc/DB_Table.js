@@ -197,14 +197,66 @@ class DB_Table {
   def (callback) {
     let ret = JSON.parse(JSON.stringify(this._data.fields))
 
-    for (let k in this._data.fields) {
-      let d = this._data.fields[k]
+    async.eachOf(ret, (d, k, done) => {
       let field = this.field(k)
-
       ret[k].type = field.form_type()
-    }
 
-    callback(null, ret)
+      if (d.reference) {
+        if (!ret[k].format) {
+          ret[k].format = '{{ ' + k + '.name }}'
+        }
+
+        get_table(d.reference, (err, table) => {
+          if (err) { return done(err) }
+
+          table.get_entries(null, null, null, null, (err, entries) => {
+            if (err) { return done(err) }
+
+            let values = {}
+            entries.map(o => values[o.id] = o.title())
+            ret[k].values = values
+
+            done()
+          })
+        })
+      } else if (d.backreference) {
+        if (!ret[k].format) {
+          ret[k].format = '{{ ' + k + '.name }}'
+        }
+
+        let ref_table = d.backreference.split(/:/)[0]
+
+        get_table(ref_table, (err, table) => {
+          if (err) { return done(err) }
+
+          table.get_entries(null, null, null, null, (err, entries) => {
+            if (err) { return done(err) }
+
+            let values = {}
+            entries.map(o => values[o.id] = o.title())
+            ret[k].values = values
+
+            done()
+          })
+        })
+      } else {
+        if ('additional_form_def' in field) {
+          field.additional_form_def((err, d) => {
+            if (err) { return callback(err) }
+
+            for (let k1 in d) {
+              ret[k1] = d[k1]
+            }
+
+            done()
+          })
+        } else {
+          done()
+        }
+      }
+    }, (err) => {
+      callback(null, ret)
+    })
   }
 
   fields () {

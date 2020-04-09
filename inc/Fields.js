@@ -156,6 +156,10 @@ class Field_backreference extends FieldWithValues {
   is_multiple () {
     return true
   }
+
+  form_type () {
+    return 'display'
+  }
 }
 
 module.exports = {
