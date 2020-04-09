@@ -56,7 +56,12 @@ class Page_edit extends Page {
     foreach ($def as $defk => $defv) {
       if (isset($defv['backreference']) && $defv['backreference']) {
         $def[$defk]['type'] = 'select';
-        $def[$defk]['count'] = array('default' => 1);
+        $def[$defk]['values_mode'] = 'keys';
+        $def[$defk]['count'] = array(
+          'default' => 1,
+          'index_type' => 'array',
+          'order' => false,
+        );
         $backreference_fields[$defk] = true;
       }
 
