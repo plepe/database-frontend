@@ -50,7 +50,16 @@ module.exports = {
           param.view = viewId
 
           // remove show_priority=0
-          done()
+
+          let views = table.views('list')
+          if (!(param.view in views)) {
+            param.view = 'default'
+          }
+
+          table.view_def(param.view, (err, ret) => {
+            result.view_def = ret
+            done(err)
+          })
         }
       )
     ], err => {

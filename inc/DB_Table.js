@@ -194,7 +194,7 @@ class DB_Table {
     return this._title_template
   }
 
-  def () {
+  def (callback) {
     let ret = JSON.parse(JSON.stringify(this._data.fields))
 
     for (let k in this._data.fields) {
@@ -204,7 +204,7 @@ class DB_Table {
       ret[k].type = field.form_type()
     }
 
-    return ret
+    callback(null, ret)
   }
 
   fields () {
@@ -288,14 +288,18 @@ class DB_Table {
     return views
   }
 
-  view_def (k) {
+  view_def (k, callback) {
     if (k == 'json') {
-      return {
-        title: 'JSON',
-        class: 'JSON',
-        weight: 100,
-        fields: this.def()
-      }
+      return this.def((err, ret) => {
+        if (err) { return callback(err) }
+
+        callback(null, {
+          title: 'JSON',
+          class: 'JSON',
+          weight: 100,
+          fields: ret
+        })
+      })
     }
 
     if (!(k in this._data.views)) {
@@ -303,7 +307,6 @@ class DB_Table {
       return false
     }
 
-    let def = this.def()
     let ret = JSON.parse(JSON.stringify(this._data.views[k]))
 
     ret.fields = {}
@@ -332,7 +335,7 @@ class DB_Table {
       ret.fields[key] = d
     }
 
-    return ret
+    callback(null, ret)
   }
 }
 
