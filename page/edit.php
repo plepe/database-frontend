@@ -117,8 +117,10 @@ class Page_edit extends Page {
 
       $orig_data = $form->get_orig_data();
       $data = $form->get_data();
-      if(!isset($this->param['id']))
+      if(!isset($this->param['id'])) {
 	$ob = new DB_Entry($this->param['table'], null);
+        $orig_data = array();
+      }
 
       $result = true;
 
@@ -161,6 +163,10 @@ class Page_edit extends Page {
         $ref_table = explode(':', $field['backreference'])[0];
         $ref_field_id = explode(':', $field['backreference'])[1];
         $ref_table = get_db_table($ref_table);
+
+        if (!array_key_exists($f_id, $orig_data)) {
+          $orig_data[$f_id] = array();
+        }
 
         foreach ($orig_data[$f_id] as $old_ref) {
           if (!in_array($old_ref, $data[$f_id])) {
