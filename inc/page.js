@@ -59,7 +59,7 @@ function load (param, callback) {
   return true
 }
 
-function connect (param) {
+function connect_server_rendered (param) {
   if (!((param.page || 'index') in pages)) {
     return false
   }
@@ -68,7 +68,9 @@ function connect (param) {
 
   let page = pages[pageId]
 
-  if (page) {
+  if ('connect_server_rendered' in page) {
+    page.connect_server_rendered(param)
+  } else {
     page.connect(param)
   }
 }
@@ -80,6 +82,6 @@ module.exports = {
       return '?' + queryString.stringify(param)
     })
   },
-  connect,
+  connect_server_rendered,
   load
 }

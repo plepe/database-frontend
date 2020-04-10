@@ -13,7 +13,7 @@ const loader = {
 
   oninit (param) {
     update_links()
-    page.connect(param)
+    page.connect_server_rendered(param)
   }
 }
 
