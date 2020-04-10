@@ -70,11 +70,6 @@ module.exports = {
       let table_extract = new DB_TableExtract(table)
       result.table_extract = table_extract
 
-      result.view_def = table.view_def(param.view)
-      if (result.view_def === false) {
-        result.view_def = table.view_def('default')
-      }
-
       async.each(modules,
         (module, done) => module.pre_render(param, result, done),
         (err) => {
