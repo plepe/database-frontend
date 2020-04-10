@@ -47,6 +47,9 @@ function connect (param) {
         state.apply({ page: 'show', table: current_entry.table.id, id: current_entry.id })
         break
       case 'delete':
+        current_entry.remove(data, null, (err) => {
+          state.apply({ page: 'list', table: current_entry.table.id })
+        })
         break
       default:
         current_entry.save(data, null, (err) => {
