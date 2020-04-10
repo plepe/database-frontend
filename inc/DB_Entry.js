@@ -1,3 +1,5 @@
+const httpRequest = require('./httpRequest')
+
 class DB_Entry {
   constructor (table, id, data) {
     this.table = table
@@ -85,6 +87,21 @@ class DB_Entry {
     }
 
     req.send(JSON.stringify(data))
+  }
+
+  remove (data, changeset, callback) {
+    httpRequest('api.php?table=' + encodeURIComponent(this.table.id) + '&id=' + encodeURIComponent(this.id),
+      {
+        method: 'DELETE'
+      },
+      (err) => {
+        if (err) { return callback(err) }
+
+        delete this.table.entries_cache[this.id]
+
+        callback(null)
+      }
+    )
   }
 }
 
