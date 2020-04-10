@@ -71,6 +71,8 @@ switch ($_SERVER['REQUEST_METHOD']) {
     break;
   case 'PATCH':
     $data = json_decode(file_get_contents("php://input"), true);
+    $changeset = new Changeset('');
+    $changeset->open();
 
     if ($_REQUEST['table']) {
       $table = get_db_table($_REQUEST['table']);
@@ -86,18 +88,24 @@ switch ($_SERVER['REQUEST_METHOD']) {
           exit(0);
         }
 
-        $ob->save($data);
+        $ob->save($data, $changeset);
+
         print json_readable_encode($ob->view());
       }
       else {
-        $table->save($data);
+        $table->save($data, $changeset);
+
         print json_readable_encode($table->view());
       }
     }
 
+    $changeset->commit();
+
     break;
   case 'POST':
     $data = json_decode(file_get_contents("php://input"), true);
+    $changeset = new Changeset('');
+    $changeset->open();
 
     if ($_REQUEST['table']) {
       $table = get_db_table($_REQUEST['table']);
@@ -111,6 +119,8 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
       print json_readable_encode($ob->view());
     }
+
+    $changeset->commit();
 
     break;
   default:
