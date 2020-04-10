@@ -115,7 +115,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
       }
 
       $ob = new DB_Entry($table->id);
-      $ob->save($data);
+      $ob->save($data, $changeset);
 
       print json_readable_encode($ob->view());
     }
