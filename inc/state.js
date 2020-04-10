@@ -1,6 +1,7 @@
 const queryString = require('qs')
 
 const httpRequest = require('./httpRequest')
+const data_from_form = require('./data_from_form')
 
 let currentState = {}
 
@@ -63,12 +64,7 @@ function change (param, noPushState = false) {
 }
 
 function apply_from_form (dom) {
-  let data = {}
-  for (let i = 0; i < dom.elements.length; i++) {
-    if (dom.elements[i].name) {
-      data[dom.elements[i].name] = dom.elements[i].value
-    }
-  }
+  let data = data_from_form(dom)
 
   return apply(data)
 }
