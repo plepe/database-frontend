@@ -123,6 +123,35 @@ switch ($_SERVER['REQUEST_METHOD']) {
     $changeset->commit();
 
     break;
+  case 'DELETE':
+    $data = json_decode(file_get_contents("php://input"), true);
+    $changeset = new Changeset('');
+    $changeset->open();
+
+    if ($_REQUEST['table']) {
+      $table = get_db_table($_REQUEST['table']);
+      if (!$table) {
+        Header('HTTP/1.0 404 Not Found');
+        exit(0);
+      }
+
+      if ($_REQUEST['id']) {
+        $ob = $table->get_entry($_REQUEST['id']);
+        if (!$ob) {
+          Header('HTTP/1.0 404 Not Found');
+          exit(0);
+        }
+
+        $ob->remove($changeset);
+      }
+      else {
+        $table->remove($changeset);
+      }
+    }
+
+    $changeset->commit();
+
+    break;
   default:
     Header('HTTP/1.0 400 Bad Request');
 }

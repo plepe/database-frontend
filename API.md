@@ -58,3 +58,11 @@ Returns the updated object as JSON
 Create a new entry in table x. In POST data supply JSON data.
 
 Returns the created object as JSON
+
+## DELETE ?table=x
+
+Delete the table.
+
+## DELETE ?table=x&id=y
+
+Delete the entry with the id y in table x.
