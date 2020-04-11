@@ -1,3 +1,13 @@
+/**
+ * @param {string} url - The URL of the request
+ * @param {Object} options - Options
+ * @param {string} options.method=GET - Method of the request (e.g. POST, DELETE).
+ * @param {boolean} options.forceServerLoad=false - Pass the request via the httpRequest.php server script to avoid CORS problems.
+ * @param {function} callback - Callback which will be called when the request completes
+ * @param {Error} callback.err - If an error occured, the error. Otherwise null.
+ * @param {Object} callback.result - The result.
+ * @param {string} callback.result.body - The result body.
+ */
 function httpRequest (url, options, callback) {
   let corsRetry = true
   var xhr
