@@ -2,6 +2,7 @@ const DB_Table = require('../inc/DB_Table.js')
 const DB_Entry = require('../inc/DB_Entry.js')
 
 const state = require('../inc/state.js')
+const db_execute = require('../inc/db_execute.js')
 
 let current_form
 let current_entry
@@ -52,8 +53,23 @@ function connect (param) {
         })
         break
       default:
-        current_entry.save(data, null, (err) => {
-          state.apply({ page: 'show', table: current_entry.table.id, id: current_entry.id })
+        let script = []
+
+        let ob_index = script.length
+        script.push({
+          action: (current_entry.id ? 'update' : 'create'),
+          table: current_entry.table.id,
+          id: current_entry.id,
+          data
+        })
+
+        // Invalidate cache
+        delete current_entry.table.entries_cache[current_entry.id]
+
+        db_execute(script, null, (err, result) => {
+          result = JSON.parse(result.body)
+
+          state.apply({ page: 'show', table: current_entry.table.id, id: result[ob_index].id })
         })
     }
 
