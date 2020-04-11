@@ -9,7 +9,7 @@ function db_execute_get ($results, $path) {
 
 function db_execute_set (&$data, $path, $value) {
   if (sizeof($path) > 1) {
-    return db_execute_set($data, array_slice($path, 1), $value);
+    return db_execute_set($data[$path[0]], array_slice($path, 1), $value);
   }
   $data[$path[0]] = $value;
 }
