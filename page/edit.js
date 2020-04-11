@@ -1,3 +1,8 @@
+const async = {
+  eachOf: require('async/eachOf')
+}
+const forEach = require('foreach')
+
 const DB_Table = require('../inc/DB_Table.js')
 const DB_Entry = require('../inc/DB_Entry.js')
 
@@ -6,6 +11,7 @@ const db_execute = require('../inc/db_execute.js')
 
 let current_form
 let current_entry
+let current_reference_fields
 
 function load (param, callback) {
   DB_Table.get(param.table, (err, table) => {
@@ -37,6 +43,67 @@ function load (param, callback) {
   })
 }
 
+function save (data, callback) {
+  let script = []
+  let references = {}
+
+  forEach(current_reference_fields, (f, k) => {
+    if (f.count) {
+      forEach(data[k], (value, i) => {
+        if (value.value) {
+          data[k][i] = value.value
+          return
+        } else {
+          references[k + '.' + i] = script.length + '.id'
+
+          script.push({
+            action: 'create',
+            table: f.table,
+            data: value.new
+          })
+
+          data[k][i] = null
+          return
+        }
+      })
+    } else {
+      if (data[k].value) {
+        data[k] = data[k].value
+      } else {
+        references[k] = script.length + '.id'
+
+        script.push({
+          action: 'create',
+          table: f.table,
+          data: data[k].new
+        })
+
+        data[k] = null
+      }
+    }
+  })
+
+  let ob_index = script.length
+  script.push({
+    action: (current_entry.id ? 'update' : 'create'),
+    table: current_entry.table.id,
+    id: current_entry.id,
+    references,
+    data
+  })
+
+  // Invalidate cache
+  delete current_entry.table.entries_cache[current_entry.id]
+
+  db_execute(script, null, (err, result) => {
+    if (err) { return callback(err) }
+    result = JSON.parse(result.body)
+
+    callback(null, result[ob_index].id)
+  })
+}
+
+
 function connect (param) {
   let dom_form = document.getElementById('form-edit')
 
@@ -53,28 +120,91 @@ function connect (param) {
         })
         break
       default:
-        let script = []
-
-        let ob_index = script.length
-        script.push({
-          action: (current_entry.id ? 'update' : 'create'),
-          table: current_entry.table.id,
-          id: current_entry.id,
-          data
-        })
-
-        // Invalidate cache
-        delete current_entry.table.entries_cache[current_entry.id]
-
-        db_execute(script, null, (err, result) => {
-          result = JSON.parse(result.body)
-
-          state.apply({ page: 'show', table: current_entry.table.id, id: result[ob_index].id })
+        save(data, (err, id) => {
+          state.apply({ page: 'show', table: current_entry.table.id, id: id })
         })
     }
 
     return false
   }
+}
+
+function compile_def (table, callback) {
+  let reference_fields = {}
+
+  table.def((err, def) => {
+    if (err) { return callback(err) }
+
+    def = JSON.parse(JSON.stringify(def))
+
+    async.eachOf(def,
+      (d, k, done) => {
+        if (d.reference) {// /* && !['checkbox'].includes(d.type) */&& d.reference_create_new) {
+          if (d.type === 'checkbox') {
+            d.type = 'select'
+            d.count = {default:1}
+          }
+
+          reference_fields[k] = {
+            count: d.count,
+            table: d.reference
+          }
+
+          DB_Table.get(d.reference, (err, ref_table) => {
+            if (err) { return done(err) }
+
+            ref_table.def((err, sub_def) => {
+              sub_def = JSON.parse(JSON.stringify(sub_def))
+
+              if (err) { return done(err) }
+
+              for (let subk in sub_def) {
+                if (sub_def.backreference) {
+                  delete sub_def[subk]
+                }
+              }
+
+              if (d.count) {
+                d.count = {
+                  default: 0,
+                  'button:add_element': lang('edit:add_subelement', 0, d.name),
+                }
+              }
+
+              def[k] = {
+                type: 'form',
+                name: d.name,
+                count: d.count,
+                def: {
+                  'value': JSON.parse(JSON.stringify(d)),
+                  'new': {
+                    type: 'form',
+                    hide_label: true,
+                    def: sub_def,
+                    show_depend: ['check', 'value', ['not', ['has_value']]]
+                  }
+                }
+              }
+
+              d = def[k]
+              delete d.def.value.count
+              d.def.value.hide_label = true
+              d.def.value.placeholder = '-- create new --'
+
+              done()
+            })
+          })
+        } else {
+          done()
+        }
+      },
+      (err) => {
+        current_reference_fields = reference_fields
+
+        callback(err, def, reference_fields)
+      }
+    )
+  })
 }
 
 module.exports = {
@@ -86,14 +216,26 @@ module.exports = {
     load (param, (err, table, entry) => {
       current_entry = entry
       // pageData.title = entry.title()
-      let def = table.def
+      let def
       pageData.form = {show: () => '<div id="show-edit"></div>'}
 
-      table.def((err, def) => {
+      compile_def(table, (err, def, reference_fields) => {
         if (err) { return callback(err) }
 
         pageData.form_edit = new form('edit', def)
-        pageData.form_edit.set_data(entry.data())
+        let data = JSON.parse(JSON.stringify(entry.data()))
+
+        forEach(reference_fields, (f, k) => {
+          if (f.count) {
+            data[k] = Object.values(data[k]).map(value => {
+              return {value}
+            })
+          } else {
+            data[k] = {value: data[k]}
+          }
+        })
+
+        pageData.form_edit.set_data(data)
         current_form = pageData.form_edit
 
         callback(null, pageData)
