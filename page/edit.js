@@ -92,12 +92,21 @@ function save (data, callback) {
     data
   })
 
+  let old_id = current_entry.id
+  let old_referenced_entries = current_entry.referenced_entries()
+  let table = current_entry.table
+
   // Invalidate cache
   delete current_entry.table.entries_cache[current_entry.id]
 
   db_execute(script, null, (err, result) => {
     if (err) { return callback(err) }
     result = JSON.parse(result.body)
+
+    delete current_entry.table.entries_cache[old_id]
+    current_entry = new DB_Entry(table, result[ob_index].id, result[ob_index])
+    DB_Table.invalidate_entries(old_referenced_entries)
+    DB_Table.invalidate_entries(current_entry.referenced_entries())
 
     callback(null, result[ob_index].id)
   })
