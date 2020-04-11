@@ -189,6 +189,42 @@ class DB_Entry {
   }
 
   /**
+   * return a list of all referenced entries
+   * @returns string[][] - Array of referenced entries where each entry is an array with [table_id, entry_id]
+   */
+  function referenced_entries() {
+    $fields = $this->table->fields();
+    $result = array();
+
+    $data = $this->data();
+    foreach ($fields as $field) {
+      if ($data[$field->id] && isset($field->def['backreference'])) {
+        $ref_table = explode(':', $field->def['backreference'])[0];
+        if ($field->is_multiple()) {
+          foreach ($data[$field->id] as $d) {
+            $result[] = array($ref_table, $d);
+          }
+        }
+        else {
+          $result[] = array($ref_table, $data[$field->id]);
+        }
+      }
+      elseif ($data[$field->id] && isset($field->def['reference'])) {
+        if ($field->is_multiple()) {
+          foreach ($data[$field->id] as $d) {
+            $result[] = array($field->def['reference'], $d);
+          }
+        }
+        else {
+          $result[] = array($field->def['reference'], $data[$field->id]);
+        }
+      }
+    }
+
+    return $result;
+  }
+
+  /**
    * remove - remove this entry
    * $changeset: either a message (string) or a Changeset
    */

@@ -1,3 +1,5 @@
+const forEach = require('foreach')
+
 const httpRequest = require('./httpRequest')
 
 class DB_Entry {
@@ -102,6 +104,39 @@ class DB_Entry {
         callback(null)
       }
     )
+  }
+
+  /**
+   * return a list of all referenced entries
+   * @returns string[][] - Array of referenced entries where each entry is an array with [table_id, entry_id]
+   */
+  referenced_entries () {
+    let fields = this.table.fields()
+    let result = []
+
+    forEach(fields, (field) => {
+      if (this._data[field.id] && field.def.backreference) {
+        let ref_table = field.def.backreference.split(/:/)[0]
+        if (field.is_multiple()) {
+          forEach(this._data[field.id], (d) => {
+            result.push([ref_table, d])
+          })
+        } else {
+          result.push([ref_table, this._data[field.id]])
+        }
+      } else if (this._data[field.id] && field.def.reference) {
+        let ref_table = field.def.reference
+        if (field.is_multiple()) {
+          forEach(this._data[field.id], (d) => {
+            result.push([ref_table, d])
+          })
+        } else {
+          result.push([ref_table, this._data[field.id]])
+        }
+      }
+    })
+
+    return result
   }
 }
 

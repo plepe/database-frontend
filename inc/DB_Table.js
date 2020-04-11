@@ -499,6 +499,15 @@ function has_missing_entries () {
   return !!Object.keys(missing_entries).length
 }
 
+function invalidate_entries (list) {
+  list.forEach((entry) => {
+    let [table_id, id] = entry
+    if (table_id in db_table_cache) {
+      delete db_table_cache[table_id].entries_cache[id]
+    }
+  })
+}
+
 module.exports = {
   get: get_table,
   get_all: get_db_tables,
@@ -507,5 +516,6 @@ module.exports = {
   missing_entries,
   has_missing_entries,
   load_missing_entries,
-  cache: db_table_cache
+  cache: db_table_cache,
+  invalidate_entries
 }
