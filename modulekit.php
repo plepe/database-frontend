@@ -31,6 +31,7 @@ $include = array(
     'inc/auto_add_new_fields_to_views.php',
     'inc/array_insert_before.php',
     'inc/random_ids.php',
+    'inc/db_execute.php',
     'page/*.php',
   ),
   'js' => array(

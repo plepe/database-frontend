@@ -107,7 +107,10 @@ switch ($_SERVER['REQUEST_METHOD']) {
     $changeset = new Changeset('');
     $changeset->open();
 
-    if ($_REQUEST['table']) {
+    if (array_key_exists('script', $_REQUEST)) {
+      print json_readable_encode(db_execute($data, $changeset));
+    }
+    else if ($_REQUEST['table']) {
       $table = get_db_table($_REQUEST['table']);
       if (!$table) {
         Header('HTTP/1.0 404 Not Found');
