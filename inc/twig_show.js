@@ -35,8 +35,8 @@ module.exports = {
       return DB_Table.get_loaded_entry_sync(table, id)
     })
 
-    Twig.extendFunction("get_entries", (table, filter) => {
-      let obs = DB_Table.get_loaded_entries(table, filter)
+    Twig.extendFunction("get_entries", (table, filter, sort, offset, limit) => {
+      let obs = DB_Table.get_loaded_entries(table, filter, sort, offset, limit)
       if (obs) {
         return obs.map(ob => ob.view())
       } else {

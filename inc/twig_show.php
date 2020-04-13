@@ -25,7 +25,7 @@ register_hook("twig_init", function() {
       return $entry->view();
   }));
 
-  $twig->addFunction(new Twig_SimpleFunction('get_entries', function($table, $filter) {
+  $twig->addFunction(new Twig_SimpleFunction('get_entries', function($table, $filter=array(), $sort=array(), $offset=0, $limit=null) {
     return array_map(function($ob) {
       return $ob->view();
     }, get_db_table($table)->get_entries($filter));
