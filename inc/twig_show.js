@@ -36,7 +36,12 @@ module.exports = {
     })
 
     Twig.extendFunction("get_entries", (table, filter) => {
-      return 'get_entries("' + table + '", ' + JSON.stringify(filter) + ')'
+      let obs = DB_Table.get_loaded_entries(table, filter)
+      if (obs) {
+        return obs.map(ob => ob.view())
+      } else {
+        return null
+      }
     })
 
     Twig.extendFilter("age", param => {

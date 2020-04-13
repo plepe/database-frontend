@@ -1,25 +1,30 @@
+const forEach = require('foreach')
 const Twig = require('twig')
 const queryString = require('qs')
 const async = {
   each: require('async/each'),
-  eachOf: require('async/eachOf')
+  eachOf: require('async/eachOf'),
+  parallel: require('async/parallel')
 }
 
 const httpRequest = require('./httpRequest')
 const DB_Entry = require('./DB_Entry')
 const Fields = require('./Fields')
 const ViewField = require('./ViewField')
+const db_execute = require('./db_execute')
 
 let db_table_cache = {}
 let db_table_complete = false
 let _load_tables_callbacks = null
 const missing_entries = {}
+const missing_queries = {}
 
 class DB_Table {
   constructor (id, data) {
     this.id = id
     db_table_cache[id] = this
     this.entries_cache = {}
+    this.query_cache = {}
     this._load_callbacks = []
 
     if (data) {
@@ -29,6 +34,10 @@ class DB_Table {
   }
 
   _call_load_callbacks (err) {
+    if (this._load_callbacks === null) {
+      return null
+    }
+
     this._load_callbacks.forEach(cb => cb(err, db_table_cache[this.id]))
     this._load_callbacks = null
   }
@@ -102,6 +111,46 @@ class DB_Table {
     }
   }
 
+  get_loaded_entries (filter, sort, offset, limit) {
+    if (filter == null) {
+      filter = []
+    }
+    if (sort == null) {
+      sort = []
+    }
+    if (offset == null) {
+      offset = 0
+    }
+    if (limit == null) {
+      limit = 0
+    }
+
+    let query_id = JSON.stringify({filter, sort})
+
+    if (query_id in this.query_cache) {
+      let ids = this.query_cache[query_id].slice(offset, limit === 0 ? undefined : offset + limit)
+      let missing = ids.filter(id => !(id in this.entries_cache))
+
+      if (missing.length === 0) {
+        return ids.map(id => this.entries_cache[id])
+      } else {
+        if (!(this.id in missing_entries)) {
+          missing_entries[this.id] = {}
+        }
+
+        missing.forEach(id => missing_entries[this.id][id] = true)
+      }
+
+      return null
+    } else {
+      if (!(this.id in missing_queries)) {
+        missing_queries[this.id] = {}
+      }
+
+      missing_queries[this.id][query_id] = true
+    }
+  }
+
   get_entries_by_id (ids, callback) {
     let toLoad = ids.filter(id => !(id in this.entries_cache))
 
@@ -139,17 +188,27 @@ class DB_Table {
       list: 1
     }
 
-    if (filter != null) {
+    if (filter == null) {
+      filter = []
+    } else {
       param.filter = filter
     }
-    if (sort != null) {
+    if (sort == null) {
+      sort = []
+    } else {
       param.sort = sort
     }
-    if (offset != null) {
-      param.offset = offset
+    if (offset == null) {
+      offset = 0
     }
-    if (limit != null) {
-      param.limit = limit
+    if (limit == null) {
+      limit = 0
+    }
+
+    let query_id = JSON.stringify({filter, sort})
+
+    if (query_id in this.query_cache) {
+      return callback(null, this.query_cache[query_id].slice(offset, limit === 0 ? undefined : offset + limit))
     }
 
     httpRequest('api.php?' + queryString.stringify(param), {},
@@ -159,8 +218,9 @@ class DB_Table {
         }
 
         let ids = JSON.parse(result.body)
+        this.query_cache[query_id] = ids
 
-        callback(null, ids)
+        callback(null, ids.slice(offset, limit === 0 ? undefined : offset + limit))
       }
     )
   }
@@ -466,9 +526,29 @@ function get_loaded_entry_sync (table_id, id) {
     return db_table_cache[table_id].get_loaded_entry_sync(id)
   } else {
     if (!(table_id in missing_entries)) {
-      missing_entries[table.id] = {}
+      missing_entries[table_id] = {}
     }
-    missing_entries[table.id][id] = true
+    missing_entries[table_id][id] = true
+  }
+}
+
+function get_loaded_entries (table_id, filter, sort) {
+  if (filter == null) {
+    filter = []
+  }
+  if (sort == null) {
+    sort = []
+  }
+
+  let query_id = JSON.stringify({filter, sort})
+
+  if (table_id in db_table_cache) {
+    return db_table_cache[table_id].get_loaded_entries(filter, sort)
+  } else {
+    if (!(table_id in missing_queries)) {
+      missing_queries[table_id] = {}
+    }
+    missing_queries[table_id][query_id] = true
   }
 }
 
@@ -497,8 +577,63 @@ function load_missing_entries (callback) {
   )
 }
 
-function has_missing_entries () {
-  return !!Object.keys(missing_entries).length
+function load_missing_queries (callback) {
+  if (Object.values(missing_queries).length === 0) {
+    return callback(null)
+  }
+
+  let script = []
+
+  let current_queries = JSON.parse(JSON.stringify(missing_queries))
+  for (let k in missing_queries) {
+    delete missing_queries[k]
+  }
+
+  forEach(current_queries,
+    (queries, table) => {
+      Object.keys(queries).map(
+        (query) => {
+          let {filter, sort} = JSON.parse(query)
+          script.push({
+            action: 'query_ids',
+            table,
+            filter,
+            sort
+          })
+        }
+      )
+    }
+  )
+
+  db_execute(script, {}, (err, result) => {
+    if (err) { return callback(err) }
+
+    let i = 0
+    forEach(current_queries,
+      (queries, table) => {
+        Object.keys(queries).map(
+          (query) => {
+            let {filter, sort} = JSON.parse(query)
+            db_table_cache[table].query_cache[query] = result[i]
+            i++
+          }
+        )
+      }
+    )
+
+    callback(null)
+  })
+}
+
+function has_missing () {
+  return !!Object.keys(missing_entries).length || !!Object.keys(missing_queries).length
+}
+
+function load_missing (callback) {
+  async.parallel([
+    (done) => load_missing_entries(done),
+    (done) => load_missing_queries(done)
+  ], callback)
 }
 
 function invalidate_entries (list) {
@@ -515,9 +650,11 @@ module.exports = {
   get_all: get_db_tables,
   get_table_list,
   get_loaded_entry_sync,
+  get_loaded_entries,
   missing_entries,
-  has_missing_entries,
-  load_missing_entries,
+  missing_queries,
+  has_missing,
+  load_missing,
   cache: db_table_cache,
   invalidate_entries
 }

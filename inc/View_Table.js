@@ -47,8 +47,8 @@ class View_Table extends View {
     view.show(type, param, (result) => {
       this.result = result
 
-      if (DB_Table.has_missing_entries()) {
-        DB_Table.load_missing_entries(
+      if (DB_Table.has_missing()) {
+        DB_Table.load_missing(
           (err) => {
             if (err) {
               return callback(err)
