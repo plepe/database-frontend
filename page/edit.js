@@ -101,7 +101,6 @@ function save (data, callback) {
 
   db_execute(script, null, (err, result) => {
     if (err) { return callback(err) }
-    result = JSON.parse(result.body)
 
     delete current_entry.table.entries_cache[old_id]
     current_entry = new DB_Entry(table, result[ob_index].id, result[ob_index])
