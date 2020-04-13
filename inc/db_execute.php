@@ -55,6 +55,9 @@ function db_execute ($script, $changeset) {
         $entry = get_db_table($statement['table'])->get_entry($statement['id']);
         $results[$i] = $entry->view();
         break;
+      case 'query_ids':
+        $results[$i] = get_db_table($statement['table'])->get_entry_ids($statement['filter'] ?? null, $statement['sort'] ?? null);
+        break;
       default:
         throw new Exception("No such action {$statement['action']}");
     }

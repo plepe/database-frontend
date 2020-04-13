@@ -69,9 +69,9 @@ Delete the entry with the id y in table x.
 
 ## POST ?script=1
 
-Execute a series of changes in a single changeset. Each change has an action ('select', 'create', 'update' or 'delete'). Each change can reference the values of a previous change (e.g. in the example below, the 1st value of the array `tags` will get the `id` of the result of the 1st change).
+Execute a series of changes in a single changeset. Each change has an action ('select', 'create', 'update', 'delete' or 'query_ids'). Each change can reference the values of a previous change (e.g. in the example below, the 1st value of the array `tags` will get the `id` of the result of the 1st change).
 
-The result of a 'select', 'create' or 'update' change will always be the full object.
+The result of a 'select', 'create' or 'update' change will always be the full object. A 'query_ids' statement requires a table and optionally filter and sort.
 
 ```json
 [
@@ -92,6 +92,11 @@ The result of a 'select', 'create' or 'update' change will always be the full o
     "references": {
       "tags.0": "0.id"
     }
+  },
+  {
+    "action": "query_ids",
+    "table": "x",
+    "filter": [["date",">","2018"]],
   }
 ]
 ```
