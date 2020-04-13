@@ -115,9 +115,11 @@ class DB_Table {
 
           let list = JSON.parse(req.body)
 
-          list.forEach(entry => {
+          list.forEach((entry, i) => {
             if (entry) {
               new DB_Entry(this, entry.id, entry)
+            } else {
+              this.entries_cache[ids[i]] = null
             }
           })
 

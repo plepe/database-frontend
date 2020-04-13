@@ -34,7 +34,7 @@ class DB_Entry {
         if (req.status == 200) {
           this._data = JSON.parse(req.responseText)
         } else {
-          delete this.table.entries_cache[this.id]
+          this.table.entries_cache[this.id] = null
           err = new Error('entry ' + this.table.id + '/' + this.id + ' does not exist')
         }
 
