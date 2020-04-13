@@ -31,6 +31,12 @@ register_hook("twig_init", function() {
     }, get_db_table($table)->get_entries($filter));
   }));
 
+  $twig->addFunction(new Twig_SimpleFunction('entry_titles', function($table, $filter=array(), $sort=array(), $offset=0, $limit=null) {
+    return array_map(function($ob) {
+      return $ob->title();
+    }, get_db_table($table)->get_entries($filter));
+  }));
+
   $twig->addFilter(new Twig_SimpleFilter('age', function($date) {
     $now = new DateTime();
     $date1 = new DateTime($date);

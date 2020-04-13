@@ -44,6 +44,17 @@ module.exports = {
       }
     })
 
+    Twig.extendFunction("entry_titles", (table, filter, sort, offset, limit) => {
+      let obs = DB_Table.get_loaded_entries(table, filter, sort, offset, limit)
+      if (obs) {
+        let result = {}
+        obs.forEach(ob => result[ob.id] = ob.title())
+        return result
+      } else {
+        return null
+      }
+    })
+
     Twig.extendFilter("age", param => {
     })
   }
