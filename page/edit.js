@@ -235,9 +235,11 @@ module.exports = {
 
         forEach(reference_fields, (f, k) => {
           if (f.count) {
-            data[k] = Object.values(data[k]).map(value => {
-              return {value}
-            })
+            if (k in data && typeof data[k] === 'object') {
+              data[k] = Object.values(data[k]).map(value => {
+                return {value}
+              })
+            }
           } else {
             data[k] = {value: data[k]}
           }
