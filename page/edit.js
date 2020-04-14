@@ -52,7 +52,6 @@ function save (data, callback) {
       forEach(data[k] || [], (value, i) => {
         if (value.value) {
           data[k][i] = value.value
-          return
         } else {
           references[k + '.' + i] = script.length + '.id'
 
@@ -63,7 +62,6 @@ function save (data, callback) {
           })
 
           data[k][i] = null
-          return
         }
       })
     } else {
