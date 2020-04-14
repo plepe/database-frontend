@@ -35,7 +35,7 @@ class DB_TableExtract {
       if (offset === null || offset === undefined) {
         offset = 0
       }
-      if (limit === null || limit === undefined) {
+      if (limit === null || limit === undefined || limit === 0 || limit === '0') {
         ids = this._ids.slice(offset)
       } else {
         ids = this._ids.slice(offset, offset + limit)
