@@ -49,7 +49,7 @@ function save (data, callback) {
 
   forEach(current_reference_fields, (f, k) => {
     if (f.count) {
-      forEach(data[k], (value, i) => {
+      forEach(data[k] || [], (value, i) => {
         if (value.value) {
           data[k][i] = value.value
           return
