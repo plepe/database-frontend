@@ -38,8 +38,9 @@ class DB_Entry {
           err = new Error('entry ' + this.table.id + '/' + this.id + ' does not exist')
         }
 
-        this._load_callbacks.forEach(cb => cb(err, this.table.entries_cache[this.id]))
+        let load_callbacks = this._load_callbacks
         this._load_callbacks = null
+        load_callbacks.forEach(cb => cb(err, this.table.entries_cache[this.id]))
       }
     }
 

@@ -84,8 +84,9 @@ class DB_TableExtract {
 
       this._ids = result
 
-      this._get_ids_callbacks.forEach(cb => cb(null, result))
+      let callbacks = this._get_ids_callbacks
       this._get_ids_callbacks = []
+      callbacks.forEach(cb => cb(null, result))
     })
   }
 

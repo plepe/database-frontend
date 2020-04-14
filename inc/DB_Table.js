@@ -38,8 +38,9 @@ class DB_Table {
       return null
     }
 
-    this._load_callbacks.forEach(cb => cb(err, db_table_cache[this.id]))
+    let load_callbacks = this._load_callbacks
     this._load_callbacks = null
+    load_callbacks.forEach(cb => cb(err, db_table_cache[this.id]))
   }
 
   _load () {
@@ -501,8 +502,9 @@ function get_db_tables (query, callback) {
     })
 
     let r = Object.values(db_table_cache)
-    _load_tables_callbacks.forEach(cb => cb(null, r))
+    let load_callbacks = _load_tables_callbacks
     _load_tables_callbacks = null
+    load_callbacks.forEach(cb => cb(null, r))
     db_table_complete = true
   })
 }
