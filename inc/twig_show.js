@@ -32,7 +32,11 @@ module.exports = {
     })
 
     Twig.extendFunction("get_entry", (table, id) => {
-      return DB_Table.get_loaded_entry_sync(table, id)
+      let ob = DB_Table.get_loaded_entry_sync(table, id)
+      if (ob) {
+        return ob.view()
+      }
+      return null
     })
 
     Twig.extendFunction("get_entries", (table, filter, sort, offset, limit) => {
