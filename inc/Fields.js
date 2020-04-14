@@ -1,3 +1,5 @@
+const httpRequest = require('./httpRequest')
+
 class Field {
   constructor (columnId, columnDef, table) {
     this.id = columnId
@@ -152,6 +154,37 @@ class Field_checkbox extends FieldWithValues {
 class Field_select extends FieldWithValues {
 }
 
+class Field_random extends Field {
+  form_type () {
+    return 'text'
+  }
+
+  additional_form_def (callback) {
+    let ret = {
+      'default_func': { js: 'random_ids_get' },
+      'random-ids-id': this.table.id + '_' + this.id
+    }
+
+    let id = 'random_key_generator_' + this.table.id + '_' + this.id
+    if (id in window && window[id].length > 10) {
+      return callback(null, ret)
+    } else {
+      httpRequest('random_ids.php?table=' + encodeURIComponent(this.table.id) + '&field=' + encodeURIComponent(this.id), {}, (err, result) => {
+        if (err) { return callback(err) }
+        result = JSON.parse(result.body)
+
+        if (id in window) {
+          window[id] = window[id].concat(result)
+        } else {
+          window[id] = result
+        }
+
+        callback(null, ret)
+      })
+    }
+  }
+}
+
 class Field_backreference extends FieldWithValues {
   is_multiple () {
     return true
@@ -171,5 +204,6 @@ module.exports = {
   radio: Field_radio,
   checkbox: Field_checkbox,
   select: Field_select,
+  random: Field_random,
   backreference: Field_backreference
 }

@@ -307,7 +307,7 @@ class DB_Table {
             if (err) { return callback(err) }
 
             for (let k1 in d) {
-              ret[k1] = d[k1]
+              ret[field.id][k1] = d[k1]
             }
 
             done()
