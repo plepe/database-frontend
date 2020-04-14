@@ -45,7 +45,7 @@ module.exports = {
       if (obs) {
         return obs.map(ob => ob.view())
       } else {
-        return null
+        return []
       }
     })
 
@@ -56,7 +56,7 @@ module.exports = {
         obs.forEach(ob => result[ob.id] = ob.title())
         return result
       } else {
-        return null
+        return []
       }
     })
 
