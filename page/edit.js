@@ -147,12 +147,7 @@ function compile_def (table, callback) {
 
     async.eachOf(def,
       (d, k, done) => {
-        if (d.reference) {// /* && !['checkbox'].includes(d.type) */&& d.reference_create_new) {
-          if (d.type === 'checkbox') {
-            d.type = 'select'
-            d.count = {default:1}
-          }
-
+        if (d.reference && !['checkbox'].includes(d.type) && d.reference_create_new) {
           reference_fields[k] = {
             count: d.count,
             table: d.reference
