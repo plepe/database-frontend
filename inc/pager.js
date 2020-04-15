@@ -1,4 +1,5 @@
 const httpRequest = require('./httpRequest')
+const state = require('./state')
 
 function connect (param) {
   let pagers = document.getElementsByClassName('pager_gear')
@@ -40,6 +41,7 @@ function connect (param) {
       select.name = 'limit'
       select.onchange = () => {
         user_settings.limit = select.value
+        state.change({limit: select.value})
         httpRequest('user_settings.php', {limit: select.value},
           (err) => {
             if (err) {

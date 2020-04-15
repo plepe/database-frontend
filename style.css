@@ -286,7 +286,7 @@ span.pager_gear {
 form.pager_options {
   position: absolute;
   white-space: nowrap;
-  left: 0px;
+  right: 0px;
   top: 1em;
   background: white;
   background: #E8EEF3;
