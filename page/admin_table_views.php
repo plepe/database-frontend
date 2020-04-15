@@ -36,6 +36,7 @@ class Page_admin_table_views extends Page {
 	'name'   => 'Fields',
 	'count'  => array(
           'default' => 1,
+          'index_type' => 'array',
           'show_depend' => array('check', 'class',
             array('is', 'Table'),
           ),
