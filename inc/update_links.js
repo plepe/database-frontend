@@ -1,6 +1,25 @@
+const forEach = require('foreach')
 const queryString = require('qs')
 
 const state = require('./state')
+
+function catch_jump_links () {
+  let Jump_links = document.getElementsByClassName('Jump_links')
+  forEach(Jump_links, form => {
+    form.addEventListener('submit', () => {
+      state.apply_from_form(form)
+      return false
+    })
+
+    let selects = form.getElementsByTagName('select')
+    forEach(selects, (select) => {
+      select.onchange = () => {
+        state.apply_from_form(form)
+        return false
+      }
+    })
+  })
+}
 
 module.exports = function update_links () {
   let links = document.getElementsByTagName('a')
@@ -19,4 +38,6 @@ module.exports = function update_links () {
       }
     }
   }
+
+  catch_jump_links()
 }
