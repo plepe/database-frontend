@@ -39,19 +39,14 @@ module.exports = {
           result.table_object = table
           result.table_name = table.name()
 
-          let viewId
-          if (param.view) {
-            viewId = param.view
+          let views = table.views(param.page)
+          if (!param.view || !(param.view in views)) {
             // TODO: update session TABLEID_view_list
-          } else {
             // viewId = global.SESSION.TABLEID_view_list
-            viewId = table.data('default_view_list')
+            param.view = table.data('default_view_' + param.page)
           }
-          param.view = viewId
 
           // remove show_priority=0
-
-          let views = table.views('list')
           if (!(param.view in views)) {
             param.view = 'default'
           }
