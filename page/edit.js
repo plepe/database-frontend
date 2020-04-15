@@ -1,5 +1,6 @@
 const async = {
-  eachOf: require('async/eachOf')
+  eachOf: require('async/eachOf'),
+  parallel: require('async/parallel')
 }
 const forEach = require('foreach')
 
@@ -214,35 +215,48 @@ module.exports = {
 
     pageData.app = global.app
 
-    load (param, (err, table, entry) => {
-      current_entry = entry
-      // pageData.title = entry.title()
-      let def
-      pageData.form = {show: () => '<div id="show-edit"></div>'}
+    async.parallel([
+      done => DB_Table.get_table_list((err, table_list) => {
+        pageData.table_list = table_list
+        done(err)
+      }),
+      done => load (param, (err, table, entry) => {
+        current_entry = entry
+        // pageData.title = entry.title()
+        let def
+        pageData.form = {show: () => '<div id="show-edit"></div>'}
 
-      compile_def(table, (err, def, reference_fields) => {
-        if (err) { return callback(err) }
+        pageData.table = table.id
+        pageData.table_name = table.name()
+        pageData.title = !param.id ? null : entry.title()
+        pageData.id = param.id
 
-        pageData.form_edit = new form('edit', def)
-        let data = JSON.parse(JSON.stringify(entry.data()))
+        compile_def(table, (err, def, reference_fields) => {
+          if (err) { return callback(err) }
 
-        forEach(reference_fields, (f, k) => {
-          if (f.count) {
-            if (k in data && typeof data[k] === 'object') {
-              data[k] = Object.values(data[k]).map(value => {
-                return {value}
-              })
+          pageData.form_edit = new form('edit', def)
+          let data = JSON.parse(JSON.stringify(entry.data()))
+
+          forEach(reference_fields, (f, k) => {
+            if (f.count) {
+              if (k in data && typeof data[k] === 'object') {
+                data[k] = Object.values(data[k]).map(value => {
+                  return {value}
+                })
+              }
+            } else {
+              data[k] = {value: data[k]}
             }
-          } else {
-            data[k] = {value: data[k]}
-          }
+          })
+
+          pageData.form_edit.set_data(data)
+          current_form = pageData.form_edit
+
+          done()
         })
-
-        pageData.form_edit.set_data(data)
-        current_form = pageData.form_edit
-
-        callback(null, pageData)
       })
+    ], (err) => {
+      callback(err, pageData)
     })
   },
 
