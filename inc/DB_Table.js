@@ -638,11 +638,16 @@ function load_missing (callback) {
   ], callback)
 }
 
+/**
+ * removes objects from cache (e.g. after saving)
+ * also clear the query_cache, as queries might be wrong (new/removed objects, sort order, ...)
+ */
 function invalidate_entries (list) {
   list.forEach((entry) => {
     let [table_id, id] = entry
     if (table_id in db_table_cache) {
       delete db_table_cache[table_id].entries_cache[id]
+      db_table_cache[table_id].query_cache = {}
     }
   })
 }
