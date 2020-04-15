@@ -249,7 +249,9 @@ module.exports = {
             }
           })
 
-          pageData.form_edit.set_data(data)
+          if (param.id || param.clone) {
+            pageData.form_edit.set_data(data)
+          }
           current_form = pageData.form_edit
 
           done()
