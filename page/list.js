@@ -34,6 +34,7 @@ module.exports = {
   },
 
   post_render (param, page_data, callback) {
+    page_with_view.connect(param)
     page_with_view.post_render(param, page_data, callback)
   },
 
