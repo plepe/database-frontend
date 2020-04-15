@@ -72,6 +72,7 @@ function apply_from_form (dom) {
 module.exports = {
   init,
   apply,
+  apply_from_form,
   change,
   parse,
   set_loader: (_loader) => loader = _loader,
