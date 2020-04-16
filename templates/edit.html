@@ -21,10 +21,10 @@
 
   <form id='form-edit' method='post'>
     {{ form|show() }}
-    <input type='submit' value='Save' title='Ctrl+s' mousetrap='ctrl+s'>
-    <input type='submit' name='delete' value='Delete'>
+    <input type='submit' onclick='this.form.submitted="save"' value='Save' title='Ctrl+s' mousetrap='ctrl+s'>
+    <input type='submit' onclick='this.form.submitted="delete"' name='delete' value='Delete'>
     <input type='text' name='message' placeholder='commit message'>
-    <input type='submit' name='cancel' value='Cancel'>
+    <input type='submit' onclick='this.form.submitted="cancel"' name='cancel' value='Cancel'>
   </form>
 
   </div>

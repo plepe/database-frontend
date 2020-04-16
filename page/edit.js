@@ -117,7 +117,7 @@ function connect (param) {
   dom_form.onsubmit = (e) => {
     let data = current_form.get_data()
 
-    switch (e.submitter ? e.submitter.name : 'save') {
+    switch (dom_form.submitted) {
       case 'cancel':
         state.apply({ page: 'show', table: current_entry.table.id, id: current_entry.id })
         break
