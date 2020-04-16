@@ -44,25 +44,27 @@ class DB_Table {
   }
 
   _load () {
-    let req = new XMLHttpRequest()
-
-    req.onreadystatechange = () => {
-      if (req.readyState == 4) {
-        let err = null
-
-        if (req.status == 200) {
-          this._data = JSON.parse(req.responseText)
-        } else {
+    httpRequest('api.php?table=' + encodeURIComponent(this.id),
+      {
+        responseType: 'json'
+      },
+      (err, result) => {
+        if (err) {
           delete db_table_cache[this.id]
-          err = new Error('table ' + this.id + ' does not exist')
+
+          if (result.status === 403) {
+            err = new Error('Access denied to table ' + this.id)
+          } else {
+            err = new Error('Can\'t load table ' + this.id + ': ' + err)
+          }
+
+          return this._call_load_callbacks(err)
         }
 
-        this._call_load_callbacks(err)
+        this._data = result.body
+        this._call_load_callbacks()
       }
-    }
-
-    req.open('GET', 'api.php?table=' + encodeURIComponent(this.id), true)
-    req.send()
+    )
   }
 
   data (key) {
@@ -159,11 +161,13 @@ class DB_Table {
       httpRequest('api.php?table=' + encodeURIComponent(this.id) + 
         toLoad.map(id => '&id[]=' + encodeURIComponent(id)).join('') +
         '&full=1',
-        {},
+        {
+          responseType: 'json'
+        },
         (err, req) => {
           if (err) { return callback(err) }
 
-          let list = JSON.parse(req.body)
+          let list = req.body
 
           list.forEach((entry, i) => {
             if (entry) {

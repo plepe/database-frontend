@@ -25,27 +25,25 @@ class DB_Entry {
   }
 
   _load () {
-    let req = new XMLHttpRequest()
-
-    req.onreadystatechange = () => {
-      if (req.readyState == 4) {
-        let err = null
-
-        if (req.status == 200) {
-          this._data = JSON.parse(req.responseText)
-        } else {
+    httpRequest(
+      'api.php?table=' + encodeURIComponent(this.table.id) + '&id=' + encodeURIComponent(this.id),
+      {
+        responseType: 'json'
+      },
+      (err, result) => {
+        if (err) {
           this.table.entries_cache[this.id] = null
-          err = new Error('entry ' + this.table.id + '/' + this.id + ' does not exist')
+          err = new Error('Error loading entry ' + this.table.id + '/' + this.id + ': ' + err)
+          return callback(err)
         }
+
+        this._data = result.body
 
         let load_callbacks = this._load_callbacks
         this._load_callbacks = null
         load_callbacks.forEach(cb => cb(err, this.table.entries_cache[this.id]))
       }
-    }
-
-    req.open('GET', 'api.php?table=' + encodeURIComponent(this.table.id) + '&id=' + encodeURIComponent(this.id), true)
-    req.send()
+    )
   }
 
   data (key) {
@@ -61,35 +59,39 @@ class DB_Entry {
   }
 
   save (data, changeset, callback) {
-    let req = new XMLHttpRequest()
-
-    req.onreadystatechange = () => {
-      if (req.readyState == 4) {
-        let err = null
-
-        if (req.status == 200) {
-          this._data = JSON.parse(req.responseText)
-
-          if ((this.id === null) || (this.id !== this._data.id)) {
-            delete this.table.entries_cache[this.id]
-            this.id = this._data.id
-            this.table.entries_cache[this.id] = this
-          }
-
-          return callback(null)
-        } else {
-          return callback(new Error('entry updating object'))
-        }
-      }
-    }
+    let url
+    let method
 
     if (this.id === null) {
-      req.open('POST', 'api.php?table=' + encodeURIComponent(this.table.id), true)
+      url = 'api.php?table=' + encodeURIComponent(this.table.id)
+      method = 'POST'
     } else {
-      req.open('PATCH', 'api.php?table=' + encodeURIComponent(this.table.id) + '&id=' + encodeURIComponent(this.id), true)
+      url = 'api.php?table=' + encodeURIComponent(this.table.id) + '&id=' + encodeURIComponent(this.id)
+      method = 'PATCH'
     }
 
-    req.send(JSON.stringify(data))
+    httpRequest(url,
+      {
+        responseType: 'json',
+        method,
+        body: JSON.stringify(data)
+      },
+      (err, result) => {
+        if (err) {
+          return callback(new Error('entry updating object: ' + err))
+        }
+
+        this._data = result.body
+
+        if ((this.id === null) || (this.id !== this._data.id)) {
+          delete this.table.entries_cache[this.id]
+          this.id = this._data.id
+          this.table.entries_cache[this.id] = this
+        }
+
+        return callback(null)
+      }
+    )
   }
 
   remove (data, changeset, callback) {
