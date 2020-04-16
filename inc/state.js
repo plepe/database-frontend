@@ -53,6 +53,10 @@ function apply (param, noPushState = false) {
   })
 }
 
+function abort () {
+  document.body.classList.remove('loading')
+}
+
 function change (param, noPushState = false) {
   let newState = JSON.parse(JSON.stringify(currentState))
 
@@ -74,6 +78,7 @@ module.exports = {
   apply,
   apply_from_form,
   change,
+  abort,
   parse,
   set_loader: (_loader) => loader = _loader,
   data: currentState

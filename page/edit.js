@@ -123,11 +123,21 @@ function connect (param) {
         break
       case 'delete':
         current_entry.remove(data, null, (err) => {
+          if (err) {
+            state.abort()
+            return alert(err)
+          }
+
           state.apply({ page: 'list', table: current_entry.table.id })
         })
         break
       default:
         save(data, (err, id) => {
+          if (err) {
+            state.abort()
+            return alert(err)
+          }
+
           state.apply({ page: 'show', table: current_entry.table.id, id: id })
         })
     }
