@@ -83,11 +83,11 @@ class DB_Entry {
 
         this._data = result.body
 
+        DB_Table.invalidate_entries([[this.table.id, this.id]])
         if ((this.id === null) || (this.id !== this._data.id)) {
-          delete this.table.entries_cache[this.id]
           this.id = this._data.id
-          this.table.entries_cache[this.id] = this
         }
+        this.table.entries_cache[this.id] = this
 
         return callback(null)
       }
