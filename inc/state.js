@@ -40,7 +40,7 @@ function apply (param, noPushState = false) {
     currentState[k] = param[k]
   }
 
-  document.body.classList.add('loading')
+  indicate_loading()
 
   if (!noPushState) {
     history.pushState(currentState, '', '?' + queryString.stringify(currentState))
@@ -53,6 +53,10 @@ function apply (param, noPushState = false) {
       return alert(err)
     }
   })
+}
+
+function indicate_loading () {
+  document.body.classList.add('loading')
 }
 
 function abort () {
@@ -82,6 +86,7 @@ module.exports = {
   change,
   abort,
   parse,
+  indicate_loading,
   set_loader: (_loader) => loader = _loader,
   data: currentState
 }

@@ -66,6 +66,8 @@ function connect (param) {
               actions.appendChild(input)
 
               f.onsubmit = () => {
+                state.indicate_loading()
+
                 let data = form_editable.get_data()
 
                 entry.save(data, null, (err) => {

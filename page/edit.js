@@ -135,6 +135,8 @@ function connect (param) {
   dom_form.onsubmit = (e) => {
     let data = current_form.get_data()
 
+    state.indicate_loading()
+
     switch (dom_form.submitted) {
       case 'cancel':
         state.apply({ page: 'show', table: current_entry.table.id, id: current_entry.id })
