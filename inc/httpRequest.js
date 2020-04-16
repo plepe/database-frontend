@@ -23,6 +23,15 @@ function httpRequest (url, options, callback) {
 
       if (xhr.status === 200) {
         xhr.body = xhr.response
+
+        if (options.responseType === 'json') {
+          try {
+            xhr.body = JSON.parse(xhr.response)
+          } catch (e) {
+            return callback(new Error('Error parsing JSON result: ' + e.message), xhr)
+          }
+        }
+
         callback(null, xhr)
       } else {
         callback(new Error(xhr.statusText), xhr)
@@ -30,10 +39,22 @@ function httpRequest (url, options, callback) {
     }
   }
 
+  function parseResponseType () {
+    if (!('responseType' in options)) {
+      return 'text'
+    }
+
+    if (options.responseType === 'json') {
+      return 'text'
+    }
+
+    return options.responseType
+  }
+
   function direct () {
     xhr = new XMLHttpRequest()
     xhr.open(options.method || 'GET', url, true)
-    xhr.responseType = options.responseType || 'text'
+    xhr.responseType = parseResponseType()
     xhr.onreadystatechange = readyStateChange
     xhr.send(options.body)
   }
@@ -41,7 +62,7 @@ function httpRequest (url, options, callback) {
   function viaServer () {
     xhr = new XMLHttpRequest()
     xhr.open(options.method || 'GET', 'httpGet.php?url=' + encodeURIComponent(url), true)
-    xhr.responseType = options.responseType || 'text'
+    xhr.responseType = parseResponseType()
     xhr.onreadystatechange = readyStateChange
     xhr.send(options.body)
   }
