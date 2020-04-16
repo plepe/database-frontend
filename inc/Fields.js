@@ -20,7 +20,7 @@ class Field {
   }
 
   is_multiple () {
-    return 'count' in this.def && this.def.count
+    return 'count' in this.def && !!this.def.count
   }
 
   default_format (key) {
