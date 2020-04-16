@@ -41,15 +41,17 @@ function apply (param, noPushState = false) {
   }
 
   document.body.classList.add('loading')
+
+  if (!noPushState) {
+    history.pushState(currentState, '', '?' + queryString.stringify(currentState))
+  }
+
   return loader.onapply(currentState, (err) => {
+    document.body.classList.remove('loading')
+
     if (err) {
       return alert(err)
     }
-
-    if (!noPushState) {
-      history.pushState(currentState, '', '?' + queryString.stringify(currentState))
-    }
-    document.body.classList.remove('loading')
   })
 }
 
