@@ -1004,6 +1004,10 @@ class DB_Table {
   function get_entry_count($filter=array()) {
     return sizeof($this->get_entry_ids($filter));
   }
+
+  function access ($type='view') {
+    return base_access($type) && access($this->data("access_{$type}"));
+  }
 }
 
 function get_db_table($type) {
@@ -1039,6 +1043,16 @@ function get_db_table($type) {
     return null;
 
   return $db_table_cache[$type];
+}
+
+function get_db_table_viewable ($table_id) {
+  $table = get_db_table($table_id);
+
+  if (!$table->access('view')) {
+    return false;
+  }
+
+  return $table;
 }
 
 function get_db_tables() {
@@ -1078,6 +1092,16 @@ function get_db_tables() {
   $db_table_cache_complete = true;
   $db_table_cache = $ret;
   return $db_table_cache;
+}
+
+function get_db_tables_viewable () {
+  $tables = get_db_tables();
+
+  $tables = array_filter($tables, function ($table) {
+    return $table->access('view');
+  });
+
+  return $tables;
 }
 
 function get_db_table_names () {

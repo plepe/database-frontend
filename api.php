@@ -18,8 +18,12 @@ if(!isset($data_path) || !is_dir($data_path) || !is_writeable($data_path)) {
 switch ($_SERVER['REQUEST_METHOD']) {
   case 'GET':
     if ($_REQUEST['table']) {
-      $table = get_db_table($_REQUEST['table']);
-      if (!$table) {
+      $table = get_db_table_viewable($_REQUEST['table']);
+      if ($table === false) {
+        Header('HTTP/1.0 403 Forbidden');
+        exit(0);
+      }
+      elseif (!$table) {
         Header('HTTP/1.0 404 Not Found');
         exit(0);
       }
@@ -56,12 +60,12 @@ switch ($_SERVER['REQUEST_METHOD']) {
         if (isset($_REQUEST['full']) && $_REQUEST['full']) {
           $data = array_map(function ($table) {
             return $table->view();
-          }, get_db_tables());
+          }, get_db_tables_viewable());
 
           print json_readable_encode(array_values($data));
         }
         else {
-          $data = array_keys(get_db_tables());
+          $data = array_keys(get_db_tables_viewable());
 
           print json_readable_encode($data);
         }
@@ -75,7 +79,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
     $changeset->open();
 
     if ($_REQUEST['table']) {
-      $table = get_db_table($_REQUEST['table']);
+      $table = get_db_table_viewable($_REQUEST['table']);
       if (!$table) {
         Header('HTTP/1.0 404 Not Found');
         exit(0);
@@ -111,7 +115,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
       print json_readable_encode(db_execute($data, $changeset));
     }
     else if ($_REQUEST['table']) {
-      $table = get_db_table($_REQUEST['table']);
+      $table = get_db_table_viewable($_REQUEST['table']);
       if (!$table) {
         Header('HTTP/1.0 404 Not Found');
         exit(0);
