@@ -120,7 +120,14 @@ switch ($_SERVER['REQUEST_METHOD']) {
     $changeset->open();
 
     if (array_key_exists('script', $_REQUEST)) {
-      print json_readable_encode(db_execute($data, $changeset));
+      try {
+        $result = db_execute($data, $changeset);
+      }
+      catch (Exception $e) {
+        Header('HTTP/1.0 403 ' . $e->getMessage());
+        exit(0);
+      }
+      print json_readable_encode($result);
     }
     else if ($_REQUEST['table']) {
       $table = get_db_table_viewable($_REQUEST['table']);

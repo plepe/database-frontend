@@ -34,6 +34,10 @@ function db_execute ($script, $changeset) {
   foreach ($script as $i => $statement) {
     switch ($statement['action']) {
       case 'create':
+        $table = get_db_table($statement['table']);
+        if (!$table->access('edit')) {
+          throw new Exception('Access denied');
+        }
         $entry = new DB_Entry($statement['table'], null);
         $data = $statement['data'];
         db_execute_references($data, $statement, $results);
@@ -41,6 +45,10 @@ function db_execute ($script, $changeset) {
         $results[$i] = $entry->view();
         break;
       case 'update':
+        $table = get_db_table($statement['table']);
+        if (!$table->access('edit')) {
+          throw new Exception('Access denied');
+        }
         $entry = get_db_table($statement['table'])->get_entry($statement['id']);
         $data = $statement['data'];
         db_execute_references($data, $statement, $results);
@@ -48,14 +56,26 @@ function db_execute ($script, $changeset) {
         $results[$i] = $entry->view();
         break;
       case 'delete':
+        $table = get_db_table($statement['table']);
+        if (!$table->access('edit')) {
+          throw new Exception('Access denied');
+        }
         $entry = get_db_table($statement['table'])->get_entry($statement['id']);
         $entry->remove($changeset);
         break;
       case 'select':
+        $table = get_db_table($statement['table']);
+        if (!$table->access('view')) {
+          throw new Exception('Access denied');
+        }
         $entry = get_db_table($statement['table'])->get_entry($statement['id']);
         $results[$i] = $entry->view();
         break;
       case 'query_ids':
+        $table = get_db_table($statement['table']);
+        if (!$table->access('view')) {
+          throw new Exception('Access denied');
+        }
         $results[$i] = get_db_table($statement['table'])->get_entry_ids($statement['filter'] ?? null, $statement['sort'] ?? null);
         break;
       default:
