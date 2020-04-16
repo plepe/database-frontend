@@ -3,6 +3,7 @@ const async = {
 }
 
 const page_with_view = require('../inc/page_with_view.js')
+const editable = require('../inc/editable.js')
 
 function page (result, callback) {
   result.view.set_extract(result.table_extract)
@@ -35,10 +36,12 @@ module.exports = {
 
   post_render (param, page_data, callback) {
     page_with_view.connect(param)
+    editable.connect(param)
     page_with_view.post_render(param, page_data, callback)
   },
 
   connect (param) {
     page_with_view.connect(param)
+    editable.connect(param)
   }
 }

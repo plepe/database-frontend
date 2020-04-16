@@ -4,6 +4,7 @@ const async = {
 
 const DB_TableExtract = require('../inc/DB_TableExtract')
 const page_with_view = require('../inc/page_with_view.js')
+const editable = require('../inc/editable.js')
 
 function page (result, callback) {
   let extract = new DB_TableExtract(result.table_object)
@@ -41,5 +42,6 @@ module.exports = {
 
   connect (param) {
     page_with_view.connect(param)
+    editable.connect(param)
   }
 }
