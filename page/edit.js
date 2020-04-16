@@ -48,6 +48,24 @@ function save (data, callback) {
   let script = []
   let references = {}
 
+  // loaded from server -> load everything and start over
+  if (!current_entry) {
+    return load(state.data,
+      (err, table, entry) => {
+        if (err) { return alert(err) }
+        current_entry = entry
+
+        compile_def(table,
+          (err) => {
+            if (err) { return alert(err) }
+
+            save(data, callback)
+          }
+        )
+      }
+    )
+  }
+
   forEach(current_reference_fields, (f, k) => {
     if (f.count) {
       forEach(data[k] || [], (value, i) => {
