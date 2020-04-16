@@ -80,8 +80,16 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
     if ($_REQUEST['table']) {
       $table = get_db_table_viewable($_REQUEST['table']);
-      if (!$table) {
+      if ($table === false) {
+        Header('HTTP/1.0 403 Forbidden');
+        exit(0);
+      }
+      elseif (!$table) {
         Header('HTTP/1.0 404 Not Found');
+        exit(0);
+      }
+      elseif (!$table->access('edit')) {
+        Header('HTTP/1.0 403 Forbidden');
         exit(0);
       }
 
@@ -116,8 +124,16 @@ switch ($_SERVER['REQUEST_METHOD']) {
     }
     else if ($_REQUEST['table']) {
       $table = get_db_table_viewable($_REQUEST['table']);
-      if (!$table) {
+      if ($table === false) {
+        Header('HTTP/1.0 403 Forbidden');
+        exit(0);
+      }
+      elseif (!$table) {
         Header('HTTP/1.0 404 Not Found');
+        exit(0);
+      }
+      elseif (!$table->access('edit')) {
+        Header('HTTP/1.0 403 Forbidden');
         exit(0);
       }
 
@@ -137,8 +153,16 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
     if ($_REQUEST['table']) {
       $table = get_db_table($_REQUEST['table']);
-      if (!$table) {
+      if ($table === false) {
+        Header('HTTP/1.0 403 Forbidden');
+        exit(0);
+      }
+      elseif (!$table) {
         Header('HTTP/1.0 404 Not Found');
+        exit(0);
+      }
+      elseif (!$table->access('edit')) {
+        Header('HTTP/1.0 403 Forbidden');
         exit(0);
       }
 
