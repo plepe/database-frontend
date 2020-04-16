@@ -76,7 +76,7 @@ function connect (param) {
                   document.body.removeChild(dom)
                   dom = null
 
-                  state.change({})
+                  state.change({id: entry.id})
                 })
 
                 return false
