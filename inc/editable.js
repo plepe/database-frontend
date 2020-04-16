@@ -14,6 +14,10 @@ function connect (param) {
         let entry_id = td.getAttribute('data-id')
         let field_id = td.getAttribute('data-field')
 
+        if (!table_id || !entry_id || !field_id) {
+          return
+        }
+
         DB_Table.get(table_id, (err, table) => {
           if (err) {
             return alert(err)
@@ -28,62 +32,69 @@ function connect (param) {
               document.body.removeChild(dom)
             }
 
-            dom = document.createElement('div')
-            dom.className = 'editable'
-            document.body.appendChild(dom)
+            table.def((err, _orig_form_def) => {
+              if (err) { return alert(err) }
 
-            let f = document.createElement('form')
-            dom.appendChild(f)
+              if (!(field_id in _orig_form_def)) {
+                return
+              }
 
-            let form_def = {}
-            form_def[field_id] = table._data.fields[field_id]
-            form_def[field_id].hide_label = true
+              dom = document.createElement('div')
+              dom.className = 'editable'
+              document.body.appendChild(dom)
 
-            let form_editable = new form('editable', form_def)
+              let f = document.createElement('form')
+              dom.appendChild(f)
 
-            observe(f, {attributes: true}, () => form_editable.resize())
+              let form_def = {}
+              form_def[field_id] = JSON.parse(JSON.stringify(_orig_form_def[field_id]))
 
-            form_editable.show(f)
-            form_editable.set_data(entry.view())
+              let form_editable = new form('editable', form_def)
 
-            let actions = document.createElement('div')
-            actions.className = 'actions'
-            f.appendChild(actions)
+              observe(f, {attributes: true}, () => form_editable.resize())
 
-            let input = document.createElement('input')
-            input.type = 'submit'
-            input.value = 'Save'
-            actions.appendChild(input)
+              form_editable.show(f)
+              form_editable.set_data(entry.view())
 
-            f.onsubmit = () => {
-              let data = form_editable.get_data()
+              let actions = document.createElement('div')
+              actions.className = 'actions'
+              f.appendChild(actions)
 
-              entry.save(data, null, (err) => {
-                if (err) {
-                  alert(err)
-                }
+              let input = document.createElement('input')
+              input.type = 'submit'
+              input.value = 'Save'
+              actions.appendChild(input)
 
+              f.onsubmit = () => {
+                let data = form_editable.get_data()
+
+                entry.save(data, null, (err) => {
+                  if (err) {
+                    alert(err)
+                  }
+
+                  document.body.removeChild(dom)
+                  dom = null
+
+                  state.change({})
+                })
+
+                return false
+              }
+
+              actions.appendChild(document.createTextNode(' '))
+
+              input = document.createElement('input')
+              input.type = 'button'
+              input.value = 'Cancel'
+              actions.appendChild(input)
+              input.onclick = () => {
                 document.body.removeChild(dom)
                 dom = null
 
-                state.change({})
-              })
-
-              return false
-            }
-
-            actions.appendChild(document.createTextNode(' '))
-
-            input = document.createElement('input')
-            input.type = 'button'
-            input.value = 'Cancel'
-            actions.appendChild(input)
-            input.onclick = () => {
-              document.body.removeChild(dom)
-              dom = null
-
-              return false
-            }
+                return false
+              }
+            })
           })
         })
 
