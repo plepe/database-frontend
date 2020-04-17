@@ -521,6 +521,12 @@ function get_table_list (callback) {
 
     let result = {}
 
+    // Sort tables alpha
+    tables.sort((a, b) => {
+      if (a.name() < b.name()) { return -1}
+      if (a.name() > b.name()) { return 1}
+    })
+
     tables.forEach(table => result[table.id] = table.name())
 
     callback(null, result)
