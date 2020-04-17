@@ -32,6 +32,7 @@ $include = array(
     'inc/array_insert_before.php',
     'inc/random_ids.php',
     'inc/db_execute.php',
+    'inc/session.php',
     'page/*.php',
   ),
   'js' => array(
