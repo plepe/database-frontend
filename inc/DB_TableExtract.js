@@ -36,9 +36,9 @@ class DB_TableExtract {
         offset = 0
       }
       if (limit === null || limit === undefined || limit === 0 || limit === '0') {
-        ids = this._ids.slice(offset)
+        ids = this._ids.slice(parseInt(offset))
       } else {
-        ids = this._ids.slice(offset, offset + limit)
+        ids = this._ids.slice(parseInt(offset), parseInt(offset) + parseInt(limit))
       }
 
       this.table.get_entries_by_id(ids, (err, result) => {
