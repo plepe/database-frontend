@@ -45,10 +45,10 @@ switch ($_SERVER['REQUEST_METHOD']) {
       }
       elseif ($_REQUEST['list']) {
         if (isset($_REQUEST['full']) && $_REQUEST['full']) {
-          $data = array_values(array_map(function ($ob) { return $ob->view(); }, $table->get_entries()));
+          $data = array_values(array_map(function ($ob) { return $ob->view(); }, $table->get_entries($_REQUEST['filter'], $_REQUEST['sort'], $_REQUEST['offset'] ?? 0, $_REQUEST['limit'] ?? null)));
           print json_readable_encode($data);
         } else {
-          print json_readable_encode($table->get_entry_ids($_REQUEST['filter']));
+          print json_readable_encode($table->get_entry_ids($_REQUEST['filter'], $_REQUEST['sort'], $_REQUEST['offset'] ?? 0, $_REQUEST['limit'] ?? null));
         }
       }
       else {
