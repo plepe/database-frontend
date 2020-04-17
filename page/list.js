@@ -28,7 +28,7 @@ module.exports = {
       }
     }
     if (!('offset' in param)) {
-      param.offset = 0
+      param.offset = 25
     }
 
     page_with_view.get(param, page, callback)

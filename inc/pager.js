@@ -54,9 +54,9 @@ function connect (param) {
       }
 
       let limits = [10, 25, 50, 100, 0]
-      let limit = parseInt(global.user_settings.limit)
+      let limit = parseInt(global.user_settings.limit) || 0
       if ('limit' in param) {
-        limit = parseInt(param.limit)
+        limit = parseInt(param.limit) || 0
       }
 
       for (let i in limits) {
