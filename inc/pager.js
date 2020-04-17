@@ -92,7 +92,17 @@ function connect (param) {
   }
 }
 
+function permalink (param) {
+  param.limit = global.user_settings.limit
+}
+
 module.exports = {
   init: () => {},
-  connect
+  connect_server_rendered: connect,
+  post_render: (param, page_data, done) => {
+    connect(param)
+    done()
+  },
+  pre_render: (param, page_data, done) => done(),
+  permalink
 }

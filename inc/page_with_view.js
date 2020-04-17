@@ -7,10 +7,12 @@ const async = {
 const Views = require('./Views.js')
 const pager = require('./pager.js')
 const state = require('./state.js')
+const session = require('./session.js')
 
 const modules = [
   require('./table_fields.js'),
-  require('./filter.js')
+  require('./filter.js'),
+  require('./pager.js')
 ]
 
 module.exports = {
@@ -41,9 +43,9 @@ module.exports = {
 
           let views = table.views(param.page)
           if (!param.view || !(param.view in views)) {
-            // TODO: update session TABLEID_view_list
-            // viewId = global.SESSION.TABLEID_view_list
-            param.view = table.data('default_view_' + param.page)
+            param.view = session.get(table.id + '_view_' + param.page) || table.data('default_view_' + param.page)
+          } else {
+            session.set(table.id + '_view_' + param.page, param.view)
           }
 
           // remove show_priority=0
@@ -64,6 +66,19 @@ module.exports = {
 
       let table_extract = new DB_TableExtract(table)
       result.table_extract = table_extract
+
+      if (param.sort) {
+        session.set(table.id + '_view_sort', param.sort)
+        session.set(table.id + '_view_sort_dir', param.sort_dir)
+      } else {
+        let sort = session.get(table.id + '_view_sort')
+        if (sort) {
+          param.sort = sort
+          param.sort_dir = session.get(table.id + '_view_sort_dir')
+        } else {
+          param.sort = table.data('sort')
+        }
+      }
 
       async.each(modules,
         (module, done) => module.pre_render(param, result, done),
@@ -96,8 +111,6 @@ module.exports = {
         return false
       }
     }
-
-    pager.connect(param)
 
     modules.forEach(module => module.connect_server_rendered(param))
   },
