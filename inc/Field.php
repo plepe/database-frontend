@@ -396,7 +396,7 @@ class Field_random extends Field {
 }
 
 class Field_backreference extends FieldWithValues {
-  function db_type() {
+  function db_type () {
     return null;
   }
 

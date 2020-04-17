@@ -86,7 +86,7 @@ class DB_Entry {
       }
 
       // the field has multiple values -> use extra table
-      if($field->is_multiple() === true) {
+      elseif($field->is_multiple() === true) {
         if($this->id !== null)
           $cmds[] = "delete from " . $db_conn->quoteIdent($this->type . '_' . $column_id) .
             " where " . $db_conn->quoteIdent('id') . "=" . $db_conn->quote($this->id);
@@ -149,9 +149,44 @@ class DB_Entry {
     foreach($data as $column_id=>$d) {
       $field = $this->table->field($column_id);
 
-      // the field has multiple values -> use extra table
-      if($field->is_multiple() === true) {
+      if ($field->type() === 'backreference') {
+        list ($ref_table, $ref_field) = explode(':', $field->def['backreference']);
+        $old_ref_data = array();
+        $res = $db_conn->query('select id from ' .
+          $db_conn->quoteIdent($ref_table . '_' . $ref_field) .
+          ' where ' . $db_conn->quoteIdent('value') . '=' . $db_conn->quote($this->id));
+        while ($elem = $res->fetch()) {
+          $old_ref_data[] = $elem['id'];
+        }
 
+        foreach ($data[$column_id] as $d) {
+          if (!in_array($d, $old_ref_data)) {
+            $cmds[] = 'insert into ' .
+              $db_conn->quoteIdent($ref_table . '_' . $ref_field) .
+              ' (select ' .
+                $db_conn->quote($d) . ', ' .
+                'coalesce(max(' . $db_conn->quoteIdent('sequence') . ') + 1, 0), ' .
+                'coalesce(max(' . $db_conn->quoteIdent('key') . ') + 1, 0), ' .
+              $db_conn->quote($this->id) .
+              ' from ' . $db_conn->quoteIdent($ref_table . '_' . $ref_field) .
+              ' where id=' . $db_conn->quote($d) . ')';
+
+            $changeset->add(get_db_table($ref_table)->get_entry($d));
+          }
+        }
+
+        foreach ($old_ref_data as $d) {
+          if (!in_array($d, $data[$column_id])) {
+            $cmds[] = 'delete from ' .
+              $db_conn->quoteIdent($ref_table . '_' . $ref_field) .
+              ' where id=' . $db_conn->quote($d);
+
+            $changeset->add(get_db_table($ref_table)->get_entry($d));
+          }
+        }
+      }
+      // the field has multiple values -> use extra table
+      elseif($field->is_multiple() === true) {
 	$sequence = 0;
 	foreach($d as $k=>$v) {
 	  // don't save null values
