@@ -81,13 +81,19 @@ class DB_Entry {
           return callback(new Error('entry updating object: ' + err))
         }
 
+        DB_Table.invalidate_entries(this.referenced_entries())
+        if (this.id !== null) {
+          DB_Table.invalidate_entries([[this.table.id, this.id]])
+        }
+
         this._data = result.body
 
-        DB_Table.invalidate_entries([[this.table.id, this.id]])
         if ((this.id === null) || (this.id !== this._data.id)) {
           this.id = this._data.id
         }
         this.table.entries_cache[this.id] = this
+
+        DB_Table.invalidate_entries(this.referenced_entries())
 
         return callback(null)
       }
@@ -102,7 +108,8 @@ class DB_Entry {
       (err) => {
         if (err) { return callback(err) }
 
-        delete this.table.entries_cache[this.id]
+        DB_Table.invalidate_entries(this.referenced_entries())
+        DB_Table.invalidate_entries([[this.table.id, this.id]])
 
         callback(null)
       }
