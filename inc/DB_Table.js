@@ -523,8 +523,15 @@ function get_table_list (callback) {
 
     // Sort tables alpha
     tables.sort((a, b) => {
-      if (a.name() < b.name()) { return -1}
-      if (a.name() > b.name()) { return 1}
+      let weight_a = parseInt(a.data('weight') || 0);
+      let weight_b = parseInt(b.data('weight') || 0);
+
+      if (weight_a === weight_b) {
+        if (a.name() < b.name()) { return -1 }
+        if (a.name() > b.name()) { return 1 }
+      } else {
+        return weight_a - weight_b
+      }
     })
 
     tables.forEach(table => result[table.id] = table.name())

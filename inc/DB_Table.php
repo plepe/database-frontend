@@ -1107,7 +1107,21 @@ function get_db_tables_viewable () {
 function get_db_table_names () {
   $ret = array();
 
-  foreach(get_db_tables() as $type) {
+  $tables = get_db_tables();
+
+  usort($tables, function ($a, $b) {
+    $weight_a = $a->data('weight') ?? 0;
+    $weight_b = $b->data('weight') ?? 0;
+
+    if ($weight_a === $weight_b) {
+      return $a->name() <=> $b->name();
+    }
+    else {
+      return $weight_a - $weight_b;
+    }
+  });
+
+  foreach($tables as $type) {
     $ret[$type->id] = $type->name();
   }
 
