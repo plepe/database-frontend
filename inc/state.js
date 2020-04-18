@@ -2,6 +2,7 @@ const queryString = require('qs')
 
 const httpRequest = require('./httpRequest')
 const data_from_form = require('./data_from_form')
+const ts = require('./ts')
 
 let currentState = {}
 
@@ -30,6 +31,14 @@ function init () {
   window.addEventListener('popstate', e => {
     apply(e.state, true)
   })
+
+  ts.wait(change_detect)
+}
+
+function change_detect (err, result) {
+  if (err) { return alert('Error waiting for changes: ' + err) }
+
+  ts.wait(change_detect)
 }
 
 function apply (param, noPushState = false) {
