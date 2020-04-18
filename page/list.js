@@ -25,11 +25,11 @@ module.exports = {
   get (param, callback) {
     if (!('limit' in param)) {
       if ('limit' in global.user_settings) {
-        param.limit = global.user_settings.limit
+        param.limit = 'limit' in global.user_settings ? global.user_settings.limit : 25
       }
     }
     if (!('offset' in param)) {
-      param.offset = 25
+      param.offset = 0
     }
 
     page_with_view.get(param, page, callback)
