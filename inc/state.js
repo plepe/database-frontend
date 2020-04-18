@@ -1,101 +1,98 @@
 const queryString = require('qs')
+const EventEmitter = require('events')
 
 const httpRequest = require('./httpRequest')
 const data_from_form = require('./data_from_form')
 const ts = require('./ts')
 
-let currentState = {}
-
-let loader
-
-function parse (str) {
-  return queryString.parse(str)
-}
-
-function init () {
-  let newState = {}
-
-  if (location.search && location.search.length > 1) {
-    newState = parse(location.search.substr(1))
+class State extends EventEmitter {
+  parse (str) {
+    return queryString.parse(str)
   }
 
-  for (let k in currentState) {
-    delete currentState[k]
-  }
-  for (let k in newState) {
-    currentState[k] = newState[k]
-  }
+  init () {
+    let newState = {}
+    this.data = {}
 
-  loader.oninit(currentState)
-
-  window.addEventListener('popstate', e => {
-    apply(e.state, true)
-  })
-
-  ts.wait(change_detect)
-}
-
-function change_detect (err, result) {
-  if (err) { return alert('Error waiting for changes: ' + err) }
-
-  ts.wait(change_detect)
-}
-
-function apply (param, noPushState = false) {
-  for (let k in currentState) {
-    delete currentState[k]
-  }
-  for (let k in param) {
-    currentState[k] = param[k]
-  }
-
-  indicate_loading()
-
-  if (!noPushState) {
-    history.pushState(currentState, '', '?' + queryString.stringify(currentState))
-  }
-
-  return loader.onapply(currentState, (err) => {
-    document.body.classList.remove('loading')
-
-    if (err) {
-      return alert(err)
+    if (location.search && location.search.length > 1) {
+      newState = this.parse(location.search.substr(1))
     }
-  })
-}
 
-function indicate_loading () {
-  document.body.classList.add('loading')
-}
+    for (let k in newState) {
+      this.data[k] = newState[k]
+    }
 
-function abort () {
-  document.body.classList.remove('loading')
-}
+    this.loader.oninit(this.data)
 
-function change (param, noPushState = false) {
-  let newState = JSON.parse(JSON.stringify(currentState))
+    window.addEventListener('popstate', e => {
+      this.apply(e.state, true)
+    })
 
-  for (let k in param) {
-    newState[k] = param[k]
+    ts.wait((err, result) => this.change_detect(err, result))
   }
 
-  apply(newState, noPushState)
+  change_detect (err, result) {
+    if (err) { return alert('Error waiting for changes: ' + err) }
+
+    if (result) {
+      this.emit('change_detect', result)
+    }
+
+    ts.wait((err, result) => this.change_detect(err, result))
+  }
+
+  apply (param, noPushState = false) {
+    for (let k in this.data) {
+      delete this.data[k]
+    }
+    for (let k in param) {
+      this.data[k] = param[k]
+    }
+
+    this.indicate_loading()
+
+    if (!noPushState) {
+      history.pushState(this.data, '', '?' + queryString.stringify(this.data))
+    }
+
+    return this.loader.onapply(this.data, (err) => {
+      document.body.classList.remove('loading')
+
+      if (err) {
+        return alert(err)
+      }
+    })
+  }
+
+  indicate_loading () {
+    document.body.classList.add('loading')
+  }
+
+  abort () {
+    document.body.classList.remove('loading')
+  }
+
+  change (param, noPushState = false) {
+    let newState = JSON.parse(JSON.stringify(this.data))
+
+    for (let k in param) {
+      newState[k] = param[k]
+    }
+
+    this.apply(newState, noPushState)
+  }
+
+  apply_from_form (dom) {
+    let data = data_from_form(dom)
+
+    return this.apply(data)
+  }
+
+  set_loader (_loader) {
+    this.loader = _loader
+  }
 }
 
-function apply_from_form (dom) {
-  let data = data_from_form(dom)
+let state = new State()
 
-  return apply(data)
-}
-
-module.exports = {
-  init,
-  apply,
-  apply_from_form,
-  change,
-  abort,
-  parse,
-  indicate_loading,
-  set_loader: (_loader) => loader = _loader,
-  data: currentState
-}
+module.exports = state
