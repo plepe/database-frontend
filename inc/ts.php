@@ -36,3 +36,7 @@ function get_timestamps ($after=null) {
 
   return $result;
 }
+
+register_hook('init', function () {
+  html_export_var(array('ts' => get_timestamps()));
+});
