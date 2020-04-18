@@ -1,5 +1,11 @@
+const forEach = require('foreach')
+const async = {
+  parallel: require('async/parallel')
+}
+
 const httpRequest = require('./httpRequest')
 const state = require('./state')
+const templates = require('./templates')
 
 function connect (param) {
   let pagers = document.getElementsByClassName('pager_gear')
@@ -96,6 +102,39 @@ function permalink (param) {
   param.limit = global.user_settings.limit
 }
 
+function update_list (param, table_extract, callback) {
+  table_extract.get_ids((err, ids) => {
+    let text = '' + ids.length
+    if (param.limit) {
+      text = (param.offset + 1) + '-' + Math.min(ids.length, param.offset + param.limit) + ' / ' + (ids.length)
+    }
+
+    let pagers = document.getElementsByClassName('pager')
+    forEach(pagers, (pager) => {
+      pager.innerHTML = text
+    })
+
+    callback(err)
+  })
+}
+
+function update_single (param, table_extract, callback) {
+  async.parallel({
+    template: (done) => templates.get('show_pager', done),
+    info: (done) => table_extract.pager_info_show(param.id, done)
+  }, (err, {template, info}) => {
+    let pagers = document.getElementsByClassName('Pager')
+    forEach(pagers, (pager) => {
+      let div = document.createElement('div')
+      div.innerHTML = template.render({pager: info})
+      pager.parentNode.insertBefore(div, pager)
+      pager.parentNode.removeChild(pager)
+    })
+
+    callback(err)
+  })
+}
+
 module.exports = {
   init: () => {},
   connect_server_rendered: connect,
@@ -104,5 +143,7 @@ module.exports = {
     done()
   },
   pre_render: (param, page_data, done) => done(),
-  permalink
+  permalink,
+  update_list,
+  update_single
 }

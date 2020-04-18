@@ -10,6 +10,19 @@ class View_JSON extends View {
     })
   }
 
+  update_single (param, callback) {
+    this.extract.get(0, 1, (list) => {
+      this.ob = list[0]
+
+      let content = document.getElementsByClassName('Content')
+      if (content.length) {
+        content[0].innerHTML = '<pre class="view_json">' + htmlentities(json_readable_encode(this.ob.view())) + '</pre>'
+      }
+
+      callback(null)
+    })
+  }
+
   show () {
     return this.result
   }

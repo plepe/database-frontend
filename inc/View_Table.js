@@ -13,8 +13,20 @@ class View_Table extends View {
       fields[key].html_attributes = 'data-table="' + htmlentities(param.table) + '" data-id="{{ id }}" data-field="' + htmlentities(key) + '" data-view="' + htmlentities(this.id) + '"'
     }
 
-    let view = new table(fields, this.extract, {template_engine: 'twig'})
-    this.render_view(view, 'html-transposed', param, callback)
+    this.view = new table(fields, this.extract, {template_engine: 'twig'})
+    this.render_view(this.view, 'html-transposed', param, callback)
+  }
+
+  update_single (param, callback) {
+    this.render_view(this.view, 'html-transposed', param, (err) => {
+      let content = document.getElementsByClassName('Content')
+
+      if (content.length) {
+        content[0].innerHTML = this.result
+      }
+
+      callback(err)
+    })
   }
 
   show_list (value, param) {
@@ -39,8 +51,20 @@ class View_Table extends View {
       fields[key].html_attributes = 'data-table="' + htmlentities(param.table) + '" data-id="{{ id }}" data-field="' + htmlentities(key) + '" data-view="' + htmlentities(this.id) + '"'
     }
 
-    let view = new table(fields, this.extract, {template_engine: 'twig'})
-    this.render_view(view, 'html', param, callback)
+    this.view = new table(fields, this.extract, {template_engine: 'twig'})
+    this.render_view(this.view, 'html', param, callback)
+  }
+
+  update_list (param, callback) {
+    this.render_view(this.view, 'html', param, (err) => {
+      let content = document.getElementsByClassName('Content')
+
+      if (content.length) {
+        content[0].innerHTML = this.result
+      }
+
+      callback(err)
+    })
   }
 
   render_view (view, type, param, callback) {

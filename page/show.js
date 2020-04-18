@@ -5,6 +5,7 @@ const async = {
 const DB_TableExtract = require('../inc/DB_TableExtract')
 const page_with_view = require('../inc/page_with_view.js')
 const editable = require('../inc/editable.js')
+const pager = require('../inc/pager.js')
 
 function page (result, callback) {
   let extract = new DB_TableExtract(result.table_object)
@@ -43,5 +44,12 @@ module.exports = {
   connect (param) {
     page_with_view.connect(param)
     editable.connect(param)
+  },
+
+  update (page_data, callback) {
+    async.parallel([
+      (done) => page_data.view.update_single(page_data.param, done),
+      (done) => pager.update_single(page_data.param, page_data.table_extract, done)
+    ], callback)
   }
 }

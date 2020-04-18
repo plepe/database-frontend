@@ -61,10 +61,6 @@ class DB_TableExtract {
   }
 
   get_ids (callback) {
-    if (this._ids) {
-      return callback(null, this._ids)
-    }
-
     if (this.ids) {
       // TODO: sort list on server
       this._ids = this.ids
