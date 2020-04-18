@@ -818,6 +818,8 @@ class DB_Table {
   }
 
   function _timestamp_query () {
+    global $db_conn;
+
     if (!$this->data('ts')) {
       return '';
     }
@@ -845,6 +847,7 @@ class DB_Table {
       return null;
     }
 
+    $ts = $this->_timestamp_query();
     $data = array();
     $res = $db_conn->query("select * from (select id {$ts} from " . $db_conn->quoteIdent($this->id) . ') t' . ($after ? ' where ts>' . $db_conn->quote((new DateTime($after))->format('Y-m-d H:i:s')) : ''));
 

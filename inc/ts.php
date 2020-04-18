@@ -1,0 +1,32 @@
+<?php
+function get_timestamps ($after=null) {
+  global $db_conn;
+
+  $where = '';
+  if ($after) {
+    $timestamp = (new DateTime($_REQUEST['ts']))->format('Y-m-d H:i:s');
+    $where = "where ts>" . $db_conn->quote($timestamp);
+  }
+
+  $res = $db_conn->query("select id, ts from __system__ {$where}");
+  while ($elem = $res->fetch()) {
+    $result['__system__'][] = $elem['id'];
+    $timestamp = max($timestamp, $elem['ts']);
+  }
+  $res->closeCursor();
+
+  $result['entries'] = array();
+  foreach (get_db_tables() as $table) {
+    if ($table->data('ts')) {
+      $entries = $table->entries_timestamps($after);
+      if (sizeof($entries)) {
+        $timestamp = max($timestamp, max($entries));
+        $result['entries'][$table->id] = array_keys($entries);
+      }
+    }
+  }
+
+  $result['ts'] = (new DateTime($timestamp))->format('Y-m-d\TH:i:s');
+
+  return $result;
+}
