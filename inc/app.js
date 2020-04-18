@@ -4,6 +4,7 @@ window.Twig = require('twig')
 window.twig = require('twig').twig
 
 const state = require('./state')
+const loader = require('./loader')
 
 window.DB_Table = require('./DB_Table')
 window.observe = require('./observe')
@@ -25,7 +26,7 @@ window.get_entry = (table_id, id, callback) => {
 }
 
 window.addEventListener('load', () => {
-  require('./loader').init()
+  loader.init()
   state.init()
   require('./page').init()
   require('./panel').init()
@@ -46,5 +47,7 @@ window.addEventListener('load', () => {
 
       DB_Table.invalidate_entries(to_invalidate)
     }
+
+    loader.update((err) => { if (err) { alert(err) }})
   })
 })

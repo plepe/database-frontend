@@ -21,6 +21,18 @@ function init () {
   state.set_loader(loader)
 }
 
+function update (callback) {
+  page.update((err) => {
+    if (err) { return callback(err) }
+
+    update_links()
+
+    callback(null)
+  })
+}
+
+
 module.exports = {
-  init
+  init,
+  update
 }

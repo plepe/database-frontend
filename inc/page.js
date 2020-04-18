@@ -8,6 +8,9 @@ const templates = require('./templates')
 const pages = require('./pages')
 const update_links = require('./update_links')
 
+let pageData
+let page
+
 function load (param, callback) {
   if (!((param.page || 'index') in pages)) {
     return false
@@ -15,8 +18,7 @@ function load (param, callback) {
 
   let pageId = param.page || 'index'
 
-  let page = pages[pageId]
-  let pageData
+  page = pages[pageId]
   let template
   async.parallel([
     done => {
@@ -75,6 +77,14 @@ function connect_server_rendered (param) {
   }
 }
 
+function update (callback) {
+  if (page && 'update' in page) {
+    page.update(pageData, callback)
+  } else {
+    callback(null)
+  }
+}
+
 module.exports = {
   init () {
     Twig.extendFunction("page_url", param => {
@@ -83,5 +93,6 @@ module.exports = {
     })
   },
   connect_server_rendered,
-  load
+  load,
+  update
 }
