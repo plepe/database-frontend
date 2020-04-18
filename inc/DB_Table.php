@@ -94,6 +94,14 @@ class DB_Table {
 
         $this->_fields[$column_id] = new $type($column_id, $column_def, $this);
       }
+
+      if ($this->data('ts')) {
+        $this->_fields['ts'] = new Field_datetime('ts', array(
+          'name' => 'Timestamp',
+          'count' => null,
+          'sortable' => true,
+        ), $this);
+      }
     }
 
     return $this->_fields;
@@ -176,6 +184,41 @@ class DB_Table {
   }
 
   /**
+   * Return definition of ID field
+   */
+  function id_field ($data=null) {
+    global $db_conn;
+
+    if ($data === null) {
+      $data = $this->data;
+    }
+
+    if(!array_key_exists('id', $data['fields'])) {
+      return array(
+        'key' => 'id',
+        'type' => 'integer',
+        'options' => 'auto_increment primary key',
+      );
+    }
+    else {
+      switch($db_conn->getAttribute(PDO::ATTR_DRIVER_NAME)) {
+        case 'sqlite':
+          $id_collate = "binary";
+          break;
+        case 'mysql':
+          $id_collate = "utf8_bin";
+          break;
+      }
+
+      return array(
+        'key' => 'id',
+        'type' => "varchar(255) collate {$id_collate}",
+        'options' => '',
+      );
+    }
+  }
+
+  /**
    * updates database structure to specified data
    * first a table __tmp__ and sub-tables __tmp___XXX are created, then these
    * are filled with data from the old table (if it is not new) and then they
@@ -211,13 +254,11 @@ class DB_Table {
       $new_table = true;
 
     // if there's no 'id' field specified, add a generated one
+    $id_field = $this->id_field($data);
+    $id_type = $id_field['type'];
     if(!array_key_exists('id', $data['fields'])) {
-      $columns[] = $db_conn->quoteIdent('id'). " INTEGER auto_increment PRIMARY KEY";
-      $column_copy[] = $db_conn->quoteIdent('id');
-      $id_type = "integer";
-    }
-    else {
-      $id_type = "varchar(255) collate {$id_collate}";
+      $columns[] = $db_conn->quoteident('id') . " {$id_field['type']} {$id_field['options']}";
+      $column_copy[] = $db_conn->quoteident('id');
     }
 
     $cmds = array();
@@ -233,7 +274,8 @@ class DB_Table {
       }
 
       if(array_key_exists('reference', $column_def) && ($column_def['reference'] != null)) {
-	$column_type = "varchar(255) collate {$id_collate}";
+        $foreign_id_field = get_db_table($column_def['reference'])->id_field();
+        $column_type = $foreign_id_field['type'];
       }
 
       if(array_key_exists('backreference', $column_def) && ($column_def['backreference'] != null)) {
@@ -258,6 +300,8 @@ class DB_Table {
 		  "  " . $db_conn->quoteIdent('sequence') . " int not null,\n" .
 		  "  " . $db_conn->quoteIdent('key') . " varchar(255) not null,\n" .
 		  "  " . $db_conn->quoteIdent('value') . " {$column_type} null,\n" .
+                  "  " . ($data['ts'] ? $db_conn->quoteIdent('ts') . " TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n" : '') .
+
 		  "  primary key(" . $db_conn->quoteIdent('id'). ", " . $db_conn->quoteIdent('key') . "),\n" .
 		  // foreign key to referenced table
 		  ((array_key_exists('reference', $column_def) && ($column_def['reference'] != null)) ? "foreign key(" . $db_conn->quoteIdent('value') . ") references " . $db_conn->quoteIdent($column_def['reference']) . "(" . $db_conn->quoteIdent('id') . "), " : "") .
@@ -281,7 +325,13 @@ class DB_Table {
 	  if(($old_field->is_multiple() === true) || ($old_def['count'])) {
 	    if($db_conn->tableExists($this->old_id . '_' . $column_def['old_key']))
 	      $multifield_cmds[] = "insert into " . $db_conn->quoteIdent($tmp_name . '_' . $column) .
-		    "  select * from " . $db_conn->quoteIdent($this->old_id . '_' . $column_def['old_key']) . ";";
+		    "  select " .
+                    $db_conn->quoteIdent('id') . ', ' .  $db_conn->quoteIdent('sequence') . ', ' . $db_conn->quoteIdent('key') . ', ' . $db_conn->quoteIdent('value') .
+                    ($data['ts'] ?
+                      (array_key_exists('ts', $old_data) && $old_data['ts'] ? ", " . $db_conn->quoteIdent('ts') : ", now()") :
+                      ""
+                    ) .
+                    " from " . $db_conn->quoteIdent($this->old_id . '_' . $column_def['old_key']) . ";";
 	  }
 	  // ... it was a field with a single value
 	  else {
@@ -337,6 +387,11 @@ class DB_Table {
 	else
 	  $column_copy[] = "null";
       }
+    }
+
+    if ($data['ts']) {
+      $columns[] = $db_conn->quoteIdent('ts') . " TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP";
+      $column_copy[] = $old_data['ts'] ? $db_conn->quoteIdent('ts') : 'now()';
     }
 
     // the new create table statement
@@ -762,6 +817,48 @@ class DB_Table {
     return null;
   }
 
+  function _timestamp_query () {
+    global $db_conn;
+
+    if (!$this->data('ts')) {
+      return '';
+    }
+
+    $ts = array();
+    foreach($this->column_tables() as $table) {
+      if (is_array($table)) {
+      }
+      else {
+        $ts[] = 'coalesce((select max(ts) from ' . $db_conn->quoteIdent($this->id . '_' . $table) . " where " . $db_conn->quoteIdent($this->id) . '.id=' . $db_conn->quoteIdent($this->id . '_' . $table) . '.id), ' . $db_conn->quote('') . ')';
+      }
+    }
+    if (sizeof($ts)) {
+      return ', greatest(ts, ' . implode(', ', $ts) . ') as ts';
+    }
+    else {
+      return ', ts';
+    }
+  }
+
+  function entries_timestamps ($after=null) {
+    global $db_conn;
+
+    if (!$this->data('ts')) {
+      return null;
+    }
+
+    $ts = $this->_timestamp_query();
+    $data = array();
+    $res = $db_conn->query("select * from (select id {$ts} from " . $db_conn->quoteIdent($this->id) . ') t' . ($after ? ' where ts>' . $db_conn->quote((new DateTime($after))->format('Y-m-d H:i:s')) : ''));
+
+    while($elem = $res->fetch()) {
+      $data[$elem['id']] = $elem['ts'];
+    }
+    $res->closeCursor();
+
+    return $data;
+  }
+
   function load_entries_data($ids) {
     global $db_conn;
     $data = array();
@@ -776,7 +873,9 @@ class DB_Table {
       return "value=" . $db_conn->quote($x);
     }, $ids));
 
-    $res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->id) . " where " . $where_quoted);
+    $ts = $this->_timestamp_query();
+
+    $res = $db_conn->query("select * {$ts} from " . $db_conn->quoteIdent($this->id) . " where " . $where_quoted);
     while($elem = $res->fetch()) {
       $data[$elem['id']] = $elem;
     }
@@ -803,8 +902,14 @@ class DB_Table {
         foreach($data as $id=>$d)
           $data[$id][$table] = array();
 
-        while($elem = $res->fetch())
+        while($elem = $res->fetch()) {
           $data[$elem['id']][$table][$elem['key']] = $elem['value'];
+
+          if ($this->data['ts'] && $elem['ts'] > $data[$elem['id']]['ts']) {
+            $data[$elem['id']]['ts'] = $elem['ts'];
+          }
+        }
+
         $res->closeCursor();
       }
     }

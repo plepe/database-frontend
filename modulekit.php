@@ -33,6 +33,7 @@ $include = array(
     'inc/random_ids.php',
     'inc/db_execute.php',
     'inc/session.php',
+    'inc/ts.php',
     'page/*.php',
   ),
   'js' => array(
