@@ -50,10 +50,6 @@ function load (param, callback) {
     if ('post_render' in page) {
       page.post_render(param, pageData, callback)
     } else {
-      if ('connect' in page) {
-        page.connect(param)
-      }
-
       callback()
     }
   })
@@ -72,8 +68,6 @@ function connect_server_rendered (param) {
 
   if ('connect_server_rendered' in page) {
     page.connect_server_rendered(param)
-  } else {
-    page.connect(param)
   }
 }
 

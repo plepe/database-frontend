@@ -41,9 +41,15 @@ module.exports = {
     page_with_view.get(param, page, callback)
   },
 
-  connect (param) {
+  connect_server_rendered (param) {
     page_with_view.connect(param)
     editable.connect(param)
+  },
+
+  post_render (param, page_data, callback) {
+    page_with_view.connect(param)
+    editable.connect(param)
+    page_with_view.post_render(param, page_data, callback)
   },
 
   update (page_data, callback) {

@@ -21,6 +21,6 @@ module.exports = {
     })
   },
 
-  connect () {
+  connect_server_rendered () {
   }
 }
