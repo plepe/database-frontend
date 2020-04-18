@@ -817,6 +817,45 @@ class DB_Table {
     return null;
   }
 
+  function _timestamp_query () {
+    if (!$this->data('ts')) {
+      return '';
+    }
+
+    $ts = array();
+    foreach($this->column_tables() as $table) {
+      if (is_array($table)) {
+      }
+      else {
+        $ts[] = 'coalesce((select max(ts) from ' . $db_conn->quoteIdent($this->id . '_' . $table) . " where " . $db_conn->quoteIdent($this->id) . '.id=' . $db_conn->quoteIdent($this->id . '_' . $table) . '.id), ' . $db_conn->quote('') . ')';
+      }
+    }
+    if (sizeof($ts)) {
+      return ', greatest(ts, ' . implode(', ', $ts) . ') as ts';
+    }
+    else {
+      return ', ts';
+    }
+  }
+
+  function entries_timestamps ($after=null) {
+    global $db_conn;
+
+    if (!$this->data('ts')) {
+      return null;
+    }
+
+    $data = array();
+    $res = $db_conn->query("select * from (select id {$ts} from " . $db_conn->quoteIdent($this->id) . ') t' . ($after ? ' where ts>' . $db_conn->quote((new DateTime($after))->format('Y-m-d H:i:s')) : ''));
+
+    while($elem = $res->fetch()) {
+      $data[$elem['id']] = $elem['ts'];
+    }
+    $res->closeCursor();
+
+    return $data;
+  }
+
   function load_entries_data($ids) {
     global $db_conn;
     $data = array();
@@ -831,23 +870,7 @@ class DB_Table {
       return "value=" . $db_conn->quote($x);
     }, $ids));
 
-    $ts = '';
-    if ($this->data('ts')) {
-      $ts = array();
-      foreach($this->column_tables() as $table) {
-        if (is_array($table)) {
-        }
-        else {
-          $ts[] = 'coalesce((select max(ts) from ' . $db_conn->quoteIdent($this->id . '_' . $table) . " where " . $db_conn->quoteIdent($this->id) . '.id=' . $db_conn->quoteIdent($this->id . '_' . $table) . '.id), ' . $db_conn->quote('') . ')';
-        }
-      }
-      if (sizeof($ts)) {
-        $ts = ', greatest(ts, ' . implode(', ', $ts) . ') as ts';
-      }
-      else {
-        $ts = ', ts';
-      }
-    }
+    $ts = $this->_timestamp_query();
 
     $res = $db_conn->query("select * {$ts} from " . $db_conn->quoteIdent($this->id) . " where " . $where_quoted);
     while($elem = $res->fetch()) {

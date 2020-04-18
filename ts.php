@@ -8,8 +8,10 @@ $result = array();
 
 $ts = '';
 $timestamp = '';
+$after = null;
 if (array_key_exists('ts', $_REQUEST)) {
   $ts = "where ts>" . $db_conn->quote((new DateTime($_REQUEST['ts']))->format('Y-m-d H:i:s'));
+  $after = $_REQUEST['ts'];
   $timestamp = $_REQUEST['ts'];
 }
 
@@ -23,16 +25,10 @@ $res->closeCursor();
 $result['entries'] = array();
 foreach (get_db_tables() as $table) {
   if ($table->data('ts')) {
-    $res = $db_conn->query("select id, ts from " . $db_conn->quoteIdent($table->id) . ' ' . $ts);
-    $entries = array();
-    while ($elem = $res->fetch()) {
-      $entries[] = $elem['id'];
-      $timestamp = max($timestamp, $elem['ts']);
-    }
-    $res->closeCursor();
-
+    $entries = $table->entries_timestamps($after);
     if (sizeof($entries)) {
-      $result['entries'][$table->id] = $entries;
+      $timestamp = max($timestamp, max($entries));
+      $result['entries'][$table->id] = array_keys($entries);
     }
   }
 }
