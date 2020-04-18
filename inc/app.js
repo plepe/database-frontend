@@ -1,3 +1,5 @@
+const forEach = require('foreach')
+
 window.Twig = require('twig')
 window.twig = require('twig').twig
 
@@ -32,4 +34,17 @@ window.addEventListener('load', () => {
   require('./table_fields').init()
 
   //window.setTimeout(() => state.apply({page:'index'}), 2000)
+
+  state.on('change_detect', (result) => {
+    let to_invalidate = []
+    if (result.entries) {
+      forEach(result.entries, (entries, table_id) => {
+        forEach(entries, (id) => {
+          to_invalidate.push([table_id, id])
+        })
+      })
+
+      DB_Table.invalidate_entries(to_invalidate)
+    }
+  })
 })
