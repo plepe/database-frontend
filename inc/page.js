@@ -10,6 +10,8 @@ const update_links = require('./update_links')
 
 let pageData
 let page
+let connecting_server
+let request_update = false
 
 function load (param, callback) {
   if (!((param.page || 'index') in pages)) {
@@ -64,14 +66,29 @@ function connect_server_rendered (param) {
 
   let pageId = param.page || 'index'
 
-  let page = pages[pageId]
+  page = pages[pageId]
 
   if ('connect_server_rendered' in page) {
+    connecting_server = true
     page.connect_server_rendered(param)
+    page.get(param, (err, _pageData) => {
+      pageData = _pageData
+      connecting_server = false
+
+      if (request_update) {
+        update(request_update)
+        request_update = null
+      }
+    })
   }
 }
 
 function update (callback) {
+  if (connecting_server) {
+    request_update = callback
+    return
+  }
+
   if (page && 'update' in page) {
     page.update(pageData, callback)
   } else {
