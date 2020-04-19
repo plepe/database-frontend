@@ -120,5 +120,18 @@ module.exports = {
       (module, done) => module.post_render(param, page_data, done),
       callback
     )
+  },
+
+  post_update (param, page_data, callback) {
+    async.each(modules,
+      (module, done) => {
+        if ('post_update' in module) {
+          module.post_update(param, page_data, done)
+        } else {
+          done()
+        }
+      },
+      callback
+    )
   }
 }

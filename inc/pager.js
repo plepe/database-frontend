@@ -142,6 +142,10 @@ module.exports = {
     connect(param)
     done()
   },
+  post_update: (param, page_data, done) => {
+    connect(param)
+    done()
+  },
   pre_render: (param, page_data, done) => done(),
   permalink,
   update_list,
