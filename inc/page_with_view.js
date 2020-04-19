@@ -24,7 +24,11 @@ module.exports = {
       param,
     }
 
-    modules.forEach(module => module.permalink(param))
+    modules.forEach(module => {
+      if ('permalink' in module) {
+        module.permalink(param)
+      }
+    })
 
     async.parallel([
       done => DB_Table.get_table_list((err, table_list) => {
@@ -81,7 +85,13 @@ module.exports = {
       }
 
       async.each(modules,
-        (module, done) => module.pre_render(param, result, done),
+        (module, done) => {
+          if ('pre_render' in module) {
+            module.pre_render(param, result, done)
+          } else {
+            done()
+          }
+        },
         (err) => {
           if (err) { return callback(err) }
 
@@ -112,12 +122,22 @@ module.exports = {
       }
     }
 
-    modules.forEach(module => module.connect_server_rendered(param))
+    modules.forEach(module => {
+      if ('connect_server_rendered' in module) {
+        module.connect_server_rendered(param)
+      }
+    })
   },
 
   post_render(param, page_data, callback) {
     async.each(modules,
-      (module, done) => module.post_render(param, page_data, done),
+      (module, done) => {
+        if ('post_render' in module) {
+          module.post_render(param, page_data, done)
+        } else {
+          done()
+        }
+      },
       callback
     )
   },
