@@ -3,7 +3,6 @@ const async = {
 }
 
 const page_with_view = require('../inc/page_with_view.js')
-const editable = require('../inc/editable.js')
 const pager = require('../inc/pager.js')
 
 function page (result, callback) {
@@ -37,13 +36,11 @@ module.exports = {
 
   post_render (param, page_data, callback) {
     page_with_view.connect(param)
-    editable.connect(param)
     page_with_view.post_render(param, page_data, callback)
   },
 
   connect_server_rendered (param) {
     page_with_view.connect(param)
-    editable.connect(param)
   },
 
   update (page_data, callback) {
@@ -52,8 +49,6 @@ module.exports = {
       (done) => pager.update_list(page_data.param, page_data.table_extract, done)
     ], (err) => {
       if (err) { return callback(err) }
-
-      editable.connect(page_data.param)
 
       page_with_view.post_update(page_data.param, page_data, callback)
     })

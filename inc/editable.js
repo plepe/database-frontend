@@ -107,5 +107,13 @@ function connect (param) {
 }
 
 module.exports = {
-  connect
+  connect_server_rendered: connect,
+  post_render: (param, page_data, callback) => {
+    connect(param)
+    callback()
+  },
+  post_update: (param, page_data, callback) => {
+    connect(param)
+    callback()
+  }
 }
