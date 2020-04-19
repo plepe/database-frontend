@@ -103,15 +103,18 @@ function permalink (param) {
 }
 
 function update_list (param, table_extract, callback) {
-  table_extract.get_ids((err, ids) => {
-    let text = '' + ids.length
-    if (param.limit) {
-      text = (param.offset + 1) + '-' + Math.min(ids.length, param.offset + param.limit) + ' / ' + (ids.length)
-    }
-
-    let pagers = document.getElementsByClassName('pager')
+  async.parallel({
+    template: (done) => templates.get('list_pager', done),
+    info: (done) => table_extract.pager_info(done)
+  }, (err, {template, info}) => {
+    let pagers = document.getElementsByClassName('Pager')
     forEach(pagers, (pager) => {
-      pager.innerHTML = text
+      let div = document.createElement('div')
+      info.param = param
+      info.table = param.table
+      div.innerHTML = template.render(info)
+      pager.parentNode.insertBefore(div, pager)
+      pager.parentNode.removeChild(pager)
     })
 
     callback(err)
