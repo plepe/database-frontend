@@ -38,6 +38,10 @@ register_hook("twig_init", function() {
   }));
 
   $twig->addFilter(new Twig_SimpleFilter('age', function($date) {
+    if ($date == null) {
+      return '';
+    }
+
     $now = new DateTime();
     $date1 = new DateTime($date);
     $diff = $now->getTimestamp() - $date1->getTimestamp();

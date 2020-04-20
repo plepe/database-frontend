@@ -61,6 +61,10 @@ module.exports = {
     })
 
     Twig.extendFilter("age", date => {
+      if (date == null) {
+        return ''
+      }
+
       let now = new Date()
       let diff = (now - new Date(date)) / 1000
       let text
