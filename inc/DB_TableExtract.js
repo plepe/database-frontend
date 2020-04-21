@@ -46,6 +46,8 @@ class DB_TableExtract {
           alert(err)
         }
 
+        result = result.filter(entry => !!entry)
+
         // TODO: convert to (null, result) !!!
         callback(result)
       })
