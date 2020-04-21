@@ -288,6 +288,15 @@ class Field_datetime extends Field {
     return 'datetime-local';
   }
 
+  function db_quote ($value, $db_conn) {
+    if ($value === 'now') {
+      return 'now()';
+    }
+    else {
+      return $db_conn->quote($value);
+    }
+  }
+
   function default_format($key=null) {
     if($key === null)
       $key = $this->id;
