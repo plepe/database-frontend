@@ -11,6 +11,7 @@ const session = require('./session.js')
 
 const modules = [
   require('./editable.js'),
+  require('./inline_actions.js'),
   require('./table_fields.js'),
   require('./filter.js'),
   require('./pager.js')
