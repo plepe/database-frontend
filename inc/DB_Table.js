@@ -644,6 +644,13 @@ function load_missing_queries (callback) {
   })
 }
 
+function get_table_entry (table_id, entry_id, callback) {
+  get_table(table_id, (err, table) => {
+    if (err) { return callback(err) }
+    table.get_entry(entry_id, callback)
+  })
+}
+
 function has_missing () {
   return !!Object.keys(missing_entries).length || !!Object.keys(missing_queries).length
 }
@@ -673,6 +680,7 @@ module.exports = {
   get: get_table,
   get_all: get_db_tables,
   get_table_list,
+  get_table_entry,
   get_loaded_entry_sync,
   get_loaded_entries,
   missing_entries,
