@@ -48,3 +48,9 @@ $include = array(
     'style.css',
   ),
 );
+
+/*** Markdown ***/
+$depend[] = "modulekit-form-markdown";
+$include['php'][] = 'inc/markdown.php';
+$include['css'][] = 'node_modules/highlight.js/styles/github.css';
+// also enable line where markdown gets embedded in inc/app.js

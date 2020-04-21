@@ -3,6 +3,8 @@ const forEach = require('foreach')
 window.Twig = require('twig')
 window.twig = require('twig').twig
 
+const markdown = require('./markdown')
+
 const state = require('./state')
 const loader = require('./loader')
 
@@ -33,6 +35,7 @@ window.addEventListener('load', () => {
   require('./twig_show').init()
   require('./pager').init()
   require('./table_fields').init()
+  markdown.init()
 
   //window.setTimeout(() => state.apply({page:'index'}), 2000)
 
