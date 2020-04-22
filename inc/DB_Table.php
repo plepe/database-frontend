@@ -73,8 +73,14 @@ class DB_Table {
       $this->_load();
     }
 
-    if($key !== null)
-      return $this->data[$key];
+    if($key !== null) {
+      if (array_key_exists($key, $this->data)) {
+        return $this->data[$key];
+      }
+      else {
+        return null;
+      }
+    }
 
     return $this->data;
   }
