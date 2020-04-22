@@ -19,4 +19,4 @@ class Field_markdown extends Field.Field {
 
 Field.fields.markdown = Field_markdown
 
-Twig.extendFilter("markdown", value => marked(value))
+Twig.extendFilter("markdown", value => value ? marked(value) : '')
