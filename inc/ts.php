@@ -37,7 +37,7 @@ function get_timestamps ($after=null) {
   return $result;
 }
 
-register_hook('init', function () {
+register_hook('page_ready', function () {
   $ts = get_timestamps();
   if ($ts && array_key_exists('ts', $ts)) {
     html_export_var(array('ts' => $ts['ts']));
