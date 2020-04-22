@@ -3,6 +3,7 @@
  * @param {Object} options - Options
  * @param {string} options.method=GET - Method of the request (e.g. POST, DELETE).
  * @param {string} options.body=null - Body of the request.
+ * @param {boolean} options.enableServerLoad=false - Try to pass the request via the httpRequest.php server script to avoid CORS problems (when direct request does not work)
  * @param {boolean} options.forceServerLoad=false - Pass the request via the httpRequest.php server script to avoid CORS problems.
  * @param {string} options.responseType=text - a string defining the XMLHttpRequestResponseType
  * @param {function} callback - Callback which will be called when the request completes
@@ -18,7 +19,9 @@ function httpRequest (url, options, callback) {
     if (xhr.readyState === 4) {
       if (corsRetry && xhr.status === 0) {
         corsRetry = false
-        return viaServer()
+        if (options.enableServerLoad) {
+          return viaServer()
+        }
       }
 
       if (xhr.status === 200) {
@@ -61,7 +64,7 @@ function httpRequest (url, options, callback) {
 
   function viaServer () {
     xhr = new XMLHttpRequest()
-    xhr.open(options.method || 'GET', 'httpGet.php?url=' + encodeURIComponent(url), true)
+    xhr.open(options.method || 'GET', 'httpRequest.php?url=' + encodeURIComponent(url), true)
     xhr.responseType = parseResponseType()
     xhr.onreadystatechange = readyStateChange
     xhr.send(options.body)
