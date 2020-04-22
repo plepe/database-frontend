@@ -1,18 +1,11 @@
 const Twig = require('twig')
 const Field = require('./Field')
 
-module.exports = {
-  init () {
-    // Markdown
-    const hljs = require('highlight.js')
-    global.marked = require('marked')
-    global.marked.setOptions({
-      highlight: (code, lang) => hljs.highlight(lang, code).value
-    })
-
-    Field.fields.markdown = Field_markdown
-  }
-}
+const hljs = require('highlight.js')
+global.marked = require('marked')
+global.marked.setOptions({
+  highlight: (code, lang) => hljs.highlight(lang, code).value
+})
 
 class Field_markdown extends Field.Field {
   default_format (key) {
@@ -23,5 +16,7 @@ class Field_markdown extends Field.Field {
     return '{{ ' + key + '|markdown }}'
   }
 }
+
+Field.fields.markdown = Field_markdown
 
 Twig.extendFilter("markdown", value => marked(value))

@@ -1,4 +1,8 @@
 const extensions = [
+  /**
+   * Enable markdown formatting for fields
+   */
+  require('./markdown'),
 ]
 
 const async = {
