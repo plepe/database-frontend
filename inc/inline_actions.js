@@ -4,7 +4,7 @@ const DB_Table = require('./DB_Table.js')
 const state = require('./state.js')
 
 function getAttribute(dom, field) {
-  if (!dom) {
+  if (!dom || !dom.hasAttribute) {
     return null
   }
 
