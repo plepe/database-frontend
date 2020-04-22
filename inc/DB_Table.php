@@ -641,7 +641,7 @@ class DB_Table {
 	return "require id for new types\n";
       }
 
-      $query = "insert into __system__ values (" .
+      $query = "insert into __system__ (id, data) values (" .
         $db_conn->quote($data['id']) . ", " .
 	$db_conn->quote(json_readable_encode($data)) . ")";
     }
