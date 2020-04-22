@@ -206,7 +206,7 @@ class Field_backreference extends FieldWithValues {
   }
 }
 
-module.exports = {
+const fields = {
   default: Field,
   textarea: Field_textarea,
   date: Field_date,
@@ -218,4 +218,10 @@ module.exports = {
   random: Field_random,
   markdown: Field_markdown,
   backreference: Field_backreference
+}
+
+module.exports = {
+  fields,
+  Field,
+  FieldWithValues
 }

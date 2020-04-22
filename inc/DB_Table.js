@@ -9,7 +9,7 @@ const async = {
 
 const httpRequest = require('./httpRequest')
 const DB_Entry = require('./DB_Entry')
-const Fields = require('./Fields')
+const fields = require('./Field').fields
 const ViewField = require('./ViewField')
 const db_execute = require('./db_execute')
 
@@ -333,11 +333,11 @@ class DB_Table {
         let columnDef = this._data.fields[columnId]
 
         let type = 'default'
-        if (columnDef.type in Fields) {
+        if (columnDef.type in fields) {
           type = columnDef.type
         }
 
-        this._fields[columnId] = new Fields[type](columnId, columnDef, this)
+        this._fields[columnId] = new fields[type](columnId, columnDef, this)
       }
     }
 
@@ -436,7 +436,7 @@ class DB_Table {
 
       if (key == '__custom__') {
         key = '__custom' + i + '__'
-        field = new Fields.default(null, [], this)
+        field = new fields.default(null, [], this)
       } else {
         field = this.field(d.key)
       }
