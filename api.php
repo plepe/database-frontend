@@ -15,6 +15,8 @@ if(!isset($data_path) || !is_dir($data_path) || !is_writeable($data_path)) {
 <?php Header('Content-Type: application/json; charset=utf-8'); ?>
 
 <?php
+$system = new DB_System($db);
+
 switch ($_SERVER['REQUEST_METHOD']) {
   case 'GET':
     if ($_REQUEST['table']) {
