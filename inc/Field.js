@@ -185,17 +185,6 @@ class Field_random extends Field {
   }
 }
 
-// TODO: Move to markdown.js
-class Field_markdown extends Field {
-  default_format (key) {
-    if (key == null) {
-      key = this.id
-    }
-
-    return '{{ ' + key + '|markdown }}'
-  }
-}
-
 class Field_backreference extends FieldWithValues {
   is_multiple () {
     return true
@@ -216,7 +205,6 @@ const fields = {
   checkbox: Field_checkbox,
   select: Field_select,
   random: Field_random,
-  markdown: Field_markdown,
   backreference: Field_backreference
 }
 
