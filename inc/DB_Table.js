@@ -339,6 +339,14 @@ class DB_Table {
 
         this._fields[columnId] = new fields[type](columnId, columnDef, this)
       }
+
+      if (this.data('ts')) {
+        this._fields.ts = new fields['datetime']('ts', {
+          name: 'Timestamp',
+          count: null,
+          sortable: true
+        }, this)
+      }
     }
 
     return this._fields
