@@ -6,7 +6,14 @@ function wait (callback) {
       responseType: 'json'
     },
     (err, result) => {
-      if (err) { return callback(err) }
+      if (err) {
+        if (result.status === 0) {
+          // request aborted -> no error
+          return callback(null)
+        }
+
+        return callback(err)
+      }
 
       if (global.ts === result.body.ts) {
         callback(null)
