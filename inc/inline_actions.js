@@ -45,12 +45,26 @@ function execute (dom) {
 function connect (param) {
   let inputs = document.getElementsByTagName('input')
   forEach(inputs, (input) => {
-    input.onclick = () => execute(input)
+    if (input.getAttribute('data-action')) {
+      input.onclick = () => execute(input)
+    }
   })
 
   let buttons = document.getElementsByTagName('button')
   forEach(buttons, (button) => {
-    button.onclick = () => execute(button)
+    if (button.getAttribute('data-action')) {
+      button.onclick = () => execute(button)
+    }
+  })
+
+  let links = document.getElementsByTagName('a')
+  forEach(links, (link) => {
+    if (link.getAttribute('data-action')) {
+      link.onclick = () => {
+        execute(link)
+        return false
+      }
+    }
   })
 }
 
