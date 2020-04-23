@@ -274,7 +274,7 @@ module.exports = {
         compile_def(table, (err, def, reference_fields) => {
           if (err) { return callback(err) }
 
-          pageData.form_edit = new form('edit', def)
+          pageData.form_edit = new form('data', def)
           let data = JSON.parse(JSON.stringify(entry.data()))
 
           forEach(reference_fields, (f, k) => {
