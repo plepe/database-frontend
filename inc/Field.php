@@ -288,6 +288,12 @@ class Field_datetime extends Field {
     return 'datetime-local';
   }
 
+  function additional_form_def () {
+    return array(
+      'value_format' => 'Y-m-d H:i:s'
+    );
+  }
+
   function db_quote ($value, $db_conn) {
     if ($value === 'now') {
       return 'now()';

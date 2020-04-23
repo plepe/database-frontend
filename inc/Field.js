@@ -120,6 +120,16 @@ class Field_date extends Field {
 }
 
 class Field_datetime extends Field {
+  form_type () {
+    return 'datetime-local'
+  }
+
+  additional_form_def (callback) {
+    callback(null, {
+      value_format: 'Y-m-d H:i:s'
+    })
+  }
+
   default_format (key) {
     if (key == null) {
       key = this.id
