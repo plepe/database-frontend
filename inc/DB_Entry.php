@@ -175,6 +175,7 @@ class DB_Entry {
                 'coalesce(max(' . $db_conn->quoteIdent('sequence') . ') + 1, 0), ' .
                 'coalesce(max(' . $db_conn->quoteIdent('key') . ') + 1, 0), ' .
               $db_conn->quote($this->id) .
+              (get_db_table($ref_table)->data('ts') ? ', now()' : '') .
               ' from ' . $db_conn->quoteIdent($ref_table . '_' . $ref_field) .
               ' where id=' . $db_conn->quote($d) . ')';
 
