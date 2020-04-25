@@ -1,6 +1,7 @@
 const forEach = require('foreach')
 
 const httpRequest = require('./httpRequest')
+const Changeset = require('./Changeset')
 
 class DB_Entry {
   constructor (table, id, data) {
@@ -69,6 +70,11 @@ class DB_Entry {
       url = 'api.php?table=' + encodeURIComponent(this.table.id) + '&id=' + encodeURIComponent(this.id)
       method = 'PATCH'
     }
+
+    if (!(changeset instanceof Changeset)) {
+      changeset = new Changeset(changeset)
+    }
+    url = changeset.modify_url(url)
 
     httpRequest(url,
       {
