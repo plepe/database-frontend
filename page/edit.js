@@ -6,6 +6,7 @@ const forEach = require('foreach')
 
 const DB_Table = require('../inc/DB_Table.js')
 const DB_Entry = require('../inc/DB_Entry.js')
+const Changeset = require('../inc/Changeset.js')
 
 const state = require('../inc/state.js')
 const db_execute = require('../inc/db_execute.js')
@@ -116,7 +117,10 @@ function save (data, callback) {
   // Invalidate cache
   DB_Table.invalidate_entries([[table.id, current_entry.id]])
 
-  db_execute(script, null, (err, result) => {
+  let message = document.getElementById('form-edit').elements.message.value
+  let changeset = new Changeset(message)
+
+  db_execute(script, changeset, (err, result) => {
     if (err) { return callback(err) }
 
     DB_Table.invalidate_entries([[table.id, old_id]])

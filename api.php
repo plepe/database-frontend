@@ -16,6 +16,7 @@ if(!isset($data_path) || !is_dir($data_path) || !is_writeable($data_path)) {
 
 <?php
 $system = new DB_System($db);
+$message = array_key_exists('message', $_REQUEST) ? $_REQUEST['message'] : null;
 
 switch ($_SERVER['REQUEST_METHOD']) {
   case 'GET':
@@ -77,7 +78,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
     break;
   case 'PATCH':
     $data = json_decode(file_get_contents("php://input"), true);
-    $changeset = new Changeset('');
+    $changeset = new Changeset($message);
     $changeset->open();
 
     if ($_REQUEST['table']) {
@@ -118,7 +119,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
     break;
   case 'POST':
     $data = json_decode(file_get_contents("php://input"), true);
-    $changeset = new Changeset('');
+    $changeset = new Changeset($message);
     $changeset->open();
 
     if (array_key_exists('script', $_REQUEST)) {
@@ -157,7 +158,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
     break;
   case 'DELETE':
     $data = json_decode(file_get_contents("php://input"), true);
-    $changeset = new Changeset('');
+    $changeset = new Changeset($message);
     $changeset->open();
 
     if ($_REQUEST['table']) {

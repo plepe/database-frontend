@@ -1,8 +1,16 @@
 const httpRequest = require('./httpRequest')
+const Changeset = require('./Changeset')
 
 module.exports = function db_execute (script, changeset, callback) {
+  let url = 'api.php?script=1'
+
+  if (!(changeset instanceof Changeset)) {
+    changeset = new Changeset(changeset)
+  }
+  url = changeset.modify_url(url)
+
   httpRequest(
-    'api.php?script=1',
+    url,
     {
       method: 'POST',
       body: JSON.stringify(script)

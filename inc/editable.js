@@ -1,5 +1,6 @@
-const state = require('../inc/state.js')
-const DB_Table = require('../inc/DB_Table.js')
+const state = require('./state.js')
+const DB_Table = require('./DB_Table.js')
+const Changeset = require('./Changeset.js')
 
 let dom
 
@@ -65,12 +66,22 @@ function connect (param) {
               input.value = 'Save'
               actions.appendChild(input)
 
+              actions.appendChild(document.createTextNode(' '))
+
+              let commit_message = document.createElement('input')
+              commit_message.name = 'message'
+              commit_message.type = 'text'
+              commit_message.placeholder = 'commit message'
+              actions.appendChild(commit_message)
+
               f.onsubmit = () => {
                 state.indicate_loading()
 
                 let data = form_editable.get_data()
 
-                entry.save(data, null, (err) => {
+                let changeset = new Changeset(commit_message.value)
+
+                entry.save(data, changeset, (err) => {
                   if (err) {
                     alert(err)
                   }

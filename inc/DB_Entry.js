@@ -70,6 +70,11 @@ class DB_Entry {
       method = 'PATCH'
     }
 
+    if (!(changeset instanceof Changeset)) {
+      changeset = new Changeset(changeset)
+    }
+    url = changeset.modify_url(url)
+
     httpRequest(url,
       {
         responseType: 'json',
