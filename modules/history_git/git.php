@@ -63,7 +63,7 @@ function git_dump($changeset) {
         );
 
   if(in_array($result[0], array(0, 1))) {
-    messages_add("<pre>Git commit:\n" . htmlspecialchars($result[1]) . "</pre>\n");
+    //messages_add("<pre>Git commit:\n" . htmlspecialchars($result[1]) . "</pre>\n");
   }
   else {
     messages_add("<pre>Git commit failed:\n" . htmlspecialchars($result[1]) . "</pre>\n", MSG_ERROR);
