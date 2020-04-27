@@ -7,10 +7,11 @@ const async = {
 const templates = require('./templates')
 const pages = require('./pages')
 const update_links = require('./update_links')
+const state = require('./state')
 
 let pageData
 let page
-let connecting_server
+let page_loaded = false
 let request_update = false
 
 function load (param, callback) {
@@ -21,10 +22,12 @@ function load (param, callback) {
   let pageId = param.page || 'index'
 
   page = pages[pageId]
+  page_loaded = false
   let template
   async.parallel([
     done => {
       page.get(param, (err, result) => {
+        page_loaded = true
         pageData = result
         done(err)
       })
@@ -69,28 +72,22 @@ function connect_server_rendered (param) {
   page = pages[pageId]
 
   if ('connect_server_rendered' in page) {
-    connecting_server = true
     page.connect_server_rendered(param)
-    page.get(param, (err, _pageData) => {
-      pageData = _pageData
-      connecting_server = false
-
-      if (request_update) {
-        update(request_update)
-        request_update = null
-      }
-    })
   }
 }
 
 function update (callback) {
-  if (connecting_server) {
-    request_update = callback
-    return
-  }
-
   if (page && 'update' in page) {
-    page.update(pageData, callback)
+    if (!page_loaded) {
+      return page.get(state.data, (err, _pageData) => {
+        pageData = _pageData
+        page_loaded = true
+
+        page.update(pageData, callback)
+      })
+    } else {
+      page.update(pageData, callback)
+    }
   } else {
     callback(null)
   }
