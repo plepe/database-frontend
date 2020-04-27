@@ -46,24 +46,24 @@ function connect (param) {
   let inputs = document.getElementsByTagName('input')
   forEach(inputs, (input) => {
     if (input.getAttribute('data-action')) {
-      input.onclick = () => execute(input)
+      input.addEventListener('click', () => execute(input))
     }
   })
 
   let buttons = document.getElementsByTagName('button')
   forEach(buttons, (button) => {
     if (button.getAttribute('data-action')) {
-      button.onclick = () => execute(button)
+      button.addEventListener('click', () => execute(button))
     }
   })
 
   let links = document.getElementsByTagName('a')
   forEach(links, (link) => {
     if (link.getAttribute('data-action')) {
-      link.onclick = () => {
+      link.addEventListener('click', () => {
         execute(link)
         return false
-      }
+      })
     }
   })
 }
