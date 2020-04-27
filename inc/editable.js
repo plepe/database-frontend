@@ -19,6 +19,22 @@ function connect (param) {
           return
         }
 
+        if (dom) {
+          document.body.removeChild(dom)
+        }
+
+        dom = document.createElement('div')
+        dom.className = 'editable'
+        document.body.appendChild(dom)
+
+        let f = document.createElement('form')
+        dom.appendChild(f)
+
+        let loading_indicator = document.createElement('div')
+        loading_indicator.className = 'loading_indicator'
+        loading_indicator.innerHTML = 'Loading ...'
+        f.appendChild(loading_indicator)
+
         DB_Table.get(table_id, (err, table) => {
           if (err) {
             return alert(err)
@@ -29,10 +45,6 @@ function connect (param) {
               return alert(err)
             }
 
-            if (dom) {
-              document.body.removeChild(dom)
-            }
-
             table.def((err, _orig_form_def) => {
               if (err) { return alert(err) }
 
@@ -40,12 +52,7 @@ function connect (param) {
                 return
               }
 
-              dom = document.createElement('div')
-              dom.className = 'editable'
-              document.body.appendChild(dom)
-
-              let f = document.createElement('form')
-              dom.appendChild(f)
+              f.removeChild(loading_indicator)
 
               let form_def = {}
               form_def[field_id] = JSON.parse(JSON.stringify(_orig_form_def[field_id]))

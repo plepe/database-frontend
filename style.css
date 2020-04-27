@@ -331,7 +331,7 @@ div.editable {
 div.editable > form {
   position: fixed;
   top: 5em;
-  width: 30em;
+  width: 50em;
   max-width: calc(100% - 4em);
   max-height: calc(100% - 7em);
   z-index: 10000;
