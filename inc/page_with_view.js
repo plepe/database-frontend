@@ -123,6 +123,10 @@ module.exports = {
         return false
       }
     }
+  },
+
+  connect_server_rendered (param) {
+    this.connect(param)
 
     modules.forEach(module => {
       if ('connect_server_rendered' in module) {
@@ -132,6 +136,8 @@ module.exports = {
   },
 
   post_render(param, page_data, callback) {
+    this.connect(param)
+
     async.each(modules,
       (module, done) => {
         if ('post_render' in module) {
