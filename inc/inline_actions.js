@@ -37,6 +37,12 @@ function execute (dom) {
       entry.save(data, {}, (err) => {
         state.abort()
         if (err) { return alert("Error on save: " + err) }
+
+        if ('id' in state.data) {
+          state.change({id: entry.id})
+        } else {
+          state.change()
+        }
       })
     }
   )

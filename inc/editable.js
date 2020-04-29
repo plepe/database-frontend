@@ -96,7 +96,11 @@ function connect (param) {
                   document.body.removeChild(dom)
                   dom = null
 
-                  state.change({id: entry.id})
+                  if ('id' in state.data) {
+                    state.change({id: entry.id})
+                  } else {
+                    state.change()
+                  }
                 })
 
                 return false
