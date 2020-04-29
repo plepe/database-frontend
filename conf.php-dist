@@ -2,6 +2,10 @@
 // Configure the look of your application, e.g. title
 $app = array(
   'title' => "database-frontend",
+
+
+  // when loading entries, load max. chunkSize at once (default: 100)
+  chunkSize: 100,
 );
 
 //// Basic configuration ////

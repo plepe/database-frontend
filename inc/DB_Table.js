@@ -157,34 +157,41 @@ class DB_Table {
   get_entries_by_id (ids, callback) {
     let toLoad = ids.filter(id => !(id in this.entries_cache))
 
-    if (toLoad.length) {
-      httpRequest('api.php?table=' + encodeURIComponent(this.id) + 
-        toLoad.map(id => '&id[]=' + encodeURIComponent(id)).join('') +
-        '&full=1',
-        {
-          responseType: 'json'
-        },
-        (err, req) => {
-          if (err) { return callback(err) }
-
-          let list = req.body
-
-          list.forEach((entry, i) => {
-            if (entry) {
-              new DB_Entry(this, entry.id, entry)
-            } else {
-              this.entries_cache[ids[i]] = null
-            }
-          })
-
-          let result = ids.map(id => this.entries_cache[id])
-          callback(null, result)
-        }
-      )
-    } else {
-      let result = ids.map(id => this.entries_cache[id])
-      callback(null, result)
+    let loadChunks = []
+    for (let i = 0; i < toLoad.length; i += global.app.chunkSize || 100) {
+      loadChunks.push(toLoad.slice(i, i + (global.app.chunkSize || 100)))
     }
+
+    async.each(loadChunks,
+      (chunk, done) => {
+        httpRequest('api.php?table=' + encodeURIComponent(this.id) +
+          chunk.map(id => '&id[]=' + encodeURIComponent(id)).join('') +
+          '&full=1',
+          {
+            responseType: 'json'
+          },
+          (err, req) => {
+            if (err) { return done(err) }
+
+            let list = req.body
+
+            list.forEach((entry, i) => {
+              if (entry) {
+                new DB_Entry(this, entry.id, entry)
+              } else {
+                this.entries_cache[ids[i]] = null
+              }
+            })
+
+            done()
+          }
+        )
+      },
+      (err) => {
+        let result = ids.map(id => this.entries_cache[id])
+        callback(null, result)
+      }
+    )
   }
 
   get_entry_ids (filter, sort, offset, limit, callback) {
