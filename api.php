@@ -23,6 +23,8 @@ $changeset->open();
 
 switch ($_SERVER['REQUEST_METHOD']) {
   case 'GET':
+    session_write_close();
+
     if ($_REQUEST['table']) {
       $table = get_db_table_viewable($_REQUEST['table']);
       if ($table === false) {
