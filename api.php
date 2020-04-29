@@ -18,6 +18,9 @@ if(!isset($data_path) || !is_dir($data_path) || !is_writeable($data_path)) {
 $system = new DB_System($db);
 $message = array_key_exists('message', $_REQUEST) ? $_REQUEST['message'] : null;
 
+$changeset = new Changeset($message);
+$changeset->open();
+
 switch ($_SERVER['REQUEST_METHOD']) {
   case 'GET':
     if ($_REQUEST['table']) {
@@ -78,8 +81,6 @@ switch ($_SERVER['REQUEST_METHOD']) {
     break;
   case 'PATCH':
     $data = json_decode(file_get_contents("php://input"), true);
-    $changeset = new Changeset($message);
-    $changeset->open();
 
     if ($_REQUEST['table']) {
       $table = get_db_table_viewable($_REQUEST['table']);
@@ -114,13 +115,9 @@ switch ($_SERVER['REQUEST_METHOD']) {
       }
     }
 
-    $changeset->commit();
-
     break;
   case 'POST':
     $data = json_decode(file_get_contents("php://input"), true);
-    $changeset = new Changeset($message);
-    $changeset->open();
 
     if (array_key_exists('script', $_REQUEST)) {
       try {
@@ -153,13 +150,9 @@ switch ($_SERVER['REQUEST_METHOD']) {
       print json_readable_encode($ob->view());
     }
 
-    $changeset->commit();
-
     break;
   case 'DELETE':
     $data = json_decode(file_get_contents("php://input"), true);
-    $changeset = new Changeset($message);
-    $changeset->open();
 
     if ($_REQUEST['table']) {
       $table = get_db_table($_REQUEST['table']);
@@ -190,9 +183,9 @@ switch ($_SERVER['REQUEST_METHOD']) {
       }
     }
 
-    $changeset->commit();
-
     break;
   default:
     Header('HTTP/1.0 400 Bad Request');
 }
+
+$changeset->commit();
