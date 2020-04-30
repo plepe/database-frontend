@@ -1,7 +1,7 @@
 const forEach = require('foreach')
 
-const DB_Table = require('./DB_Table.js')
-const state = require('./state.js')
+const DB_Table = require('../../inc/DB_Table.js')
+const state = require('../../inc/state.js')
 
 function getAttribute(dom, field) {
   if (!dom || !dom.hasAttribute) {
@@ -76,12 +76,12 @@ function connect (param) {
 
 module.exports = {
   connect_server_rendered: connect,
-  post_render: (param, page_data, callback) => {
-    connect(param)
+  post_render: (page_data, callback) => {
+    connect(page_data.param)
     callback()
   },
-  post_update: (param, page_data, callback) => {
-    connect(param)
+  post_update: (page_data, callback) => {
+    connect(page_data.param)
     callback()
   }
 }

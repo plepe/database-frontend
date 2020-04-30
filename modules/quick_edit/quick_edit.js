@@ -1,6 +1,6 @@
-const state = require('./state.js')
-const DB_Table = require('./DB_Table.js')
-const Changeset = require('./Changeset.js')
+const state = require('../../inc/state.js')
+const DB_Table = require('../../inc/DB_Table.js')
+const Changeset = require('../../inc/Changeset.js')
 
 let dom
 
@@ -130,12 +130,12 @@ function connect (param) {
 
 module.exports = {
   connect_server_rendered: connect,
-  post_render: (param, page_data, callback) => {
-    connect(param)
+  post_render: (page_data, callback) => {
+    connect(page_data.param)
     callback()
   },
-  post_update: (param, page_data, callback) => {
-    connect(param)
+  post_update: (page_data, callback) => {
+    connect(page_data.param)
     callback()
   }
 }

@@ -8,6 +8,7 @@ const Views = require('./Views.js')
 const pager = require('./pager.js')
 const state = require('./state.js')
 const session = require('./session.js')
+const extensions = require('./extensions.js')
 
 const modules = [
   require('./table_fields.js'),
@@ -29,6 +30,8 @@ module.exports = {
         module.permalink(param)
       }
     })
+
+    extensions.call('permalink', param)
 
     async.parallel([
       done => DB_Table.get_table_list((err, table_list) => {
@@ -84,14 +87,21 @@ module.exports = {
         }
       }
 
-      async.each(modules,
-        (module, done) => {
-          if ('pre_render' in module) {
-            module.pre_render(param, result, done)
-          } else {
-            done()
-          }
+      async.parallel([
+        (done) => {
+          async.each(modules,
+            (module, done) => {
+              if ('pre_render' in module) {
+                module.pre_render(param, result, done)
+              } else {
+                done()
+              }
+            },
+            done
+          )
         },
+        (done) => extensions.call_async('pre_render', result, done)
+      ],
         (err) => {
           if (err) { return callback(err) }
 
@@ -149,15 +159,20 @@ module.exports = {
   },
 
   post_update (param, page_data, callback) {
-    async.each(modules,
-      (module, done) => {
-        if ('post_update' in module) {
-          module.post_update(param, page_data, done)
-        } else {
-          done()
-        }
+    async.parallel([
+      (done) => {
+        async.each(modules,
+          (module, done) => {
+            if ('post_update' in module) {
+              module.post_update(param, page_data, done)
+            } else {
+              done()
+            }
+          },
+          done
+        )
       },
-      callback
-    )
+      (done) => extensions.call_async('post_render', page_data, done)
+    ], callback)
   }
 }
