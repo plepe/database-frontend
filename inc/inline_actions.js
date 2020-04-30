@@ -38,7 +38,7 @@ function execute (dom) {
         state.abort()
         if (err) { return alert("Error on save: " + err) }
 
-        if ('id' in state.data) {
+        if ('id' in state.data && state.data.table === table_id && state.data.id === entry_id) {
           state.change({id: entry.id})
         } else {
           state.change()
