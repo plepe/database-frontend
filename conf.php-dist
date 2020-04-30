@@ -30,11 +30,24 @@ $data_path = "data/";
 #  'password' => 'PASSWORD',
 #);
 
+/** EXTENSIONS **/
+// after changing the list of extensions (array $modulekit_load),
+// you have to re-run 'npm run build'
+
 // Uncomment the following block to enable & configure Git History
 #$modulekit_load[] = "history_git";
 #$git = array(
 #  'path' => "{$data_path}/git/",
 #);
+
+// Enable Markdown formatting
+#$modulekit_load[] = "dbf-markdown";
+
+// Enable quick editing (double-click on table fields)
+#$modulekit_load[] = "quick_edit";
+
+// Enable Inline Actions (e.g. buttons or links in table fields, which generate actions)
+#$modulekit_load[] = "inline_actions";
 
 // Authentication configuration
 // see https://github.com/plepe/modulekit-auth for more information

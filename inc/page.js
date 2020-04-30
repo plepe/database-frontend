@@ -8,6 +8,7 @@ const templates = require('./templates')
 const pages = require('./pages')
 const update_links = require('./update_links')
 const state = require('./state')
+const extensions = require('./extensions.js')
 
 let pageData
 let page
@@ -52,11 +53,16 @@ function load (param, callback) {
 
     update_links()
 
-    if ('post_render' in page) {
-      page.post_render(param, pageData, callback)
-    } else {
-      callback()
-    }
+    async.parallel([
+      (done) => {
+        if ('post_render' in page) {
+          page.post_render(param, pageData, callback)
+        } else {
+          done()
+        }
+      },
+      (done) => extensions.call_async('post_render', pageData, done)
+    ], callback)
   })
 
   return true
@@ -74,6 +80,8 @@ function connect_server_rendered (param) {
   if ('connect_server_rendered' in page) {
     page.connect_server_rendered(param)
   }
+
+  extensions.call('connect_server_rendered', param)
 }
 
 function update (callback) {
