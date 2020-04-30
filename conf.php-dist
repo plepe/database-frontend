@@ -43,6 +43,12 @@ $data_path = "data/";
 // Enable Markdown formatting
 #$modulekit_load[] = "dbf-markdown";
 
+// Enable quick editing (double-click on table fields)
+#$modulekit_load[] = "quick_edit";
+
+// Enable Inline Actions (e.g. buttons or links in table fields, which generate actions)
+#$modulekit_load[] = "inline_actions";
+
 // Authentication configuration
 // see https://github.com/plepe/modulekit-auth for more information
 $auth_config = array(
