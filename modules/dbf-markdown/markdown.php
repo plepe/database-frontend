@@ -35,3 +35,7 @@ register_hook("twig_init", function() {
     return $result;
   }, array("is_safe"=>array("html"))));
 });
+
+register_hook("init", function () {
+  add_html_header('<link rel="stylesheet" type="text/css" href="node_modules/highlight.js/styles/github.css">');
+});
