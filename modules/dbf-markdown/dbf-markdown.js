@@ -4,7 +4,7 @@ const Field = require('../../inc/Field')
 const hljs = require('highlight.js')
 global.marked = require('marked')
 global.marked.setOptions({
-  highlight: (code, lang) => hljs.highlight(lang, code).value
+  highlight: (code, lang) => hljs.getLanguage(lang) ? hljs.highlight(lang, code).value : code
 })
 
 class Field_markdown extends Field.Field {
