@@ -1,10 +1,4 @@
 const extensions = require('./_extensions_.js')
-extensions.push(
-  /**
-   * Enable markdown formatting for fields
-   */
-  require('./markdown')
-)
 
 const async = {
   each: require('async/each')

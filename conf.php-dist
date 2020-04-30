@@ -40,6 +40,9 @@ $data_path = "data/";
 #  'path' => "{$data_path}/git/",
 #);
 
+// Enable Markdown formatting
+#$modulekit_load[] = "dbf-markdown";
+
 // Authentication configuration
 // see https://github.com/plepe/modulekit-auth for more information
 $auth_config = array(
