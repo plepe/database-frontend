@@ -42,17 +42,25 @@ function connect (param) {
 
           table.get_entry(entry_id, (err, entry) => {
             if (err) {
+              document.body.removeChild(dom)
+              dom = null
               return alert(err)
             }
 
             table.def((err, _orig_form_def) => {
-              if (err) { return alert(err) }
+              f.removeChild(loading_indicator)
 
-              if (!(field_id in _orig_form_def)) {
-                return
+              if (err) {
+                document.body.removeChild(dom)
+                dom = null
+                return alert(err)
               }
 
-              f.removeChild(loading_indicator)
+              if (!(field_id in _orig_form_def)) {
+                document.body.removeChild(dom)
+                dom = null
+                return
+              }
 
               let form_def = {}
               form_def[field_id] = JSON.parse(JSON.stringify(_orig_form_def[field_id]))
