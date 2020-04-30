@@ -1,5 +1,5 @@
 const Twig = require('twig')
-const Field = require('./Field')
+const Field = require('../../inc/Field')
 
 const hljs = require('highlight.js')
 global.marked = require('marked')
