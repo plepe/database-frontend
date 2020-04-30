@@ -1,5 +1,4 @@
-<?php include "conf.php"; /* load a local configuration */ ?>
-<?php include "modulekit/loader.php"; /* loads all php-includes */ ?>
+<?php require "inc/bootstrap.php";
 <?php
 $db_tables = get_db_tables();
 
