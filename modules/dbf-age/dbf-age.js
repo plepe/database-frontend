@@ -1,3 +1,4 @@
+const forEach = require('foreach')
 const Twig = require('twig')
 const htmlentities = require('html-escaper').escape
 
@@ -8,6 +9,11 @@ function text (date) {
 
   let now = new Date()
   let diff = (now - new Date(date)) / 1000
+
+  return _text(diff)
+}
+
+function _text (diff) {
   let text
 
   if (diff < 0) {
@@ -33,10 +39,31 @@ function text (date) {
   return text
 }
 
+function update () {
+  let now = new Date() / 1000
+
+  let age_fields = document.getElementsByClassName('age')
+  forEach(age_fields, (span) => {
+    if (!span.hasAttribute('value')) {
+      return
+    }
+
+    if (!span.value) {
+      span.value = new Date(span.getAttribute('value')) / 1000
+    }
+
+    if (span.value) {
+      span.innerHTML = _text(now - span.value)
+    }
+  })
+}
+
 module.exports = {
   init () {
     Twig.extendFilter("age", (date) => {
-      return '<span title="' + htmlentities(date) + '">' + text(date) + '</span>'
+      return '<span class="age" value="' + htmlentities(date) + '" title="' + htmlentities(date) + '">' + text(date) + '</span>'
     })
+
+    global.setInterval(update, 30000) // every 30 sec
   }
 }

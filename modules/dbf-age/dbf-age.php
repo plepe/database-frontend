@@ -39,6 +39,6 @@ register_hook("twig_init", function() {
       $text = round($diff / 365.25 / 86400) . " years ago";
     }
 
-    return "<span title=\"" . htmlspecialchars($date) . "\">{$text}</span>";
+    return "<span class=\"age\" value=\"" . htmlspecialchars($date) . "\" title=\"" . htmlspecialchars($date) . "\">{$text}</span>";
   }, array("is_safe"=>array("html"))));
 });
