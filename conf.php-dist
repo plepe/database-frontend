@@ -49,6 +49,9 @@ $data_path = "data/";
 // Enable Inline Actions (e.g. buttons or links in table fields, which generate actions)
 #$modulekit_load[] = "inline_actions";
 
+// Enable the 'age' Twig filter (prints time since the date value)
+#$modulekit_load[] = "dbf-age";
+
 // Authentication configuration
 // see https://github.com/plepe/modulekit-auth for more information
 $auth_config = array(
