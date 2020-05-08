@@ -52,6 +52,9 @@ $data_path = "data/";
 // Enable the 'age' Twig filter (prints time since the date value)
 #$modulekit_load[] = "dbf-age";
 
+// Add a 'user' field which references a user in the system
+#$modulekit_load[] = "dbf-user";
+
 // Authentication configuration
 // see https://github.com/plepe/modulekit-auth for more information
 $auth_config = array(
