@@ -18,9 +18,14 @@ function getAttribute(dom, field) {
 function execute (dom) {
   let table_id = getAttribute(dom, 'data-table')
   let entry_id = getAttribute(dom, 'data-id')
-  let field_id = getAttribute(dom, 'data-field')
   let action = getAttribute(dom, 'data-action')
-  let value = dom.value || getAttribute(dom, 'data-value')
+  let data = {}
+  if (getAttribute(dom, 'data-data')) {
+    data = JSON.parse(getAttribute(dom, 'data-data'))
+  } else {
+    let field_id = getAttribute(dom, 'data-field')
+    data[field_id] = dom.value || getAttribute(dom, 'data-value')
+  }
 
   state.indicate_loading()
 
@@ -30,9 +35,6 @@ function execute (dom) {
         state.abort()
         return alert("Can't execute action: " + err)
       }
-
-      let data = {}
-      data[field_id] = value
 
       entry.save(data, {}, (err) => {
         state.abort()
