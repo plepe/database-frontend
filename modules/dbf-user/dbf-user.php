@@ -19,3 +19,22 @@ class Field_user extends Field {
     }
   }
 }
+
+register_hook("twig_init", function() {
+  global $twig;
+  $twig->addFilter(new Twig_SimpleFilter('user_username', function($value) {
+    if (!$value) {
+      return '';
+    }
+
+    return explode('@', $value)[0];
+  }));
+
+  $twig->addFilter(new Twig_SimpleFilter('user_domain', function($value) {
+    if (!$value) {
+      return '';
+    }
+
+    return explode('@', $value)[1];
+  }));
+});
