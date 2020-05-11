@@ -59,7 +59,7 @@ function get_filter_form_def($table) {
   return $filter_form_def;
 }
 
-function get_filter_form(&$param) {
+function get_filter_form(&$param, $view=null) {
   global $filter_form;
 
   if(isset($filter_form))
@@ -69,21 +69,20 @@ function get_filter_form(&$param) {
   if(!$table)
     return null;
 
-  if(!array_key_exists('filter', $_SESSION))
-    $_SESSION['filter'] = array();
-
   $filter_form = new form('filter', get_filter_form_def($table));
 
-  if(array_key_exists('apply_filter', $param)) {
+  if (array_key_exists('apply_filter', $param)) {
     $filter = $filter_form->get_data();
-    $_SESSION['filter'][$param['table']] = $filter;
+    $_SESSION["{$param['table']}_filter"] = $filter;
     $param['offset'] = 0;
   }
 
-  if($filter_form->is_empty()) {
-    if(array_key_exists($param['table'], $_SESSION['filter'])) {
-      $filter = $_SESSION['filter'][$param['table']];
-      $filter_form->set_data($filter);
+  if ($filter_form->is_empty() && array_key_exists("{$param['table']}_filter", $_SESSION)) {
+    $filter_form->set_data($_SESSION["{$param['table']}_filter"]);
+  }
+  elseif (!array_key_exists('filter', $param) && $view) {
+    if (array_key_exists('filter', $view->def)) {
+      $filter_form->set_data($view->def['filter']);
     }
   }
 
@@ -91,13 +90,7 @@ function get_filter_form(&$param) {
 }
 
 function get_filter(&$param, $view=null) {
-  $filter_form = get_filter_form($param);
-
-  if (!array_key_exists('filter', $param) && $view) {
-    if (array_key_exists('filter', $view->def)) {
-      $filter_form->set_data($view->def['filter']);
-    }
-  }
+  $filter_form = get_filter_form($param, $view);
 
   $data = $filter_form->get_data();
   $filter_form->set_orig_data($data);
@@ -120,3 +113,7 @@ function get_filter(&$param, $view=null) {
 
   return $ret;
 }
+
+register_hook('session_regexp_allowed', function (&$ret) {
+  $ret[] = '/^(.*)_filter$/';
+});

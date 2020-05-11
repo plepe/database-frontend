@@ -3,6 +3,7 @@ const async = {
 }
 
 const state = require('./state')
+const session = require('./session')
 
 const filters = {}
 let current_filter
@@ -160,8 +161,14 @@ module.exports = {
 
       if ('filter' in param) {
         current_filter.set_data(param.filter)
-      } else if (page_data.view && page_data.view.def.filter) {
-        current_filter.set_data(page_data.view.def.filter)
+        session.set(param.table + '_filter', param.filter)
+      } else {
+        let filter = session.get(param.table + '_filter')
+        if (filter) {
+          current_filter.set_data(filter)
+        } else {
+          current_filter.set_data(page_data.view.def.filter)
+        }
       }
 
       page_data.filter = {show: () => '<div id="show-filter"></div>'}
