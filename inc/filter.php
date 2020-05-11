@@ -69,6 +69,14 @@ function get_filter_form(&$param, $view=null) {
   if(!$table)
     return null;
 
+  if (array_key_exists('reset_filter', $param)) {
+    unset($_SESSION["{$param['table']}_filter"]);
+    unset($_REQUEST["filter"]);
+    unset($_REQUEST["form_orig_filter"]);
+    unset($param["filter"]);
+    unset($param["apply_filter"]);
+  }
+
   $filter_form = new form('filter', get_filter_form_def($table));
 
   if (array_key_exists('apply_filter', $param)) {

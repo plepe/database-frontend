@@ -106,6 +106,14 @@ function connect (param) {
       state.change({filter})
       return false
     }
+
+    if (choose_filter.elements.reset_filter) {
+      choose_filter.elements.reset_filter.onclick = () => {
+        session.set(param.table + '_filter', null)
+        state.change({filter: null})
+        return false
+      }
+    }
   }
 }
 
@@ -159,7 +167,7 @@ module.exports = {
 
       current_filter = filter_form
 
-      if ('filter' in param) {
+      if ('filter' in param && param.filter) {
         current_filter.set_data(param.filter)
         session.set(param.table + '_filter', param.filter)
       } else {
