@@ -1,17 +1,5 @@
 <?php
-function get_filter_form(&$param) {
-  global $filter_form;
-
-  if(isset($filter_form))
-    return $filter_form;
-
-  $table = get_db_table($param['table']);
-  if(!$table)
-    return null;
-
-  if(!array_key_exists('filter', $_SESSION))
-    $_SESSION['filter'] = array();
-
+function get_filter_form_def($table) {
   $operators = array();
   $filter_form_def = array(
   );
@@ -68,7 +56,23 @@ function get_filter_form(&$param) {
     ),
   ));
 
-  $filter_form = new form('filter', $filter_form_def);
+  return $filter_form_def;
+}
+
+function get_filter_form(&$param) {
+  global $filter_form;
+
+  if(isset($filter_form))
+    return $filter_form;
+
+  $table = get_db_table($param['table']);
+  if(!$table)
+    return null;
+
+  if(!array_key_exists('filter', $_SESSION))
+    $_SESSION['filter'] = array();
+
+  $filter_form = new form('filter', get_filter_form_def($table));
 
   if(array_key_exists('apply_filter', $param)) {
     $filter = $filter_form->get_data();
