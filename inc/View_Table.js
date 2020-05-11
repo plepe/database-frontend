@@ -10,7 +10,7 @@ class View_Table extends View {
     let fields = JSON.parse(JSON.stringify(this.def.fields))
 
     for (let key in fields) {
-      fields[key].html_attributes = 'data-table="' + htmlentities(param.table) + '" data-id="{{ id }}" data-field="' + htmlentities(key) + '" data-view="' + htmlentities(this.id) + '"'
+      fields[key].html_attributes = 'data-table="' + htmlentities(param.table) + '" data-id="{{ id }}" data-field="' + htmlentities(fields[key].field_id || key) + '" data-view="' + htmlentities(this.id) + '"'
     }
 
     this.view = new table(fields, this.extract, {template_engine: 'twig'})
@@ -48,7 +48,7 @@ class View_Table extends View {
       "'><img src='images/edit.png'></a>"
 
     for (let key in fields) {
-      fields[key].html_attributes = 'data-table="' + htmlentities(param.table) + '" data-id="{{ id }}" data-field="' + htmlentities(key) + '" data-view="' + htmlentities(this.id) + '"'
+      fields[key].html_attributes = 'data-table="' + htmlentities(param.table) + '" data-id="{{ id }}" data-field="' + htmlentities(fields[key].field_id || key) + '" data-view="' + htmlentities(this.id) + '"'
     }
 
     this.view = new table(fields, this.extract, {template_engine: 'twig'})
