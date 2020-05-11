@@ -138,6 +138,11 @@ class Page_admin_table_views extends Page {
 	  ),
 	),
       ),
+      'filter' => array(
+        'type' => 'form',
+        'name' => 'Filter',
+        'def'  => get_filter_form_def($table),
+      ),
       'format_header'   => array(
         'type' => 'textarea',
         'name' => 'Format Header',

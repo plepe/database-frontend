@@ -90,8 +90,14 @@ function get_filter_form(&$param) {
   return $filter_form;
 }
 
-function get_filter(&$param) {
+function get_filter(&$param, $view=null) {
   $filter_form = get_filter_form($param);
+
+  if (!array_key_exists('filter', $param) && $view) {
+    if (array_key_exists('filter', $view->def)) {
+      $filter_form->set_data($view->def['filter']);
+    }
+  }
 
   $data = $filter_form->get_data();
   $filter_form->set_orig_data($data);

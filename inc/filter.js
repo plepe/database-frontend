@@ -160,6 +160,8 @@ module.exports = {
 
       if ('filter' in param) {
         current_filter.set_data(param.filter)
+      } else if (page_data.view && page_data.view.def.filter) {
+        current_filter.set_data(page_data.view.def.filter)
       }
 
       page_data.filter = {show: () => '<div id="show-filter"></div>'}
