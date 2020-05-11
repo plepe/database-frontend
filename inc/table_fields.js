@@ -221,7 +221,9 @@ module.exports = {
             } else if (typeof field_id === 'object') {
               def.fields['__table_fields:' + i + '__'] = field_id
             } else {
-              def.fields['__table_fields:' + i + '__'] = fields[field_id].view_def()
+              let d = JSON.parse(JSON.stringify(fields[field_id].view_def()))
+              d.field_id = field_id
+              def.fields['__table_fields:' + i + '__'] = d
             }
           })
 

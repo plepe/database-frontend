@@ -84,7 +84,9 @@ function modify_table_fields(&$param, &$def) {
       $def['fields'][] = $field_id;
     }
     else if ($field_id) {
-      $def['fields'][] = $fields[$field_id]->view_def();
+      $d = $fields[$field_id]->view_def();
+      $d['field_id'] = $field_id;
+      $def['fields'][] = $d;
     }
   }
 }
