@@ -87,6 +87,11 @@ module.exports = {
         }
       }
 
+      let viewClass = (result.view_def.class || 'Table')
+      let view = new Views[viewClass](result.view_def, param)
+      result.view = view
+      result.views = table.views(param.page)
+
       async.parallel([
         (done) => {
           async.each(modules,
@@ -104,11 +109,6 @@ module.exports = {
       ],
         (err) => {
           if (err) { return callback(err) }
-
-          let viewClass = (result.view_def.class || 'Table')
-          let view = new Views[viewClass](result.view_def, param)
-          result.view = view
-          result.views = table.views(param.page)
 
           page(result, (err) => {
             callback(err, result)
