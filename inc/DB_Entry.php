@@ -10,7 +10,10 @@ class DB_Entry {
     }
     else {
       $this->id = $id;
-      $this->data = $data;
+      if ($data) {
+        $this->data = $data;
+        $this->_load();
+      }
     }
   }
 
@@ -36,6 +39,18 @@ class DB_Entry {
 
     $this->data = $this->table->load_entries_data(array($this->id));
     $this->data = $this->data[$this->id];
+    $this->_load();
+  }
+
+  /**
+   * _load - parse values from database if fields override it
+   */
+  function _load () {
+    foreach ($this->table->fields() as $field_id => $field) {
+      if (method_exists($field, '_load')) {
+        $this->data[$field_id] = $field->_load($this->data[$field_id]);
+      }
+    }
   }
 
   /**
