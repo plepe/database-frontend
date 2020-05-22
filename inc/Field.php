@@ -358,6 +358,12 @@ class Field_boolean extends Field {
     return 'boolean';
   }
 
+  function _load ($value) {
+    if ($value !== null) {
+      return !!$value;
+    }
+  }
+
   function default_format($key=null) {
     if($key === null)
       $key = $this->id;
