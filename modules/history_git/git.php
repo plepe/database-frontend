@@ -238,3 +238,12 @@ register_hook("admin_table_general", function(&$def) {
     'default' => true,
   );
 });
+
+register_hook("admin_maintainance_actions", function (&$links) {
+  $links['git_dump'] = array(
+    'text' => 'Dump database to Git',
+    'action' => function () {
+      git_dump(new Changeset('git dump via admin panel'));
+    }
+  );
+});
