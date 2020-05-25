@@ -48,7 +48,14 @@ class DB_Entry {
   function _load () {
     foreach ($this->table->fields() as $field_id => $field) {
       if (method_exists($field, '_load')) {
-        $this->data[$field_id] = $field->_load($this->data[$field_id]);
+        if ($field->is_multiple()) {
+          foreach ($this->data[$field_id] as $k => $v) {
+            $this->data[$field_id][$k] = $field->_load($v);
+          }
+        }
+        else {
+          $this->data[$field_id] = $field->_load($this->data[$field_id]);
+        }
       }
     }
   }
