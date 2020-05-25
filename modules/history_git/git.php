@@ -87,7 +87,24 @@ function history_git_get_path ($object) {
   }
 }
 
+function history_git_get_path_old ($object) {
+  if (!isset($object->old_id)) {
+    return;
+  }
+
+  if (get_class($object) === 'DB_Entry') {
+    return "{$object->table->id}/{$object->old_id}.json";
+  }
+  elseif (get_class($object) === 'DB_Table') {
+    return "__system__/{$object->old_id}.json";
+  }
+}
+
 function _git_dump_table_entries ($table) {
+  if (isset($table->old_id)) {
+    system("rm -r " . escapeshellarg($table->old_id . '/'));
+  }
+
   system("rm -r " . escapeshellarg($table->id . '/'));
 
   if($table->data('history_git_enabled') === false)
@@ -126,19 +143,21 @@ function git_commit ($changeset) {
 
   file_put_contents("__system__/__system__.json", json_readable_encode($system->data()) . "\n");
 
-  foreach ($changeset->changes['add'] as $object) {
-    $path = history_git_get_path($object);
-
-    if ($path) {
-      file_put_contents($path, json_readable_encode($object->data()) . "\n");
+  foreach ($changeset->changes['remove'] as $object) {
+    if ($path = history_git_get_path($object)) {
+      unlink($path);
     }
   }
 
-  foreach ($changeset->changes['remove'] as $object) {
-    $path = history_git_get_path($object);
-
-    if ($path) {
+  foreach ($changeset->changes['add'] as $object) {
+    if ($path = history_git_get_path_old($object)) {
       unlink($path);
+    }
+  }
+
+  foreach ($changeset->changes['add'] as $object) {
+    if ($path = history_git_get_path($object)) {
+      file_put_contents($path, json_readable_encode($object->data()) . "\n");
     }
   }
 

@@ -160,6 +160,8 @@ class DB_Entry {
       return db_return_error_info($db_conn);
     }
 
+    $this->old_id = $this->id;
+
     if($this->id === null) {
       $this->id = $db_conn->lastInsertId();
     }
