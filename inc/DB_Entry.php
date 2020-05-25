@@ -319,7 +319,7 @@ class DB_Entry {
 
     $res = $db_conn->query($query);
 
-    $changeset->add($this);
+    $changeset->remove($this);
   }
 
   /**
