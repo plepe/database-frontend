@@ -15,7 +15,7 @@ $db_conn->query('drop table if exists test3');
 
 db_system_init();
 
-class DBMYSQL extends PHPUnit_Framework_TestCase {
+class DBMYSQL extends PHPUnit\Framework\TestCase {
   protected $backupGlobals = FALSE;
 
   public function testInit () {
