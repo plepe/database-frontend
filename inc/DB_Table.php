@@ -10,6 +10,12 @@ class DB_Table {
     $this->_load($data);
   }
 
+  function clear_cache () {
+    unset($this->data);
+    unset($this->_fields);
+    $this->entries_cache = array();
+  }
+
   function _load($data=null) {
     if (!$data) {
       global $db_conn;

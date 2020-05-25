@@ -38,13 +38,7 @@ function git_dump($changeset) {
   foreach(get_db_tables() as $table) {
     file_put_contents("__system__/{$table->id}.json", json_readable_encode($table->data()) . "\n");
 
-    if($table->data('history_git_enabled') === false)
-      continue;
-
-    mkdir($table->id);
-    foreach($table->get_entries() as $entry) {
-      file_put_contents("{$table->id}/{$entry->id}.json", json_readable_encode($entry->data()) . "\n");
-    }
+    _git_dump_table_entries($table);
   }
 
   global $auth;
@@ -84,10 +78,27 @@ function history_git_get_path ($object) {
     return "{$object->table->id}/{$object->id}.json";
   }
   elseif (get_class($object) === 'DB_Table') {
+    _git_dump_table_entries($object);
+
     return "__system__/{$object->id}.json";
   }
   elseif (get_class($object) === 'DB_System') {
     return "__system__/__system__.json";
+  }
+}
+
+function _git_dump_table_entries ($table) {
+  system("rm -r " . escapeshellarg($table->id . '/'));
+
+  if($table->data('history_git_enabled') === false)
+    return;
+
+  // clear chache of table, so that all
+  $table->clear_cache();
+
+  mkdir($table->id);
+  foreach($table->get_entries() as $entry) {
+    file_put_contents("{$table->id}/{$entry->id}.json", json_readable_encode($entry->data()) . "\n");
   }
 }
 
