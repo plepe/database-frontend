@@ -30,6 +30,16 @@
       {% endfor %}
       </ul>
 
+      {% if data.maintainance_actions %}
+      <h3> Maintainance </h3>
+
+      <ul>
+      {% for action, link in data.maintainance_actions %}
+      <li><a href='?page=admin&amp;action={{ action }}'>{{ link.text }}</a></li>
+      {% endfor %}
+      </ul>
+      {% endif %}
+
   </div>
 
   <div class='Panel'>
