@@ -90,12 +90,6 @@ class DB_Entry {
 
     foreach($data as $column_id=>$d) {
       $field = $this->table->field($column_id);
-      if (method_exists($field, 'db_quote')) {
-        $quoted_value = $field->db_quote($d, $db_conn);
-      }
-      else {
-        $quoted_value = $db_conn->quote($d);
-      }
 
       if(!$field) {
 	trigger_error("DB_Entry::save(): no such field '" . $column_id . "'", E_USER_ERROR);
@@ -122,6 +116,12 @@ class DB_Entry {
         }
       }
       else {
+        if (method_exists($field, 'db_quote')) {
+          $quoted_value = $field->db_quote($d, $db_conn);
+        }
+        else {
+          $quoted_value = $db_conn->quote($d);
+        }
 
 	$set[] = $db_conn->quoteIdent($column_id) . "=" . $quoted_value;
 	$insert_columns[] = $db_conn->quoteIdent($column_id);
@@ -222,10 +222,17 @@ class DB_Entry {
             continue;
           }
 
+          if (method_exists($field, 'db_quote')) {
+            $quoted_value = $field->db_quote($v, $db_conn);
+          }
+          else {
+            $quoted_value = $db_conn->quote($v);
+          }
+
           $cmds[] = "insert into " . $db_conn->quoteIdent($this->type . '_' . $column_id) .
             " (" . $db_conn->quoteIdent('id') . ', ' .  $db_conn->quoteIdent('sequence') . ', ' . $db_conn->quoteIdent('key') . ', ' . $db_conn->quoteIdent('value') . ') ' .
             " values (" . $db_conn->quote($this->id) . ", " . $db_conn->quote($sequence) . ", " .
-            $db_conn->quote($k) . ", " . $db_conn->quote($v) . ")";
+            $db_conn->quote($k) . ", " . $quoted_value . ")";
 
           $sequence++;
 	}
