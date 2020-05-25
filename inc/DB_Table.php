@@ -75,7 +75,7 @@ class DB_Table {
   }
 
   function data($key=null) {
-    if ($this->data === null) {
+    if (!isset($this->data)) {
       $this->_load();
     }
 
@@ -312,7 +312,7 @@ class DB_Table {
 		  "  " . $db_conn->quoteIdent('sequence') . " int not null,\n" .
 		  "  " . $db_conn->quoteIdent('key') . " varchar(255) not null,\n" .
 		  "  " . $db_conn->quoteIdent('value') . " {$column_type} null,\n" .
-                  "  " . ($data['ts'] ? $db_conn->quoteIdent('ts') . " TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n" : '') .
+                  "  " . (array_key_exists('ts', $data) && $data['ts'] ? $db_conn->quoteIdent('ts') . " TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n" : '') .
 
 		  "  primary key(" . $db_conn->quoteIdent('id'). ", " . $db_conn->quoteIdent('key') . "),\n" .
 		  // foreign key to referenced table
@@ -401,7 +401,7 @@ class DB_Table {
       }
     }
 
-    if ($data['ts']) {
+    if (array_key_exists('ts', $data) && $data['ts']) {
       $columns[] = $db_conn->quoteIdent('ts') . " TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP";
       $column_copy[] = $old_data['ts'] ? $db_conn->quoteIdent('ts') : 'now()';
     }
@@ -917,7 +917,7 @@ class DB_Table {
         while($elem = $res->fetch()) {
           $data[$elem['id']][$table][$elem['key']] = $elem['value'];
 
-          if ($this->data['ts'] && $elem['ts'] > $data[$elem['id']]['ts']) {
+          if ($this->data('ts') && $elem['ts'] > $data[$elem['id']]['ts']) {
             $data[$elem['id']]['ts'] = $elem['ts'];
           }
         }

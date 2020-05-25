@@ -18,7 +18,7 @@ class DB_Entry {
   }
 
   function data($key=null) {
-    if($this->data === null)
+    if(!isset($this->data))
       $this->load();
 
     if($key !== null)
