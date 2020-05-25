@@ -178,3 +178,4 @@ switch ($_SERVER['REQUEST_METHOD']) {
 }
 
 $changeset->commit();
+messages_keep();
