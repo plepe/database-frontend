@@ -23,6 +23,8 @@ function git_dump($changeset) {
     return;
   }
 
+  history_git_lock();
+
   if(!is_dir(".git")) {
     system("git init");
   }
@@ -52,7 +54,7 @@ function git_dump($changeset) {
   if(!$email)
     $email = "unknown@unknown";
 
-  system("git add .");
+  system("git add *");
   $result = adv_exec("git " .
            "-c user.name=" . shell_escape($user) . " " .
            "-c user.email=" . shell_escape($email) . " " .
@@ -62,6 +64,8 @@ function git_dump($changeset) {
            "--author=" . shell_escape("{$user} <{$email}>")
         );
 
+  history_git_unlock();
+
   if(in_array($result[0], array(0, 1))) {
     //messages_add("<pre>Git commit:\n" . htmlspecialchars($result[1]) . "</pre>\n");
   }
@@ -70,6 +74,22 @@ function git_dump($changeset) {
   }
 
   chdir($cwd);
+}
+
+function history_git_lock () {
+  global $history_git_fd;
+
+  $history_git_fd = fopen('.lock', 'w');
+  if (!flock($history_git_fd, LOCK_EX)) {
+    messages_add("History: could not get lock!", MSG_ERROR);
+  }
+}
+
+function history_git_unlock () {
+  global $history_git_fd;
+
+  flock($history_git_fd, LOCK_UN);
+  fclose($history_git_fd);
 }
 
 register_hook("panel_items", function(&$items, $param) {
