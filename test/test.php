@@ -12,10 +12,13 @@ $db_conn->query('drop table if exists test4_b');
 $db_conn->query('drop table if exists test4');
 $db_conn->query('drop table if exists test3_b');
 $db_conn->query('drop table if exists test3');
+$db_conn->query('drop table if exists test5_bl_multiple');
+$db_conn->query('drop table if exists test5_dt_multiple');
+$db_conn->query('drop table if exists test5');
 
 db_system_init();
 
-class DBMYSQL extends PHPUnit_Framework_TestCase {
+class DBMYSQL extends PHPUnit\Framework\TestCase {
   protected $backupGlobals = FALSE;
 
   public function testInit () {
@@ -154,6 +157,49 @@ class DBMYSQL extends PHPUnit_Framework_TestCase {
 
     $entry = $table->get_entry(2);
     $this->assertEquals(array('a' => 'bar', 'b' => 'bar', 'id' => 2), $entry->data());
+
+    $entry = $table->get_entry(3);
+    $this->assertEquals(null, $entry);
+  }
+
+  public function test5 () {
+    $table = new DB_Table(null, null);
+
+    $table->save(array(
+      'id' => 'test5',
+      'fields' => array(
+        'dt_single' => array(
+          'type' => 'datetime',
+          'count' => false,
+        ),
+        'dt_multiple' => array(
+          'type' => 'datetime',
+          'count' => true,
+        ),
+        'bl_single' => array(
+          'type' => 'boolean',
+          'count' => false,
+        ),
+        'bl_multiple' => array(
+          'type' => 'boolean',
+          'count' => true,
+        ),
+      ),
+    ));
+
+    $entry = new DB_Entry('test5', null);
+    $entry->save(array('dt_single' => 'now', 'dt_multiple' => array('now', '2015-01-01 12:00:00'), 'bl_single' => false, 'bl_multiple' => array(false, true)));
+
+    global $db_conn;
+    $res = $db_conn->query('select now() as now');
+    $now = $res->fetch()['now'];
+    $res->closeCursor();
+
+    $entry = $table->get_entry(1);
+    $this->assertEquals(
+      array('id' => '1', 'dt_single' => $now, 'dt_multiple' => array($now, '2015-01-01 12:00:00'), 'bl_single' => false, 'bl_multiple' => array(false, true)),
+      $entry->data()
+    );
 
     $entry = $table->get_entry(3);
     $this->assertEquals(null, $entry);

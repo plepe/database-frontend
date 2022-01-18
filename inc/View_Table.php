@@ -1,23 +1,36 @@
 <?php
 class View_Table extends View {
   function show() {
-    $view = new table($this->def['fields'], $this->extract, array("template_engine"=>"twig"));
+    $fields = $this->def['fields'];
+
+    foreach ($fields as $key => $def) {
+      $fields[$key]['html_attributes'] = 'data-table="' . htmlentities($this->param['table']) . '" data-id="{{ id }}" data-field="' . htmlentities($def['field_id'] ?? $key) . '" data-view="' . htmlentities($this->id) . '"';
+    }
+
+    $view = new table($fields, $this->extract, array("template_engine"=>"twig"));
+
     return $view->show('html-transposed');
   }
 
   function show_list() {
-    $first_field = array_keys($this->def['fields'])[0];
-    $this->def['fields'][$first_field]['format'] =
+    $fields = $this->def['fields'];
+
+    $first_field = array_keys($fields)[0];
+    $fields[$first_field]['format'] =
       "<a class='TableLink' href='" .
       strtr(page_url(array('page' => 'show', 'table' => $this->param['table'], 'id' => "ID")), array("ID" => "{{ id }}")) .
       "'>" .
-      $this->def['fields'][$first_field]['format'] .
+      $fields[$first_field]['format'] .
       "</a>" .
       "<a title='edit' class='edit' href='" .
       strtr(page_url(array('page' => 'edit', 'table' => $this->param['table'], 'id' => "ID")), array("ID" => "{{ id }}")) .
       "'><img src='images/edit.png'></a>";
 
-    $view = new table($this->def['fields'], $this->extract, array("template_engine"=>"twig"));
+    foreach ($fields as $key => $def) {
+      $fields[$key]['html_attributes'] = 'data-table="' . htmlentities($this->param['table']) . '" data-id="{{ id }}" data-field="' . htmlentities($def['field_id'] ?? $key) . '" data-view="' . htmlentities($this->id) . '"';
+    }
+
+    $view = new table($fields, $this->extract, array("template_engine"=>"twig"));
 
     return $view->show('html', $this->param);
   }

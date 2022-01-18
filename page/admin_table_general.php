@@ -30,6 +30,10 @@ class Page_admin_table_general extends Page {
 	  'type'	=> 'text',
 	  'name'	=> 'Name',
 	),
+        'weight' => array(
+          'type'        => 'integer',
+          'name'        => 'Sort order in table list',
+        ),
 	'access_view' => array(
 	  'type'	=> 'text',
 	  'name'	=> 'View access',
@@ -57,6 +61,11 @@ class Page_admin_table_general extends Page {
           'name'         => 'Default view for showing a list',
           'values'       => $views,
           'default'      => 'default',
+        ),
+        'ts' => array(
+          'type'         => 'boolean',
+          'name'         => 'Add a timestamp field',
+          'default'      => true,
         ),
     );
 

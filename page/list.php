@@ -46,9 +46,6 @@ class Page_list extends Page {
     }
 
     $table_extract = new DB_TableExtract($table);
-    $filter_values = get_filter($this->param);
-    $table_extract->set_filter($filter_values);
-
 //    $data = array();
 //    foreach($table_extract->get() as $o) {
 //      $data[$o->id] = $o->view();
@@ -85,6 +82,9 @@ class Page_list extends Page {
     else {
       $view = new View_Table($def, $this->param);
     }
+
+    $filter_values = get_filter($this->param, $view);
+    $table_extract->set_filter($filter_values);
 
     $view->set_extract($table_extract);
 

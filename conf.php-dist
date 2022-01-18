@@ -2,6 +2,10 @@
 // Configure the look of your application, e.g. title
 $app = array(
   'title' => "database-frontend",
+
+
+  // when loading entries, load max. chunkSize at once (default: 100)
+  chunkSize: 100,
 );
 
 //// Basic configuration ////
@@ -26,11 +30,30 @@ $data_path = "data/";
 #  'password' => 'PASSWORD',
 #);
 
+/** EXTENSIONS **/
+// after changing the list of extensions (array $modulekit_load),
+// you have to re-run 'npm run build'
+
 // Uncomment the following block to enable & configure Git History
 #$modulekit_load[] = "history_git";
 #$git = array(
 #  'path' => "{$data_path}/git/",
 #);
+
+// Enable Markdown formatting
+#$modulekit_load[] = "dbf-markdown";
+
+// Enable quick editing (double-click on table fields)
+#$modulekit_load[] = "quick_edit";
+
+// Enable Inline Actions (e.g. buttons or links in table fields, which generate actions)
+#$modulekit_load[] = "inline_actions";
+
+// Enable the 'age' Twig filter (prints time since the date value)
+#$modulekit_load[] = "dbf-age";
+
+// Add a 'user' field which references a user in the system
+#$modulekit_load[] = "dbf-user";
 
 // Authentication configuration
 // see https://github.com/plepe/modulekit-auth for more information

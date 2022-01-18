@@ -21,9 +21,6 @@ class Page_show extends Page {
       return null;
 
     $table_extract = new DB_TableExtract($table);
-    $filter_values = get_filter($this->param);
-    $table_extract->set_filter($filter_values);
-    $pager_index = $table_extract->index($object->id);
 
     // if no 'view'-parameter is set, use session or view with lowest weight
     if(!isset($this->param['view'])) {
@@ -50,6 +47,10 @@ class Page_show extends Page {
     else {
       $view = new View_Table($def, $this->param);
     }
+
+    $filter_values = get_filter($this->param);
+    $table_extract->set_filter($filter_values);
+    $pager_index = $table_extract->index($object->id);
 
     $extract = new DB_TableExtract($table);
     $extract->set_ids(array($object->id));

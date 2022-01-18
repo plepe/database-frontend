@@ -31,16 +31,17 @@ $include = array(
     'inc/auto_add_new_fields_to_views.php',
     'inc/array_insert_before.php',
     'inc/random_ids.php',
-    'page/*',
+    'inc/db_execute.php',
+    'inc/session.php',
+    'inc/ts.php',
+    'page/*.php',
   ),
   'js' => array(
     'inc/index.js',
-    'inc/pager.js',
     'inc/mousetrap.min.js',
     'inc/mousetrap-auto.js',
-    'inc/filter.js',
-    'inc/table_fields.js',
     'inc/random_ids.js',
+    'dist/app.js'
   ),
 
   'css' => array(

@@ -3,14 +3,14 @@ class Page_admin_table_views extends Page {
   function content() {
     global $app;
 
-     if(!base_access('admin')) {
+    if(!base_access('admin')) {
       global $auth;
       if(!$auth->is_logged_in())
 	page_reload(array("page" => "login", "return" => array("page" => "admin_table_views", "table" => $this->param['table'], "view" => $this->param['view'])));
       return "Permission denied.";
     }
 
-   $table = get_db_table($this->param['table']);
+    $table = get_db_table($this->param['table']);
     $keys = $table->def();
     $keys['__custom__'] = 'Custom Field';
 
@@ -36,6 +36,7 @@ class Page_admin_table_views extends Page {
 	'name'   => 'Fields',
 	'count'  => array(
           'default' => 1,
+          'index_type' => 'array',
           'show_depend' => array('check', 'class',
             array('is', 'Table'),
           ),
@@ -136,6 +137,11 @@ class Page_admin_table_views extends Page {
 	    ),
 	  ),
 	),
+      ),
+      'filter' => array(
+        'type' => 'form',
+        'name' => 'Filter',
+        'def'  => get_filter_form_def($table),
       ),
       'format_header'   => array(
         'type' => 'textarea',

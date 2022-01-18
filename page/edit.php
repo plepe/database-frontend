@@ -52,12 +52,15 @@ class Page_edit extends Page {
     $def = $table->def();
 
     $reference_fields = array();
-    $backreference_fields = array();
     foreach ($def as $defk => $defv) {
       if (isset($defv['backreference']) && $defv['backreference']) {
         $def[$defk]['type'] = 'select';
-        $def[$defk]['count'] = array('default' => 1);
-        $backreference_fields[$defk] = true;
+        $def[$defk]['values_mode'] = 'keys';
+        $def[$defk]['count'] = array(
+          'default' => 1,
+          'index_type' => 'array',
+          'order' => false,
+        );
       }
 
       if (isset($defv['reference']) && $defv['reference'] && !in_array($defv['type'], array('checkbox')) && $defv['reference_create_new']) {
@@ -112,15 +115,22 @@ class Page_edit extends Page {
 
       $orig_data = $form->get_orig_data();
       $data = $form->get_data();
-      if(!isset($this->param['id']))
+      if(!isset($this->param['id'])) {
 	$ob = new DB_Entry($this->param['table'], null);
+        $orig_data = array();
+      }
+
+      $result = true;
 
       foreach ($reference_fields as $f_id => $f_count) {
         if ($f_count) {
           foreach ($data[$f_id] as $e_id => $e_v) {
             if (!$e_v['value']) {
               $new_object = new DB_Entry($f_id, null);
-              $new_object->save($e_v['new'], $changeset);
+              $result = $new_object->save($e_v['new'], $changeset);
+              if ($result !== true) {
+                break;
+              }
               $data[$f_id][$e_id] = $new_object->id;
             }
             else {
@@ -130,7 +140,10 @@ class Page_edit extends Page {
         } else {
           if (!$data[$f_id]['value']) {
             $new_object = new DB_Entry($f_id, null);
-            $new_object->save($data[$f_id]['new'], $changeset);
+            $result = $new_object->save($data[$f_id]['new'], $changeset);
+            if ($result !== true) {
+              break;
+            }
             $data[$f_id] = $new_object->id;
           }
           else {
@@ -139,37 +152,13 @@ class Page_edit extends Page {
         }
       }
 
-      $result = $ob->save($data, $changeset);
-
-      foreach ($backreference_fields as $f_id => $f_dummy) {
-        $field = $def[$f_id];
-        $ref_table = explode(':', $field['backreference'])[0];
-        $ref_field_id = explode(':', $field['backreference'])[1];
-        $ref_table = get_db_table($ref_table);
-
-        foreach ($orig_data[$f_id] as $old_ref) {
-          if (!in_array($old_ref, $data[$f_id])) {
-            $other_ob = $ref_table->get_entry($old_ref);
-            $old_field_data = $other_ob->data($ref_field_id);
-            $p = array_search($ob->id, $old_field_data);
-            if ($p !== false) {
-              array_splice($old_field_data, $p, 1);
-            }
-            $other_ob->save(array($ref_field_id => $old_field_data), $changeset);
-          }
-        }
-
-        foreach ($data[$f_id] as $new_ref) {
-          if (!in_array($new_ref, $orig_data[$f_id])) {
-            $other_ob = $ref_table->get_entry($new_ref);
-            $new_field_data = $other_ob->data($ref_field_id);
-            $new_field_data[] = $ob->id;
-            $other_ob->save(array($ref_field_id => $new_field_data), $changeset);
-          }
-        }
+      if ($result === true) {
+        $result = $ob->save($data, $changeset);
       }
 
-      $changeset->commit();
+      if ($result === true) {
+        $changeset->commit();
+      }
 
       if($result === true) {
 	page_reload(page_url(array("page" => "show", "table" => $this->param['table'], "id" => $ob->id)));

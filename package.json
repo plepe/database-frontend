@@ -3,9 +3,27 @@
   "version": "0.1.0",
   "description": "A simple but powerful database frontend",
   "scripts": {
-    "test": "phpunit test/test.php"
+    "build": "php create_extensions.php && mkdir -p dist && browserify inc/app.js -o dist/app.js",
+    "lint": "standard --fix inc/*.js page/*.js",
+    "test": "phpunit test/test.php",
+    "prepare": "npm run build",
+    "watch": "php create_extensions.php && mkdir -p dist && watchify --debug inc/app.js -o dist/app.js -v"
   },
   "repository": "https://github.com/plepe/database-frontend/",
   "author": "Stephan Bösch-Plepelits <skunk@xover.mud.at>",
-  "license": "GPL-3.0"
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "browserify": "^16.5.0",
+    "standard": "^14.3.3",
+    "watchify": "^3.11.1"
+  },
+  "dependencies": {
+    "async": "^3.2.0",
+    "foreach": "^2.0.5",
+    "highlight.js": "^9.18.1",
+    "html-escaper": "^3.0.0",
+    "marked": "^1.0.0",
+    "qs": "^6.9.3",
+    "twig": "^1.15.0"
+  }
 }

@@ -10,12 +10,15 @@ class DB_Entry {
     }
     else {
       $this->id = $id;
-      $this->data = $data;
+      if ($data) {
+        $this->data = $data;
+        $this->_load();
+      }
     }
   }
 
   function data($key=null) {
-    if($this->data === null)
+    if(!isset($this->data))
       $this->load();
 
     if($key !== null)
@@ -36,6 +39,25 @@ class DB_Entry {
 
     $this->data = $this->table->load_entries_data(array($this->id));
     $this->data = $this->data[$this->id];
+    $this->_load();
+  }
+
+  /**
+   * _load - parse values from database if fields override it
+   */
+  function _load () {
+    foreach ($this->table->fields() as $field_id => $field) {
+      if (method_exists($field, '_load')) {
+        if ($field->is_multiple()) {
+          foreach ($this->data[$field_id] as $k => $v) {
+            $this->data[$field_id][$k] = $field->_load($v);
+          }
+        }
+        else {
+          $this->data[$field_id] = $field->_load($this->data[$field_id]);
+        }
+      }
+    }
   }
 
   /**
@@ -86,7 +108,7 @@ class DB_Entry {
       }
 
       // the field has multiple values -> use extra table
-      if($field->is_multiple() === true) {
+      elseif($field->is_multiple() === true) {
         if($this->id !== null)
           $cmds[] = "delete from " . $db_conn->quoteIdent($this->type . '_' . $column_id) .
             " where " . $db_conn->quoteIdent('id') . "=" . $db_conn->quote($this->id);
@@ -101,9 +123,16 @@ class DB_Entry {
         }
       }
       else {
-	$set[] = $db_conn->quoteIdent($column_id) . "=" . $db_conn->quote($d);
+        if (method_exists($field, 'db_quote')) {
+          $quoted_value = $field->db_quote($d, $db_conn);
+        }
+        else {
+          $quoted_value = $db_conn->quote($d);
+        }
+
+	$set[] = $db_conn->quoteIdent($column_id) . "=" . $quoted_value;
 	$insert_columns[] = $db_conn->quoteIdent($column_id);
-	$insert_values[] = $db_conn->quote($d);
+	$insert_values[] = $quoted_value;
       }
     }
 
@@ -138,6 +167,8 @@ class DB_Entry {
       return db_return_error_info($db_conn);
     }
 
+    $this->old_id = $this->id;
+
     if($this->id === null) {
       $this->id = $db_conn->lastInsertId();
     }
@@ -149,9 +180,45 @@ class DB_Entry {
     foreach($data as $column_id=>$d) {
       $field = $this->table->field($column_id);
 
-      // the field has multiple values -> use extra table
-      if($field->is_multiple() === true) {
+      if ($field->type() === 'backreference') {
+        list ($ref_table, $ref_field) = explode(':', $field->def['backreference']);
+        $old_ref_data = array();
+        $res = $db_conn->query('select id from ' .
+          $db_conn->quoteIdent($ref_table . '_' . $ref_field) .
+          ' where ' . $db_conn->quoteIdent('value') . '=' . $db_conn->quote($this->id));
+        while ($elem = $res->fetch()) {
+          $old_ref_data[] = $elem['id'];
+        }
 
+        foreach ($data[$column_id] as $d) {
+          if (!in_array($d, $old_ref_data)) {
+            $cmds[] = 'insert into ' .
+              $db_conn->quoteIdent($ref_table . '_' . $ref_field) .
+              ' (select ' .
+                $db_conn->quote($d) . ', ' .
+                'coalesce(max(' . $db_conn->quoteIdent('sequence') . ') + 1, 0), ' .
+                'coalesce(max(' . $db_conn->quoteIdent('key') . ') + 1, 0), ' .
+              $db_conn->quote($this->id) .
+              (get_db_table($ref_table)->data('ts') ? ', now()' : '') .
+              ' from ' . $db_conn->quoteIdent($ref_table . '_' . $ref_field) .
+              ' where id=' . $db_conn->quote($d) . ')';
+
+            $changeset->add(get_db_table($ref_table)->get_entry($d));
+          }
+        }
+
+        foreach ($old_ref_data as $d) {
+          if (!in_array($d, $data[$column_id])) {
+            $cmds[] = 'delete from ' .
+              $db_conn->quoteIdent($ref_table . '_' . $ref_field) .
+              ' where id=' . $db_conn->quote($d);
+
+            $changeset->add(get_db_table($ref_table)->get_entry($d));
+          }
+        }
+      }
+      // the field has multiple values -> use extra table
+      elseif($field->is_multiple() === true) {
 	$sequence = 0;
 	foreach($d as $k=>$v) {
 	  // don't save null values
@@ -162,9 +229,17 @@ class DB_Entry {
             continue;
           }
 
+          if (method_exists($field, 'db_quote')) {
+            $quoted_value = $field->db_quote($v, $db_conn);
+          }
+          else {
+            $quoted_value = $db_conn->quote($v);
+          }
+
           $cmds[] = "insert into " . $db_conn->quoteIdent($this->type . '_' . $column_id) .
+            " (" . $db_conn->quoteIdent('id') . ', ' .  $db_conn->quoteIdent('sequence') . ', ' . $db_conn->quoteIdent('key') . ', ' . $db_conn->quoteIdent('value') . ') ' .
             " values (" . $db_conn->quote($this->id) . ", " . $db_conn->quote($sequence) . ", " .
-            $db_conn->quote($k) . ", " . $db_conn->quote($v) . ")";
+            $db_conn->quote($k) . ", " . $quoted_value . ")";
 
           $sequence++;
 	}
@@ -186,6 +261,42 @@ class DB_Entry {
     $changeset->add($this);
 
     return true;
+  }
+
+  /**
+   * return a list of all referenced entries
+   * @returns string[][] - Array of referenced entries where each entry is an array with [table_id, entry_id]
+   */
+  function referenced_entries() {
+    $fields = $this->table->fields();
+    $result = array();
+
+    $data = $this->data();
+    foreach ($fields as $field) {
+      if ($data[$field->id] && isset($field->def['backreference'])) {
+        $ref_table = explode(':', $field->def['backreference'])[0];
+        if ($field->is_multiple()) {
+          foreach ($data[$field->id] as $d) {
+            $result[] = array($ref_table, $d);
+          }
+        }
+        else {
+          $result[] = array($ref_table, $data[$field->id]);
+        }
+      }
+      elseif ($data[$field->id] && isset($field->def['reference'])) {
+        if ($field->is_multiple()) {
+          foreach ($data[$field->id] as $d) {
+            $result[] = array($field->def['reference'], $d);
+          }
+        }
+        else {
+          $result[] = array($field->def['reference'], $data[$field->id]);
+        }
+      }
+    }
+
+    return $result;
   }
 
   /**
@@ -224,7 +335,7 @@ class DB_Entry {
 
     $res = $db_conn->query($query);
 
-    $changeset->add($this);
+    $changeset->remove($this);
   }
 
   /**
@@ -235,38 +346,6 @@ class DB_Entry {
       return $this->view_cache;
 
     $this->view_cache = $this->data();
-
-    foreach($this->table->fields() as $field) {
-      $k = $field->id;
-      if(array_key_exists('reference', $field->def) && ($field->def['reference'] != null)) {
-	if($field->is_multiple() === true) {
-	  $this->view_cache[$k] = array();
-	  foreach($this->data[$k] as $v) {
-              $o = get_db_table($field->def['reference'])->get_entry($v);
-              if($o)
-                $this->view_cache[$k][] = &$o->view();
-          }
-        }
-	else {
-	  if($this->data[$k]) {
-	    $o = get_db_table($field->def['reference'])->get_entry($this->data[$k]);
-	    if($o)
-	      $this->view_cache[$k] = &$o->view();
-	  }
-	}
-      }
-
-      if(array_key_exists('backreference', $field->def) && ($field->def['backreference'] != null)) {
-        // backreferences are always multiple
-	$this->view_cache[$k] = array();
-        list($ref_table, $ref_field) = explode(':', $field->def['backreference']);
-	foreach($this->data[$k] as $v) {
-          $o = get_db_table($ref_table)->get_entry($v);
-          if($o)
-            $this->view_cache[$k][] = &$o->view();
-	}
-      }
-    }
 
     return $this->view_cache;
   }

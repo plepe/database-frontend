@@ -97,16 +97,16 @@ class Field {
 	$ret['format'] =
 	  "<ul class='MultipleValues'>\n" .
 	  "{% for _ in {$this->id} %}\n" .
-	  "<li><a href='{{ page_url({ \"page\": \"show\", \"table\": {$ref_table}, \"id\": _.id }) }}'>" .
-          "{{ entry_title({$ref_table}, _.id) }}" .
+	  "<li><a href='{{ page_url({ \"page\": \"show\", \"table\": {$ref_table}, \"id\": _ }) }}'>" .
+          "{{ entry_title({$ref_table}, _) }}" .
 	  "</a>" .
 	  "{% endfor %}\n" .
 	  "</ul>\n";
       }
       else {
 	$ret['format'] =
-	  "<a href='{{ page_url({ \"page\": \"show\", \"table\": {$ref_table}, \"id\": {$this->id}.id }) }}'>" .
-          "{{ entry_title({$ref_table}, {$this->id}.id) }}" .
+	  "<a href='{{ page_url({ \"page\": \"show\", \"table\": {$ref_table}, \"id\": {$this->id} }) }}'>" .
+          "{{ entry_title({$ref_table}, {$this->id}) }}" .
 	  "</a>";
       }
     }
@@ -288,6 +288,21 @@ class Field_datetime extends Field {
     return 'datetime-local';
   }
 
+  function additional_form_def () {
+    return array(
+      'value_format' => 'Y-m-d H:i:s'
+    );
+  }
+
+  function db_quote ($value, $db_conn) {
+    if ($value === 'now') {
+      return 'now()';
+    }
+    else {
+      return $db_conn->quote($value);
+    }
+  }
+
   function default_format($key=null) {
     if($key === null)
       $key = $this->id;
@@ -343,6 +358,12 @@ class Field_boolean extends Field {
     return 'boolean';
   }
 
+  function _load ($value) {
+    if ($value !== null) {
+      return !!$value;
+    }
+  }
+
   function default_format($key=null) {
     if($key === null)
       $key = $this->id;
@@ -396,7 +417,7 @@ class Field_random extends Field {
 }
 
 class Field_backreference extends FieldWithValues {
-  function db_type() {
+  function db_type () {
     return null;
   }
 

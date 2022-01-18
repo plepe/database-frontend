@@ -21,7 +21,10 @@ function get_table_fields_form(&$param, $view_def) {
     'table_fields' => array(
       'name' => 'Additional table fields',
       'type' => 'select_other',
-      'count' => array('default' => 1),
+      'count' => array(
+        'index_type' => 'array',
+        'default' => 1,
+      ),
       'button:other' => 'Custom',
       'other_def' => array(
         'type' => 'form',
@@ -42,7 +45,9 @@ function get_table_fields_form(&$param, $view_def) {
     ),
   );
 
-  $table_fields_form = new form(null, $def);
+  $table_fields_form = new form('table_fields', $def, array(
+    'var_name' => '',
+  ));
 
   if(array_key_exists('apply_table_fields', $param)) {
     $table_fields = $table_fields_form->get_data();
@@ -79,7 +84,9 @@ function modify_table_fields(&$param, &$def) {
       $def['fields'][] = $field_id;
     }
     else if ($field_id) {
-      $def['fields'][] = $fields[$field_id]->view_def();
+      $d = $fields[$field_id]->view_def();
+      $d['field_id'] = $field_id;
+      $def['fields'][] = $d;
     }
   }
 }

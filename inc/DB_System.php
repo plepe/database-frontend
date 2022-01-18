@@ -13,10 +13,16 @@ function db_system_init() {
 create table __system__ (
   id		varchar(255) not null,
   data		text	null,
+  ts            TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   primary key(id)
 );
 EOT
     );
+  }
+
+  $columns = $db_conn->columns('__system__');
+  if (!array_key_exists('ts', $columns)) {
+    $db_conn->query('alter table __system__ add column ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
   }
 
   $db_system_is_init = true;

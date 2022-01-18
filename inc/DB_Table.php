@@ -10,6 +10,12 @@ class DB_Table {
     $this->_load($data);
   }
 
+  function clear_cache () {
+    unset($this->data);
+    unset($this->_fields);
+    $this->entries_cache = array();
+  }
+
   function _load($data=null) {
     if (!$data) {
       global $db_conn;
@@ -69,12 +75,18 @@ class DB_Table {
   }
 
   function data($key=null) {
-    if ($this->data === null) {
+    if (!isset($this->data)) {
       $this->_load();
     }
 
-    if($key !== null)
-      return $this->data[$key];
+    if($key !== null) {
+      if (array_key_exists($key, $this->data)) {
+        return $this->data[$key];
+      }
+      else {
+        return null;
+      }
+    }
 
     return $this->data;
   }
@@ -93,6 +105,14 @@ class DB_Table {
           $type = "Field_{$column_def['type']}";
 
         $this->_fields[$column_id] = new $type($column_id, $column_def, $this);
+      }
+
+      if ($this->data('ts')) {
+        $this->_fields['ts'] = new Field_datetime('ts', array(
+          'name' => 'Timestamp',
+          'count' => null,
+          'sortable' => true,
+        ), $this);
       }
     }
 
@@ -179,6 +199,8 @@ class DB_Table {
    * Return definition of ID field
    */
   function id_field ($data=null) {
+    global $db_conn;
+
     if ($data === null) {
       $data = $this->data;
     }
@@ -290,6 +312,8 @@ class DB_Table {
 		  "  " . $db_conn->quoteIdent('sequence') . " int not null,\n" .
 		  "  " . $db_conn->quoteIdent('key') . " varchar(255) not null,\n" .
 		  "  " . $db_conn->quoteIdent('value') . " {$column_type} null,\n" .
+                  "  " . (array_key_exists('ts', $data) && $data['ts'] ? $db_conn->quoteIdent('ts') . " TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n" : '') .
+
 		  "  primary key(" . $db_conn->quoteIdent('id'). ", " . $db_conn->quoteIdent('key') . "),\n" .
 		  // foreign key to referenced table
 		  ((array_key_exists('reference', $column_def) && ($column_def['reference'] != null)) ? "foreign key(" . $db_conn->quoteIdent('value') . ") references " . $db_conn->quoteIdent($column_def['reference']) . "(" . $db_conn->quoteIdent('id') . "), " : "") .
@@ -313,7 +337,13 @@ class DB_Table {
 	  if(($old_field->is_multiple() === true) || ($old_def['count'])) {
 	    if($db_conn->tableExists($this->old_id . '_' . $column_def['old_key']))
 	      $multifield_cmds[] = "insert into " . $db_conn->quoteIdent($tmp_name . '_' . $column) .
-		    "  select * from " . $db_conn->quoteIdent($this->old_id . '_' . $column_def['old_key']) . ";";
+		    "  select " .
+                    $db_conn->quoteIdent('id') . ', ' .  $db_conn->quoteIdent('sequence') . ', ' . $db_conn->quoteIdent('key') . ', ' . $db_conn->quoteIdent('value') .
+                    ($data['ts'] ?
+                      (array_key_exists('ts', $old_data) && $old_data['ts'] ? ", " . $db_conn->quoteIdent('ts') : ", now()") :
+                      ""
+                    ) .
+                    " from " . $db_conn->quoteIdent($this->old_id . '_' . $column_def['old_key']) . ";";
 	  }
 	  // ... it was a field with a single value
 	  else {
@@ -369,6 +399,11 @@ class DB_Table {
 	else
 	  $column_copy[] = "null";
       }
+    }
+
+    if (array_key_exists('ts', $data) && $data['ts']) {
+      $columns[] = $db_conn->quoteIdent('ts') . " TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP";
+      $column_copy[] = $old_data['ts'] ? $db_conn->quoteIdent('ts') : 'now()';
     }
 
     // the new create table statement
@@ -612,7 +647,7 @@ class DB_Table {
 	return "require id for new types\n";
       }
 
-      $query = "insert into __system__ values (" .
+      $query = "insert into __system__ (id, data) values (" .
         $db_conn->quote($data['id']) . ", " .
 	$db_conn->quote(json_readable_encode($data)) . ")";
     }
@@ -794,6 +829,48 @@ class DB_Table {
     return null;
   }
 
+  function _timestamp_query () {
+    global $db_conn;
+
+    if (!$this->data('ts')) {
+      return '';
+    }
+
+    $ts = array();
+    foreach($this->column_tables() as $table) {
+      if (is_array($table)) {
+      }
+      else {
+        $ts[] = 'coalesce((select max(ts) from ' . $db_conn->quoteIdent($this->id . '_' . $table) . " where " . $db_conn->quoteIdent($this->id) . '.id=' . $db_conn->quoteIdent($this->id . '_' . $table) . '.id), ' . $db_conn->quote('') . ')';
+      }
+    }
+    if (sizeof($ts)) {
+      return ', greatest(ts, ' . implode(', ', $ts) . ') as ts';
+    }
+    else {
+      return ', ts';
+    }
+  }
+
+  function entries_timestamps ($after=null) {
+    global $db_conn;
+
+    if (!$this->data('ts')) {
+      return null;
+    }
+
+    $ts = $this->_timestamp_query();
+    $data = array();
+    $res = $db_conn->query("select * from (select id {$ts} from " . $db_conn->quoteIdent($this->id) . ') t' . ($after ? ' where ts>' . $db_conn->quote((new DateTime($after))->format('Y-m-d H:i:s')) : ''));
+
+    while($elem = $res->fetch()) {
+      $data[$elem['id']] = $elem['ts'];
+    }
+    $res->closeCursor();
+
+    return $data;
+  }
+
   function load_entries_data($ids) {
     global $db_conn;
     $data = array();
@@ -808,7 +885,9 @@ class DB_Table {
       return "value=" . $db_conn->quote($x);
     }, $ids));
 
-    $res = $db_conn->query("select * from " . $db_conn->quoteIdent($this->id) . " where " . $where_quoted);
+    $ts = $this->_timestamp_query();
+
+    $res = $db_conn->query("select * {$ts} from " . $db_conn->quoteIdent($this->id) . " where " . $where_quoted);
     while($elem = $res->fetch()) {
       $data[$elem['id']] = $elem;
     }
@@ -835,8 +914,14 @@ class DB_Table {
         foreach($data as $id=>$d)
           $data[$id][$table] = array();
 
-        while($elem = $res->fetch())
+        while($elem = $res->fetch()) {
           $data[$elem['id']][$table][$elem['key']] = $elem['value'];
+
+          if ($this->data('ts') && $elem['ts'] > $data[$elem['id']]['ts']) {
+            $data[$elem['id']]['ts'] = $elem['ts'];
+          }
+        }
+
         $res->closeCursor();
       }
     }
@@ -863,6 +948,10 @@ class DB_Table {
     return array_map(function($x) {
       return $x['__id'];
     }, $data);
+  }
+
+  function create_entry($id) {
+    return new DB_Entry($id);
   }
 
   function get_entry($id, $data=null) {
@@ -1032,6 +1121,10 @@ class DB_Table {
   function get_entry_count($filter=array()) {
     return sizeof($this->get_entry_ids($filter));
   }
+
+  function access ($type='view') {
+    return base_access($type) && access($this->data("access_{$type}"));
+  }
 }
 
 function get_db_table($type) {
@@ -1067,6 +1160,16 @@ function get_db_table($type) {
     return null;
 
   return $db_table_cache[$type];
+}
+
+function get_db_table_viewable ($table_id) {
+  $table = get_db_table($table_id);
+
+  if (!$table->access('view')) {
+    return false;
+  }
+
+  return $table;
 }
 
 function get_db_tables() {
@@ -1108,10 +1211,34 @@ function get_db_tables() {
   return $db_table_cache;
 }
 
+function get_db_tables_viewable () {
+  $tables = get_db_tables();
+
+  $tables = array_filter($tables, function ($table) {
+    return $table->access('view');
+  });
+
+  return $tables;
+}
+
 function get_db_table_names () {
   $ret = array();
 
-  foreach(get_db_tables() as $type) {
+  $tables = get_db_tables();
+
+  usort($tables, function ($a, $b) {
+    $weight_a = $a->data('weight') ?? 0;
+    $weight_b = $b->data('weight') ?? 0;
+
+    if ($weight_a === $weight_b) {
+      return $a->name() <=> $b->name();
+    }
+    else {
+      return $weight_a - $weight_b;
+    }
+  });
+
+  foreach($tables as $type) {
     $ret[$type->id] = $type->name();
   }
 

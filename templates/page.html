@@ -7,9 +7,10 @@
   <body>
 <div id='user_info'>{{ user_info|raw }}</div>
 {{ messages|raw }}
-<div id='page_{{ page.page }}'>
+<div id='content' class='page_{{ page.page }}'>
 {{ content|raw }}
 </div>
+<div id='loadingIndicator'></div>
   </body>
 </html>
 

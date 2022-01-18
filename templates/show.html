@@ -10,7 +10,7 @@
          <li><a href='{{ page_url({ "page": "show", "table": table, "id": id }) }}'>{{ title|raw }}</a></li>
       </ul>
     </div>
-    View: <form method='get'>
+    View: <form id='choose_view' method='get'>
     <input type='hidden' name='page' value='show'/>
     <input type='hidden' name='table' value='{{table}}'/>
     <input type='hidden' name='id' value='{{id}}'/>
@@ -43,10 +43,11 @@
       class='hidden'
     {% endif %}
   >
-  <form method='post'>
+  <form id='choose_filter' method='post'>
   {{ filter|show }}
   <input type='hidden' name='apply_filter' value='true' />
   <input type='submit' value='Apply filter'>
+  <input type='button' name='reset_filter' value='Reset filter'>
   </form>
   </div>
 

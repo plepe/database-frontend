@@ -9,7 +9,7 @@
         <li><a href='{{ page_url({ "page": "list", "table": table }) }}'>{{ table_name }}</a></li>
       </ul>
     </div>
-    View: <form method='get'>
+    View: <form id='choose_view' method='get'>
     <input type='hidden' name='page' value='list'/>
     <input type='hidden' name='table' value='{{table}}'/>
     <select name='view' onchange='this.form.submit()'>
@@ -47,12 +47,13 @@
       class='hidden'
     {% endif %}
   >
-  <form method='get'>
+  <form id='choose_filter' method='get'>
   <input type='hidden' name='page' value='list'/>
   <input type='hidden' name='table' value='{{table}}'/>
   {{ filter|show }}
   <input type='hidden' name='apply_filter' value='true' />
   <input type='submit' value='Apply filter'>
+  <input type='submit' name='reset_filter' value='Reset filter'>
   </form>
   </div>
 
@@ -62,7 +63,7 @@
       class='hidden'
     {% endif %}
   >
-  <form method='get'>
+  <form id='choose_table_fields' method='get'>
   <input type='hidden' name='page' value='list'/>
   <input type='hidden' name='table' value='{{table}}'/>
   {{ table_fields|show }}
