@@ -22,15 +22,15 @@ class Field {
     return 'json';
   }
 
-  public static function is_multiple() {
-    if (!isset($this)) {
-      return null;
-    }
-
+  function is_multiple() {
     if(array_key_exists('count', $this->def) && $this->def['count'])
       return true;
 
     return false;
+  }
+
+  public static function field_multiple () {
+    return null;
   }
 
   public static function need_values() {
@@ -330,13 +330,21 @@ class FieldWithValues extends Field {
 }
 
 class Field_radio extends FieldWithValues {
-  public static function is_multiple() {
+  function is_multiple() {
+    return false;
+  }
+
+  public static function field_multiple () {
     return false;
   }
 }
 
 class Field_checkbox extends FieldWithValues {
-  public static function is_multiple() {
+  function is_multiple() {
+    return true;
+  }
+
+  public static function field_multiple () {
     return true;
   }
 }
@@ -425,7 +433,11 @@ class Field_backreference extends FieldWithValues {
     return 'display';
   }
 
-  public static function is_multiple() {
+  function is_multiple() {
+    return true;
+  }
+
+  public static function field_multiple() {
     return true;
   }
 }

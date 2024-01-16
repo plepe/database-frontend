@@ -35,7 +35,7 @@ class Page_admin_table_fields extends Page {
     $show_depend_count = array("check", "type", array("or"));
 
     foreach($field_types as $k => $type) {
-      if($type::is_multiple() === null)
+      if($type::field_multiple() === null)
 	$show_depend_count[2][] = array("is", $k);
       if($type::need_values())
 	$has_values[2][] = array("is", $k);
