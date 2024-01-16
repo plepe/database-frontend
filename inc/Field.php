@@ -6,7 +6,7 @@ class Field {
     $this->table = $table;
   }
 
-  function type() {
+  public static function type() {
     return substr(get_called_class(), 6);
   }
 
@@ -22,7 +22,7 @@ class Field {
     return 'json';
   }
 
-  function is_multiple() {
+  public static function is_multiple() {
     if (!isset($this)) {
       return null;
     }
@@ -33,7 +33,7 @@ class Field {
     return false;
   }
 
-  function need_values() {
+  public static function need_values() {
     return false;
   }
 
@@ -324,19 +324,19 @@ class FieldWithValues extends Field {
     return "{{ {$key} }}";
   }
 
-  function need_values() {
+  public static function need_values() {
     return true;
   }
 }
 
 class Field_radio extends FieldWithValues {
-  function is_multiple() {
+  public static function is_multiple() {
     return false;
   }
 }
 
 class Field_checkbox extends FieldWithValues {
-  function is_multiple() {
+  public static function is_multiple() {
     return true;
   }
 }
@@ -425,7 +425,7 @@ class Field_backreference extends FieldWithValues {
     return 'display';
   }
 
-  function is_multiple() {
+  public static function is_multiple() {
     return true;
   }
 }
